@@ -8,7 +8,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Allow cookies if needed
+  //withCredentials: true, // Allow cookies if needed
 });
 
 // Request Interceptor: Attach JWT to authorization header
