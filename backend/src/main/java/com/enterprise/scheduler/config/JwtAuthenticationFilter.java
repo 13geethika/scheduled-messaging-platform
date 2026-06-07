@@ -24,25 +24,59 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
             throws ServletException, IOException {
+
         try {
+
+            System.out.println("========== JWT FILTER ==========");
+            System.out.println("Request URI: " + request.getRequestURI());
+
             String jwt = getJwtFromRequest(request);
 
-            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                String username = tokenProvider.getEmailFromJWT(jwt);
+            System.out.println("JWT Present: " + (jwt != null));
 
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-                if (userDetails != null && userDetails.isAccountNonLocked()) {
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            if (StringUtils.hasText(jwt)) {
 
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                boolean valid = tokenProvider.validateToken(jwt);
+                System.out.println("Token Valid: " + valid);
+
+                if (valid) {
+
+                    String username = tokenProvider.getEmailFromJWT(jwt);
+                    System.out.println("Username from token: " + username);
+
+                    UserDetails userDetails =
+                            customUserDetailsService.loadUserByUsername(username);
+
+                    System.out.println("User Found: " + (userDetails != null));
+
+                    if (userDetails != null) {
+                        System.out.println("Account Non Locked: "
+                                + userDetails.isAccountNonLocked());
+
+                        UsernamePasswordAuthenticationToken authentication =
+                                new UsernamePasswordAuthenticationToken(
+                                        userDetails,
+                                        null,
+                                        userDetails.getAuthorities());
+
+                        authentication.setDetails(
+                                new WebAuthenticationDetailsSource()
+                                        .buildDetails(request));
+
+                        SecurityContextHolder.getContext()
+                                .setAuthentication(authentication);
+
+                        System.out.println("Authentication Set Successfully");
+                    }
                 }
             }
+
         } catch (Exception ex) {
-            logger.error("Could not set user authentication in security context", ex);
+            ex.printStackTrace();
         }
 
         filterChain.doFilter(request, response);

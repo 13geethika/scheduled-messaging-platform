@@ -16,7 +16,7 @@ public class JwtTokenProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
-    @Value("${app.jwt.secret:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}")
+    @Value("${app.jwt.secret:your secret_key is 12345}")
     private String jwtSecret;
 
     @Value("${app.jwt.expiration-ms:900000}") // 15 mins default
@@ -51,20 +51,37 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String authToken) {
         try {
+
             Jwts.parser()
                     .verifyWith(getSigningKey())
                     .build()
                     .parseSignedClaims(authToken);
+
+            System.out.println("JWT VALID");
+
             return true;
+
         } catch (MalformedJwtException ex) {
-            logger.error("Invalid JWT token");
+            System.out.println("INVALID JWT TOKEN");
+            ex.printStackTrace();
+
         } catch (ExpiredJwtException ex) {
-            logger.error("Expired JWT token");
+            System.out.println("EXPIRED JWT TOKEN");
+            ex.printStackTrace();
+
         } catch (UnsupportedJwtException ex) {
-            logger.error("Unsupported JWT token");
+            System.out.println("UNSUPPORTED JWT TOKEN");
+            ex.printStackTrace();
+
         } catch (IllegalArgumentException ex) {
-            logger.error("JWT claims string is empty.");
+            System.out.println("EMPTY JWT TOKEN");
+            ex.printStackTrace();
+
+        } catch (Exception ex) {
+            System.out.println("UNKNOWN JWT ERROR");
+            ex.printStackTrace();
         }
+
         return false;
     }
 }

@@ -51,7 +51,7 @@ export const DashboardLayout: React.FC = () => {
 
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 15000); // refresh every 15s
+    const interval = setInterval(fetchNotifications, 5000); // refresh every 15s
     return () => clearInterval(interval);
   }, []);
 

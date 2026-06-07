@@ -73,7 +73,8 @@ public class SecurityConfig {
         //configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://scheduled-messaging-platform.vercel.app"));
         configuration.setAllowedOriginPatterns(List.of(
                 "http://localhost:5173",
-                "https://scheduled-messaging-platform.vercel.app"
+                "https://scheduled-messaging-platform.vercel.app",
+                "https://*.ngrok-free.dev"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 //        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Cache-Control"));
