@@ -225,10 +225,10 @@
 
 
 #psql
--- --------------------------------------------------------
+-- -------------------------------------------------------
+-- =========================================================
 -- USERS TABLE
--- --------------------------------------------------------
-
+-- =========================================================
 CREATE TABLE IF NOT EXISTS users (
                                      id BIGSERIAL PRIMARY KEY,
                                      name VARCHAR(255) NOT NULL,
@@ -237,16 +237,15 @@ CREATE TABLE IF NOT EXISTS users (
     role VARCHAR(50) NOT NULL,
     status VARCHAR(50) NOT NULL,
     failed_attempts INT NOT NULL DEFAULT 0,
-    locked_until TIMESTAMP NULL,
+    locked_until TIMESTAMP,
     email_verification_token VARCHAR(255),
     password_reset_token VARCHAR(255),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
--- --------------------------------------------------------
+-- =========================================================
 -- CONTACTS TABLE
--- --------------------------------------------------------
-
+-- =========================================================
 CREATE TABLE IF NOT EXISTS contacts (
                                         id BIGSERIAL PRIMARY KEY,
                                         user_id BIGINT NOT NULL,
@@ -263,10 +262,9 @@ CREATE TABLE IF NOT EXISTS contacts (
     FOREIGN KEY (contact_user_id) REFERENCES users(id) ON DELETE CASCADE
     );
 
--- --------------------------------------------------------
+-- =========================================================
 -- MESSAGES TABLE
--- --------------------------------------------------------
-
+-- =========================================================
 CREATE TABLE IF NOT EXISTS messages (
                                         id BIGSERIAL PRIMARY KEY,
                                         sender_id BIGINT NOT NULL,
@@ -275,8 +273,8 @@ CREATE TABLE IF NOT EXISTS messages (
                                         message_type VARCHAR(50) NOT NULL,
     file_url VARCHAR(500),
     status VARCHAR(50) NOT NULL,
-    scheduled_time TIMESTAMP NULL,
-    sent_time TIMESTAMP NULL,
+    scheduled_time TIMESTAMP,
+    sent_time TIMESTAMP,
     recurring_type VARCHAR(50) NOT NULL DEFAULT 'NONE',
     retry_count INT NOT NULL DEFAULT 0,
     max_retries INT NOT NULL DEFAULT 3,
@@ -290,10 +288,9 @@ CREATE TABLE IF NOT EXISTS messages (
     FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
     );
 
--- --------------------------------------------------------
+-- =========================================================
 -- NOTIFICATIONS TABLE
--- --------------------------------------------------------
-
+-- =========================================================
 CREATE TABLE IF NOT EXISTS notifications (
                                              id BIGSERIAL PRIMARY KEY,
                                              user_id BIGINT NOT NULL,
@@ -305,10 +302,9 @@ CREATE TABLE IF NOT EXISTS notifications (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
 
--- --------------------------------------------------------
--- REFRESH TOKENS
--- --------------------------------------------------------
-
+-- =========================================================
+-- REFRESH TOKENS TABLE
+-- =========================================================
 CREATE TABLE IF NOT EXISTS refresh_tokens (
                                               id BIGSERIAL PRIMARY KEY,
                                               user_id BIGINT NOT NULL UNIQUE,
@@ -319,25 +315,27 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
 
--- --------------------------------------------------------
--- QUARTZ SCHEDULER TABLES (POSTGRESQL VERSION)
--- --------------------------------------------------------
-
+-- =========================================================
+-- QUARTZ JOB DETAILS
+-- =========================================================
 CREATE TABLE IF NOT EXISTS qrtz_job_details (
                                                 sched_name VARCHAR(120) NOT NULL,
     job_name VARCHAR(190) NOT NULL,
     job_group VARCHAR(190) NOT NULL,
     description VARCHAR(250),
     job_class_name VARCHAR(250) NOT NULL,
-    is_durable VARCHAR(1) NOT NULL,
-    is_nonconcurrent VARCHAR(1) NOT NULL,
-    is_update_data VARCHAR(1) NOT NULL,
-    requests_recovery VARCHAR(1) NOT NULL,
+    is_durable BOOLEAN NOT NULL,
+    is_nonconcurrent BOOLEAN NOT NULL,
+    is_update_data BOOLEAN NOT NULL,
+    requests_recovery BOOLEAN NOT NULL,
     job_data BYTEA,
 
     PRIMARY KEY (sched_name, job_name, job_group)
     );
 
+-- =========================================================
+-- QUARTZ TRIGGERS
+-- =========================================================
 CREATE TABLE IF NOT EXISTS qrtz_triggers (
                                              sched_name VARCHAR(120) NOT NULL,
     trigger_name VARCHAR(190) NOT NULL,
@@ -363,6 +361,9 @@ CREATE TABLE IF NOT EXISTS qrtz_triggers (
     REFERENCES qrtz_job_details(sched_name, job_name, job_group)
     );
 
+-- =========================================================
+-- QUARTZ SIMPLE TRIGGERS
+-- =========================================================
 CREATE TABLE IF NOT EXISTS qrtz_simple_triggers (
                                                     sched_name VARCHAR(120) NOT NULL,
     trigger_name VARCHAR(190) NOT NULL,
@@ -378,6 +379,9 @@ CREATE TABLE IF NOT EXISTS qrtz_simple_triggers (
     REFERENCES qrtz_triggers(sched_name, trigger_name, trigger_group)
     );
 
+-- =========================================================
+-- QUARTZ CRON TRIGGERS
+-- =========================================================
 CREATE TABLE IF NOT EXISTS qrtz_cron_triggers (
                                                   sched_name VARCHAR(120) NOT NULL,
     trigger_name VARCHAR(190) NOT NULL,
@@ -392,6 +396,9 @@ CREATE TABLE IF NOT EXISTS qrtz_cron_triggers (
     REFERENCES qrtz_triggers(sched_name, trigger_name, trigger_group)
     );
 
+-- =========================================================
+-- QUARTZ SIMPROP TRIGGERS
+-- =========================================================
 CREATE TABLE IF NOT EXISTS qrtz_simprop_triggers (
                                                      sched_name VARCHAR(120) NOT NULL,
     trigger_name VARCHAR(190) NOT NULL,
@@ -405,8 +412,8 @@ CREATE TABLE IF NOT EXISTS qrtz_simprop_triggers (
     long_prop_2 BIGINT,
     dec_prop_1 NUMERIC(13,4),
     dec_prop_2 NUMERIC(13,4),
-    bool_prop_1 VARCHAR(1),
-    bool_prop_2 VARCHAR(1),
+    bool_prop_1 BOOLEAN,
+    bool_prop_2 BOOLEAN,
 
     PRIMARY KEY (sched_name, trigger_name, trigger_group),
 
@@ -415,6 +422,9 @@ CREATE TABLE IF NOT EXISTS qrtz_simprop_triggers (
     REFERENCES qrtz_triggers(sched_name, trigger_name, trigger_group)
     );
 
+-- =========================================================
+-- QUARTZ BLOB TRIGGERS
+-- =========================================================
 CREATE TABLE IF NOT EXISTS qrtz_blob_triggers (
                                                   sched_name VARCHAR(120) NOT NULL,
     trigger_name VARCHAR(190) NOT NULL,
@@ -428,6 +438,9 @@ CREATE TABLE IF NOT EXISTS qrtz_blob_triggers (
     REFERENCES qrtz_triggers(sched_name, trigger_name, trigger_group)
     );
 
+-- =========================================================
+-- QUARTZ CALENDARS
+-- =========================================================
 CREATE TABLE IF NOT EXISTS qrtz_calendars (
                                               sched_name VARCHAR(120) NOT NULL,
     calendar_name VARCHAR(190) NOT NULL,
@@ -436,6 +449,9 @@ CREATE TABLE IF NOT EXISTS qrtz_calendars (
     PRIMARY KEY (sched_name, calendar_name)
     );
 
+-- =========================================================
+-- QUARTZ PAUSED GROUPS
+-- =========================================================
 CREATE TABLE IF NOT EXISTS qrtz_paused_trigger_grps (
                                                         sched_name VARCHAR(120) NOT NULL,
     trigger_group VARCHAR(190) NOT NULL,
@@ -443,6 +459,9 @@ CREATE TABLE IF NOT EXISTS qrtz_paused_trigger_grps (
     PRIMARY KEY (sched_name, trigger_group)
     );
 
+-- =========================================================
+-- QUARTZ FIRED TRIGGERS
+-- =========================================================
 CREATE TABLE IF NOT EXISTS qrtz_fired_triggers (
                                                    sched_name VARCHAR(120) NOT NULL,
     entry_id VARCHAR(95) NOT NULL,
@@ -455,12 +474,15 @@ CREATE TABLE IF NOT EXISTS qrtz_fired_triggers (
     state VARCHAR(16) NOT NULL,
     job_name VARCHAR(190),
     job_group VARCHAR(190),
-    is_nonconcurrent VARCHAR(1),
-    requests_recovery VARCHAR(1),
+    is_nonconcurrent BOOLEAN,
+    requests_recovery BOOLEAN,
 
     PRIMARY KEY (sched_name, entry_id)
     );
 
+-- =========================================================
+-- QUARTZ SCHEDULER STATE
+-- =========================================================
 CREATE TABLE IF NOT EXISTS qrtz_scheduler_state (
                                                     sched_name VARCHAR(120) NOT NULL,
     instance_name VARCHAR(190) NOT NULL,
@@ -470,6 +492,9 @@ CREATE TABLE IF NOT EXISTS qrtz_scheduler_state (
     PRIMARY KEY (sched_name, instance_name)
     );
 
+-- =========================================================
+-- QUARTZ LOCKS
+-- =========================================================
 CREATE TABLE IF NOT EXISTS qrtz_locks (
                                           sched_name VARCHAR(120) NOT NULL,
     lock_name VARCHAR(40) NOT NULL,
@@ -477,10 +502,9 @@ CREATE TABLE IF NOT EXISTS qrtz_locks (
     PRIMARY KEY (sched_name, lock_name)
     );
 
--- --------------------------------------------------------
--- INDEXES (OPTIONAL BUT RECOMMENDED)
--- --------------------------------------------------------
-
+-- =========================================================
+-- INDEXES
+-- =========================================================
 CREATE INDEX IF NOT EXISTS idx_qrtz_triggers_state
     ON qrtz_triggers(sched_name, trigger_state);
 
