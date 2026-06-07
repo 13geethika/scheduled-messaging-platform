@@ -57,7 +57,8 @@ public class AuthServiceImpl implements AuthService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.ROLE_USER)
-                .status(UserStatus.PENDING_VERIFICATION)
+                //.status(UserStatus.PENDING_VERIFICATION)
+                .status(UserStatus.ACTIVE)
                 .failedAttempts(0)
                 .emailVerificationToken(verificationToken)
                 .build();
