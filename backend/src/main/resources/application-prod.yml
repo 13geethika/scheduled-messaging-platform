@@ -6,6 +6,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  quartz:
+    properties:
+      org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
   mail:
     host: ${SPRING_MAIL_HOST:127.0.0.1}
     port: ${SPRING_MAIL_PORT:587}

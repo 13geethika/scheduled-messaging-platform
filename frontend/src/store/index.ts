@@ -1,16 +1,26 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import authReducer from './auth/authSlice';
 import contactsReducer from './contacts/contactsSlice';
 import messagesReducer from './messages/messagesSlice';
 import { apiSlice } from './apiSlice';
 
+const appReducer = combineReducers({
+  auth: authReducer,
+  contacts: contactsReducer,
+  messages: messagesReducer,
+  [apiSlice.reducerPath]: apiSlice.reducer,
+});
+
+const rootReducer = (state: any, action: any) => {
+  if (action.type === 'auth/logout/fulfilled' || action.type === 'auth/forcedLogout') {
+    // Reset all state to initial state on logout
+    state = undefined;
+  }
+  return appReducer(state, action);
+};
+
 export const store = configureStore({
-  reducer: {
-    auth: authReducer,
-    contacts: contactsReducer,
-    messages: messagesReducer,
-    [apiSlice.reducerPath]: apiSlice.reducer,
-  },
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apiSlice.middleware),
 });
