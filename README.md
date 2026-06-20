@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # ChronosMsg - Enterprise Scheduled Messaging Platform
 
 ChronosMsg is a production-grade, enterprise-ready Scheduled Messaging Platform built using **Java 21**, **Spring Boot 3**, **React 19 (Vite + TypeScript)**, **Redux Toolkit**, **Spring Security JWT**, and **Quartz Scheduler**.
@@ -146,6 +145,4 @@ docker run -d --name local-mailpit -p 1025:1025 -p 8025:8025 axllent/mailpit
    - Enter text content, or change Message Type to **IMAGE** and upload a local image file.
    - Click **Schedule Message**.
 6. **Watch execution**: Check your console logs. At the scheduled time, the Quartz worker trigger will fire, execute the simulated delivery, log the payload, and notify Bob of the incoming message in real time!
-=======
->>>>>>> 0862e1f32b794b1c687f62ba6b84901fd8b514e7
-# ChronosMsg
+
