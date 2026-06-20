@@ -5,7 +5,7 @@ spring:
     password: ${DB_PASSWORD:GopiChand@26}
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
   mail:
     host: ${SPRING_MAIL_HOST:127.0.0.1}
     port: ${SPRING_MAIL_PORT:587}
