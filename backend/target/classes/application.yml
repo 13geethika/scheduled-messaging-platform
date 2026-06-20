@@ -10,6 +10,7 @@ spring:
     enabled: true
     baseline-on-migrate: true
     baseline-version: 0
+    locations: classpath:db/migration/{vendor}
   servlet:
     multipart:
       max-file-size: 50MB
@@ -27,7 +28,7 @@ spring:
       org.quartz.jobStore.clusterCheckinInterval: 20000
 
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 management:
   endpoints:
