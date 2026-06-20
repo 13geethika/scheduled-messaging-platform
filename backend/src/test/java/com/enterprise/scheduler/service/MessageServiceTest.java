@@ -1,13 +1,13 @@
 package com.enterprise.scheduler.service;
 
-import com.enterprise.scheduler.dto.MessageScheduleRequest;
-import com.enterprise.scheduler.entity.Contact;
-import com.enterprise.scheduler.entity.ContactStatus;
-import com.enterprise.scheduler.entity.User;
-import com.enterprise.scheduler.repository.ContactRepository;
-import com.enterprise.scheduler.repository.MessageRepository;
-import com.enterprise.scheduler.repository.UserRepository;
-import com.enterprise.scheduler.service.impl.MessageServiceImpl;
+import com.enterprise.scheduler.message.MessageScheduleRequest;
+import com.enterprise.scheduler.user.Contact;
+import com.enterprise.scheduler.user.ContactStatus;
+import com.enterprise.scheduler.user.User;
+import com.enterprise.scheduler.user.ContactRepository;
+import com.enterprise.scheduler.message.MessageRepository;
+import com.enterprise.scheduler.user.UserRepository;
+import com.enterprise.scheduler.message.MessageServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

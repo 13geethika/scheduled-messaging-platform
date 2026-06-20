@@ -1,8 +1,6 @@
 import axios from 'axios';
 
-//const API_BASE_URL = 'http://localhost:8080/api';
-// const API_BASE_URL = "https://until-clear-exposure.ngrok-free.dev/api";
-const API_BASE_URL = "https://scheduled-messaging-platform.onrender.com/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
 
 const api = axios.create({
@@ -19,6 +17,14 @@ api.interceptors.request.use(
     const token = localStorage.getItem('accessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    // Centrally delete default 'Content-Type' for FormData requests,
+    // allowing the browser / Axios to set it dynamically with the correct boundary.
+    if (config.data instanceof FormData) {
+      if (config.headers.delete) {
+        config.headers.delete('Content-Type');
+      }
+      delete config.headers['Content-Type'];
     }
     return config;
   },
@@ -45,7 +51,7 @@ api.interceptors.response.use(
       try {
         // Call refresh endpoint
         const response = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
-        const { accessToken, refreshToken: newRefreshToken } = response.data;
+        const { accessToken, refreshToken: newRefreshToken } = response.data.data;
 
         // Store new tokens
         localStorage.setItem('accessToken', accessToken);

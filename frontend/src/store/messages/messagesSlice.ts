@@ -46,7 +46,7 @@ export const fetchMessages = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get('/messages');
-      return response.data; // List of MessageResponse
+      return response.data.data; // List of MessageResponse
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.error || 'Failed to fetch messages');
     }
@@ -57,11 +57,9 @@ export const scheduleMessage = createAsyncThunk(
   'messages/scheduleMessage',
   async (formData: FormData, { dispatch, rejectWithValue }) => {
     try {
-      const response = await api.post('/messages/schedule', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const response = await api.post('/messages/schedule', formData);
       dispatch(fetchMessages());
-      return response.data;
+      return response.data.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.error || 'Failed to schedule message');
     }
@@ -72,11 +70,9 @@ export const editMessage = createAsyncThunk(
   'messages/editMessage',
   async ({ id, formData }: { id: number; formData: FormData }, { dispatch, rejectWithValue }) => {
     try {
-      const response = await api.put(`/messages/${id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const response = await api.put(`/messages/${id}`, formData);
       dispatch(fetchMessages());
-      return response.data;
+      return response.data.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.error || 'Failed to edit message');
     }
@@ -140,7 +136,7 @@ export const fetchDashboardStats = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get('/dashboard/stats');
-      return response.data; // DashboardStatsResponse
+      return response.data.data; // DashboardStatsResponse
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.error || 'Failed to fetch dashboard stats');
     }

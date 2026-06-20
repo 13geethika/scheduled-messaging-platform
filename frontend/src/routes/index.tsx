@@ -6,17 +6,18 @@ import { ProtectedRoute } from '../shared/components/ProtectedRoute';
 import { PATHS } from './paths';
 
 // Lazy loading views for bundle optimization
-const Login = React.lazy(() => import('../modules/auth/Login'));
-const Register = React.lazy(() => import('../modules/auth/Register'));
-const VerifyEmail = React.lazy(() => import('../modules/auth/VerifyEmail'));
-const ForgotPassword = React.lazy(() => import('../modules/auth/ForgotPassword'));
-const ResetPassword = React.lazy(() => import('../modules/auth/ResetPassword'));
+const Login = React.lazy(() => import('../features/auth/Login'));
+const Register = React.lazy(() => import('../features/auth/Register'));
+const VerifyEmail = React.lazy(() => import('../features/auth/VerifyEmail'));
+const ForgotPassword = React.lazy(() => import('../features/auth/ForgotPassword'));
+const ResetPassword = React.lazy(() => import('../features/auth/ResetPassword'));
 
-const Dashboard = React.lazy(() => import('../modules/dashboard/Dashboard'));
-const Contacts = React.lazy(() => import('../modules/contacts/Contacts'));
-const Scheduler = React.lazy(() => import('../modules/messages/Scheduler'));
-const Chats = React.lazy(() => import('../modules/chats/Chats'));
-const Profile = React.lazy(() => import('../modules/profile/Profile'));
+const Dashboard = React.lazy(() => import('../features/dashboard/Dashboard'));
+const Contacts = React.lazy(() => import('../features/contacts/Contacts'));
+const Scheduler = React.lazy(() => import('../features/messages/Scheduler'));
+const Chats = React.lazy(() => import('../features/chats/Chats'));
+const Profile = React.lazy(() => import('../features/profile/Profile'));
+const AuditLogs = React.lazy(() => import('../features/audit/AuditLogs'));
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -38,6 +39,7 @@ export const AppRoutes: React.FC = () => {
           <Route path={PATHS.SCHEDULER} element={<Scheduler />} />
           <Route path={PATHS.CHATS} element={<Chats />} />
           <Route path={PATHS.PROFILE} element={<Profile />} />
+          <Route path={PATHS.AUDIT_LOGS} element={<AuditLogs />} />
         </Route>
       </Route>
 

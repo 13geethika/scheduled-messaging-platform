@@ -37,7 +37,7 @@ export const login = createAsyncThunk(
   async (credentials: { email: string; password: string }, { rejectWithValue }) => {
     try {
       const response = await api.post('/auth/login', credentials);
-      const data = response.data; // JwtResponse
+      const data = response.data.data; // JwtResponse from ApiResponse.data
       
       localStorage.setItem('accessToken', data.token);
       localStorage.setItem('refreshToken', data.refreshToken);
@@ -128,10 +128,10 @@ export const updateProfileName = createAsyncThunk(
       const stored = localStorage.getItem('user');
       if (stored) {
         const u = JSON.parse(stored);
-        u.name = response.data.name;
+        u.name = response.data.data.name;
         localStorage.setItem('user', JSON.stringify(u));
       }
-      return response.data.name;
+      return response.data.data.name;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.error || 'Profile update failed');
     }

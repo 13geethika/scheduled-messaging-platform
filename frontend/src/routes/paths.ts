@@ -9,4 +9,5 @@ export const PATHS = {
   SCHEDULER: '/scheduler',
   CHATS: '/chats',
   PROFILE: '/profile',
+  AUDIT_LOGS: '/audit-logs',
 };

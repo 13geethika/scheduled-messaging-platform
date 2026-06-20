@@ -1,0 +1,55 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="scheduled-messaging-platform" type="MavenRunConfiguration" factoryName="Maven" nameIsGenerated="true">
+    <MavenSettings>
+      <option name="myGeneralSettings" />
+      <option name="myRunnerSettings">
+        <MavenRunnerSettings>
+          <option name="delegateBuildToMaven" value="false" />
+          <option name="environmentProperties">
+            <map>
+              <entry key="APP_SERVER_URL" value="https://scheduled-messaging-platform.onrender.com" />
+              <entry key="DB_PASSWORD" value="QR3jzMC5P2SahlMCEO1rjjLXTTCzIJR8" />
+              <entry key="DB_URL" value="jdbc:postgresql://dpg-d8ili6ddt1ts73fg2ndg-a.ohio-postgres.render.com:5432/scheduledmessaging" />
+              <entry key="DB_USERNAME" value="scheduledmessaging_user" />
+              <entry key="FRONTEND_URL" value="https://scheduled-messaging-platform.vercel.app" />
+              <entry key="SPRING_MAIL_HOST" value="http://localhost:8025/" />
+              <entry key="SPRING_MAIL_PASSWORD" value="vvit@123" />
+              <entry key="SPRING_MAIL_USERNAME" value="21bq1a0522.vvit@gmail.com" />
+            </map>
+          </option>
+          <option name="jreName" value="#USE_PROJECT_JDK" />
+          <option name="mavenProperties">
+            <map />
+          </option>
+          <option name="passParentEnv" value="true" />
+          <option name="skipTests" value="false" />
+          <option name="vmOptions" value="" />
+        </MavenRunnerSettings>
+      </option>
+      <option name="myRunnerParameters">
+        <MavenRunnerParameters>
+          <option name="cmdOptions" />
+          <option name="profiles">
+            <set />
+          </option>
+          <option name="goals">
+            <list />
+          </option>
+          <option name="multimoduleDir" />
+          <option name="pomFileName" />
+          <option name="profilesMap">
+            <map>
+              <entry key="native" value="true" />
+            </map>
+          </option>
+          <option name="projectsCmdOptionValues">
+            <list />
+          </option>
+          <option name="resolveToWorkspace" value="false" />
+          <option name="workingDirPath" value="$PROJECT_DIR$/backend" />
+        </MavenRunnerParameters>
+      </option>
+    </MavenSettings>
+    <method v="2" />
+  </configuration>
+</component>

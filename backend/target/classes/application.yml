@@ -1,0 +1,50 @@
+spring:
+  profiles:
+    active: prod
+  application:
+    name: scheduled-messaging-platform
+  sql:
+    init:
+      mode: never
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: never
+    properties:
+      org.quartz.scheduler.instanceName: ScheduledMessagingScheduler
+      org.quartz.scheduler.instanceId: AUTO
+      org.quartz.threadPool.threadCount: 10
+      org.quartz.jobStore.tablePrefix: QRTZ_
+      org.quartz.jobStore.isClustered: true
+      org.quartz.jobStore.clusterCheckinInterval: 20000
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+
+app:
+  jwt:
+    expiration-ms: 900000
+    refresh-expiration-ms: 86400000
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [traceId=%X{correlationId}] - %msg%n"

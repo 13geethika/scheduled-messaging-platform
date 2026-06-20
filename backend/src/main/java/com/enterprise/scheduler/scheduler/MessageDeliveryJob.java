@@ -1,6 +1,6 @@
 package com.enterprise.scheduler.scheduler;
 
-import com.enterprise.scheduler.service.MessageService;
+import com.enterprise.scheduler.message.MessageService;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;

@@ -12,7 +12,7 @@ import {
 import {
   Menu as MenuIcon, Dashboard as DashboardIcon, People as PeopleIcon,
   Schedule as ScheduleIcon, Chat as ChatIcon, AccountCircle as AccountIcon, Logout as LogoutIcon,
-  Notifications as BellIcon, Check as CheckIcon
+  Notifications as BellIcon, Check as CheckIcon, Shield as ShieldIcon
 } from '@mui/icons-material';
 import api from '../services/api';
 
@@ -43,7 +43,7 @@ export const DashboardLayout: React.FC = () => {
   const fetchNotifications = async () => {
     try {
       const response = await api.get('/notifications');
-      setNotifications(response.data);
+      setNotifications(response.data.data || []);
     } catch (err) {
       console.error('Failed to load notifications', err);
     }
@@ -97,6 +97,10 @@ export const DashboardLayout: React.FC = () => {
     { text: 'Chats', icon: <ChatIcon />, path: PATHS.CHATS },
     { text: 'Profile', icon: <AccountIcon />, path: PATHS.PROFILE },
   ];
+
+  if (user?.role === 'ROLE_ADMIN') {
+    menuItems.push({ text: 'Audit Logs', icon: <ShieldIcon />, path: PATHS.AUDIT_LOGS });
+  }
 
   const unreadCount = notifications.filter(n => n.status === 'UNREAD').length;
 
