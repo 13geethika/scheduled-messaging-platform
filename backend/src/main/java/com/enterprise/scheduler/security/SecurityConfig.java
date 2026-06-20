@@ -32,7 +32,8 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
 
-    @Value("${app.frontend.url:http://localhost:5173}")
+    //@Value("${app.frontend.url:http://localhost:5173}")
+    @Value("${app.frontend.url:https://scheduled-messaging-platform.vercel.app}")
     private String frontendUrl;
 
     public SecurityConfig(JwtTokenProvider tokenProvider,

@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://scheduled-messaging-platform.onrender.com";//'http://localhost:8080/api' ||
+let rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+if (rawBaseUrl && !rawBaseUrl.endsWith('/api') && !rawBaseUrl.endsWith('/api/')) {
+  rawBaseUrl = rawBaseUrl.endsWith('/') ? `${rawBaseUrl}api` : `${rawBaseUrl}/api`;
+}
+const API_BASE_URL = rawBaseUrl;
 
 
 const api = axios.create({
