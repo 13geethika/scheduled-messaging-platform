@@ -54,12 +54,14 @@ public class S3StorageServiceImpl implements FileStorageService {
 
             // Validate image and generate thumbnail
             if (contentType != null && contentType.startsWith("image/")) {
-                try (ByteArrayInputStream bais = new ByteArrayInputStream(fileBytes)) {
-                    if (!ImageUtils.isValidImage(bais)) {
-                        throw new IllegalArgumentException("Invalid image file payload");
+                if (ImageUtils.isSupportedByImageIO(contentType)) {
+                    try (ByteArrayInputStream bais = new ByteArrayInputStream(fileBytes)) {
+                        if (!ImageUtils.isValidImage(bais)) {
+                            throw new IllegalArgumentException("Invalid image file payload");
+                        }
                     }
                 }
-
+                
                 try {
                     byte[] thumbBytes = ImageUtils.generateThumbnail(fileBytes, cleanExtension);
                     String thumbKey = baseName + "_thumb" + extension;

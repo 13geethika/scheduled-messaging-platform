@@ -35,8 +35,7 @@ public class CloudinaryStorageServiceImpl implements FileStorageService {
             byte[] fileBytes = file.getBytes();
             String contentType = file.getContentType();
 
-            // Validate image structure if contentType is an image
-            if (contentType != null && contentType.startsWith("image/")) {
+            if (contentType != null && contentType.startsWith("image/") && ImageUtils.isSupportedByImageIO(contentType)) {
                 try (ByteArrayInputStream bais = new ByteArrayInputStream(fileBytes)) {
                     if (!ImageUtils.isValidImage(bais)) {
                         throw new IllegalArgumentException("Invalid image file payload");

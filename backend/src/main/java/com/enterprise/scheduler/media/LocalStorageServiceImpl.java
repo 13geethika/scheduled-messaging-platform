@@ -66,11 +66,12 @@ public class LocalStorageServiceImpl implements FileStorageService {
             byte[] fileBytes = file.getBytes();
             String contentType = file.getContentType();
 
-            // Image validation and thumbnailing
             if (contentType != null && contentType.startsWith("image/")) {
-                try (ByteArrayInputStream bais = new ByteArrayInputStream(fileBytes)) {
-                    if (!ImageUtils.isValidImage(bais)) {
-                        throw new IllegalArgumentException("Invalid image file payload");
+                if (ImageUtils.isSupportedByImageIO(contentType)) {
+                    try (ByteArrayInputStream bais = new ByteArrayInputStream(fileBytes)) {
+                        if (!ImageUtils.isValidImage(bais)) {
+                            throw new IllegalArgumentException("Invalid image file payload");
+                        }
                     }
                 }
                 

@@ -11,6 +11,16 @@ import javax.imageio.ImageIO;
 
 public class ImageUtils {
 
+    public static boolean isSupportedByImageIO(String contentType) {
+        if (contentType == null) return false;
+        String mime = contentType.toLowerCase();
+        return mime.equals("image/jpeg") || 
+               mime.equals("image/jpg") || 
+               mime.equals("image/png") || 
+               mime.equals("image/gif") || 
+               mime.equals("image/bmp");
+    }
+
     public static boolean isValidImage(InputStream inputStream) {
         try {
             BufferedImage image = ImageIO.read(inputStream);
