@@ -13,22 +13,34 @@ import java.util.List;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
-    List<Message> findBySenderAndScheduledTimeIsNotNullOrderByScheduledTimeDesc(User sender);
+    List<Message> findBySenderAndScheduledTimeIsNotNullAndDeletedBySenderFalseOrderByScheduledTimeDesc(User sender);
     List<Message> findBySenderAndStatusOrderByScheduledTimeDesc(User sender, MessageStatus status);
     List<Message> findByStatus(MessageStatus status);
 
-    @Query("SELECT COUNT(m) FROM Message m WHERE m.sender = :sender")
-    long countAllBySender(@Param("sender") User sender);
+    @Query("SELECT COUNT(m) FROM Message m WHERE " +
+           "(m.sender = :senderUser) OR " +
+           "(m.receiver = :receiverUser AND m.status = com.enterprise.scheduler.message.MessageStatus.DELIVERED)")
+    long countAllInAndOut(@Param("senderUser") User senderUser, @Param("receiverUser") User receiverUser);
 
-    @Query("SELECT COUNT(m) FROM Message m WHERE m.sender = :sender AND m.status = :status")
-    long countBySenderAndStatus(@Param("sender") User sender, @Param("status") MessageStatus status);
+    @Query("SELECT COUNT(m) FROM Message m WHERE m.status = com.enterprise.scheduler.message.MessageStatus.DELIVERED AND " +
+           "(m.sender = :senderUser OR m.receiver = :receiverUser)")
+    long countDeliveredInAndOut(@Param("senderUser") User senderUser, @Param("receiverUser") User receiverUser);
 
-    @Query("SELECT m FROM Message m WHERE m.sender = :sender AND m.scheduledTime >= :now ORDER BY m.scheduledTime ASC")
+    @Query("SELECT COUNT(m) FROM Message m WHERE m.sender = :user AND m.status = com.enterprise.scheduler.message.MessageStatus.FAILED")
+    long countFailedBySender(@Param("user") User user);
+
+    @Query("SELECT COUNT(m) FROM Message m WHERE m.sender = :user AND m.status = com.enterprise.scheduler.message.MessageStatus.SCHEDULED")
+    long countPendingBySender(@Param("user") User user);
+
+    @Query("SELECT m FROM Message m WHERE m.sender = :sender AND m.scheduledTime >= :now AND m.deletedBySender = false ORDER BY m.scheduledTime ASC")
     List<Message> findUpcomingScheduled(@Param("sender") User sender, @Param("now") Instant now);
 
     @Query("SELECT m FROM Message m WHERE " +
-           "(m.sender = :currentUser AND m.receiver = :contact) OR " +
-           "(m.sender = :contact AND m.receiver = :currentUser AND m.status = com.enterprise.scheduler.message.MessageStatus.DELIVERED) " +
-           "ORDER BY m.createdAt ASC")
-    List<Message> findChatHistory(@Param("currentUser") User currentUser, @Param("contact") User contact);
+           "(m.sender = :senderUser AND m.receiver = :receiverContact AND m.deletedBySender = false) OR " +
+           "(m.sender = :senderContact AND m.receiver = :receiverUser AND m.status = com.enterprise.scheduler.message.MessageStatus.DELIVERED AND m.deletedByReceiver = false) " +
+           "ORDER BY COALESCE(m.sentTime, m.scheduledTime, m.createdAt) ASC")
+    List<Message> findChatHistory(@Param("senderUser") User senderUser,
+                                  @Param("receiverContact") User receiverContact,
+                                  @Param("senderContact") User senderContact,
+                                  @Param("receiverUser") User receiverUser);
 }

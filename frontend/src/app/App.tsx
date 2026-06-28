@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider, useDispatch } from 'react-redux';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
@@ -71,6 +71,70 @@ const darkTheme = createTheme({
   },
 });
 
+// Premium light theme with Outfit font and matching accents
+const lightTheme = createTheme({
+  palette: {
+    mode: 'light',
+    primary: {
+      main: '#4f46e5', // Indigo 600
+    },
+    secondary: {
+      main: '#db2777', // Pink 600
+    },
+    background: {
+      default: '#f8fafc', // Slate 50
+      paper: '#ffffff', // White
+    },
+    text: {
+      primary: '#0f172a', // Slate 900
+      secondary: '#475569', // Slate 600
+    },
+  },
+  typography: {
+    fontFamily: '"Outfit", "Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    h4: {
+      fontWeight: 800,
+    },
+    h5: {
+      fontWeight: 700,
+    },
+    h6: {
+      fontWeight: 600,
+    },
+    button: {
+      textTransform: 'none',
+      fontWeight: 600,
+    },
+  },
+  shape: {
+    borderRadius: 12,
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: '12px',
+          padding: '10px 18px',
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          backgroundImage: 'none',
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: 'none',
+        },
+      },
+    },
+  },
+});
+
 const AppContent: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
@@ -88,9 +152,24 @@ const AppContent: React.FC = () => {
 };
 
 function App() {
+  const [mode, setMode] = useState<'light' | 'dark'>(
+    () => (localStorage.getItem('themeMode') as 'light' | 'dark') || 'dark'
+  );
+
+  useEffect(() => {
+    const handleThemeChange = () => {
+      const currentMode = (localStorage.getItem('themeMode') as 'light' | 'dark') || 'dark';
+      setMode(currentMode);
+    };
+    window.addEventListener('theme-change', handleThemeChange);
+    return () => window.removeEventListener('theme-change', handleThemeChange);
+  }, []);
+
+  const activeTheme = mode === 'light' ? lightTheme : darkTheme;
+
   return (
     <Provider store={store}>
-      <ThemeProvider theme={darkTheme}>
+      <ThemeProvider theme={activeTheme}>
         <CssBaseline />
         <BrowserRouter>
           <AppContent />

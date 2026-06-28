@@ -52,7 +52,14 @@ export const messagesApi = apiSlice.injectEndpoints({
         method: 'GET',
       }),
       transformResponse: (response: ApiResponse<Message[]>) => response.data,
-      providesTags: (_result, _error, email) => [{ type: 'Message', id: `CHAT_${email}` }],
+      providesTags: (result, _error, email) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: 'Message' as const, id })),
+              { type: 'Message', id: `CHAT_${email}` },
+              { type: 'Message', id: 'LIST' },
+            ]
+          : [{ type: 'Message', id: `CHAT_${email}` }, { type: 'Message', id: 'LIST' }],
     }),
     getDashboardStats: builder.query<DashboardStats, void>({
       query: () => ({
@@ -103,6 +110,16 @@ export const messagesApi = apiSlice.injectEndpoints({
         { type: 'Dashboard', id: 'STATS' },
       ],
     }),
+    deleteMessageForMe: builder.mutation<ApiResponse<any>, number>({
+      query: (id) => ({
+        url: `/messages/${id}/delete-for-me`,
+        method: 'POST',
+      }),
+      invalidatesTags: [
+        { type: 'Message', id: 'LIST' },
+        { type: 'Dashboard', id: 'STATS' },
+      ],
+    }),
     pauseMessage: builder.mutation<ApiResponse<any>, number>({
       query: (id) => ({
         url: `/messages/${id}/pause`,
@@ -146,6 +163,7 @@ export const {
   useScheduleMessageMutation,
   useEditMessageMutation,
   useDeleteMessageMutation,
+  useDeleteMessageForMeMutation,
   usePauseMessageMutation,
   useResumeMessageMutation,
   useRetryFailedMessageMutation,

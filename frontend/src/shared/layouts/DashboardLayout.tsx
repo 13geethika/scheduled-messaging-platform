@@ -105,7 +105,7 @@ export const DashboardLayout: React.FC = () => {
   const unreadCount = notifications.filter(n => n.status === 'UNREAD').length;
 
   const drawer = (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', bgcolor: '#0f172a', color: '#f8fafc' }}>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'background.paper', color: 'text.primary' }}>
       <Toolbar sx={{ px: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Box
           sx={{
@@ -117,11 +117,11 @@ export const DashboardLayout: React.FC = () => {
         >
           C
         </Box>
-        <Typography variant="h6" noWrap sx={{ fontWeight: 800, letterSpacing: '-0.5px' }}>
+        <Typography variant="h6" noWrap sx={{ fontWeight: 800, letterSpacing: '-0.5px', color: 'text.primary' }}>
           ChronosMsg
         </Typography>
       </Toolbar>
-      <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)' }} />
+      <Divider sx={{ borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }} />
       <List sx={{ px: 2, py: 3, flexGrow: 1 }}>
         {menuItems.map((item) => {
           const active = location.pathname === item.path;
@@ -133,16 +133,16 @@ export const DashboardLayout: React.FC = () => {
                 onClick={() => isMobile && setMobileOpen(false)}
                 sx={{
                   borderRadius: '12px',
-                  bgcolor: active ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
-                  color: active ? '#818cf8' : '#94a3b8',
+                  bgcolor: active ? (theme.palette.mode === 'dark' ? 'rgba(99, 102, 241, 0.15)' : 'rgba(79, 70, 229, 0.08)') : 'transparent',
+                  color: active ? theme.palette.primary.main : theme.palette.text.secondary,
                   '&:hover': {
-                    bgcolor: 'rgba(255,255,255,0.02)',
-                    color: '#f8fafc'
+                    bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
+                    color: theme.palette.text.primary
                   },
                   transition: 'all 0.2s'
                 }}
               >
-                <ListItemIcon sx={{ color: active ? '#818cf8' : '#64748b', minWidth: 40 }}>
+                <ListItemIcon sx={{ color: active ? theme.palette.primary.main : theme.palette.text.secondary, minWidth: 40 }}>
                   {item.icon}
                 </ListItemIcon>
                 <ListItemText primary={item.text} primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 600 }} />
@@ -151,11 +151,11 @@ export const DashboardLayout: React.FC = () => {
           );
         })}
       </List>
-      <Box sx={{ p: 2, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-        <Typography variant="caption" sx={{ color: '#64748b', display: 'block', px: 2 }}>
+      <Box sx={{ p: 2, borderTop: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` }}>
+        <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', px: 2 }}>
           LOGGED IN AS
         </Typography>
-        <Typography variant="body2" noWrap sx={{ color: '#e2e8f0', fontWeight: 600, display: 'block', px: 2 }}>
+        <Typography variant="body2" noWrap sx={{ color: 'text.primary', fontWeight: 600, display: 'block', px: 2 }}>
           {user?.name}
         </Typography>
       </Box>
@@ -163,7 +163,7 @@ export const DashboardLayout: React.FC = () => {
   );
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#020617' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* AppBar Header */}
       <AppBar
         position="fixed"
@@ -171,9 +171,9 @@ export const DashboardLayout: React.FC = () => {
         sx={{
           width: { md: `calc(100% - ${drawerWidth}px)` },
           ml: { md: `${drawerWidth}px` },
-          bgcolor: 'rgba(2, 6, 23, 0.75)',
+          bgcolor: theme.palette.mode === 'dark' ? 'rgba(2, 6, 23, 0.75)' : 'rgba(248, 250, 252, 0.75)',
           backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+          borderBottom: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'}`,
         }}
       >
         <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 2, sm: 3 } }}>
@@ -181,12 +181,12 @@ export const DashboardLayout: React.FC = () => {
             color="inherit"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { md: 'none' }, color: '#94a3b8' }}
+            sx={{ mr: 2, display: { md: 'none' }, color: 'text.secondary' }}
           >
             <MenuIcon />
           </IconButton>
           
-          <Typography variant="h6" noWrap sx={{ fontWeight: 700, color: '#f8fafc', display: { xs: 'none', sm: 'block' } }}>
+          <Typography variant="h6" noWrap sx={{ fontWeight: 700, color: 'text.primary', display: { xs: 'none', sm: 'block' } }}>
             {menuItems.find(item => item.path === location.pathname)?.text || 'Platform'}
           </Typography>
           <Box sx={{ display: 'none', xs: 'block' }} />
@@ -194,7 +194,7 @@ export const DashboardLayout: React.FC = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             {/* Notification Bell */}
             <Tooltip title="Notifications">
-              <IconButton onClick={handleOpenNotifMenu} sx={{ color: '#94a3b8', bgcolor: 'rgba(255,255,255,0.02)' }}>
+              <IconButton onClick={handleOpenNotifMenu} sx={{ color: 'text.secondary', bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }}>
                 <Badge badgeContent={unreadCount} color="error">
                   <BellIcon />
                 </Badge>
@@ -211,19 +211,19 @@ export const DashboardLayout: React.FC = () => {
               onClose={handleCloseNotifMenu}
               PaperProps={{
                 sx: {
-                  width: 320, maxHeight: 400, bgcolor: '#0f172a',
-                  border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', color: '#f8fafc',
+                  width: 320, maxHeight: 400, bgcolor: 'background.paper',
+                  border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`, borderRadius: '16px', color: 'text.primary',
                   boxShadow: '0 10px 25px -5px rgba(0,0,0,0.5)'
                 }
               }}
             >
               <Box sx={{ px: 2, py: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Notifications</Typography>
-                {unreadCount > 0 && <Typography variant="caption" sx={{ color: '#818cf8' }}>{unreadCount} unread</Typography>}
+                {unreadCount > 0 && <Typography variant="caption" sx={{ color: 'primary.main' }}>{unreadCount} unread</Typography>}
               </Box>
-              <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)' }} />
+              <Divider sx={{ borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }} />
               {notifications.length === 0 ? (
-                <Box sx={{ p: 3, textAlign: 'center', color: '#64748b' }}>
+                <Box sx={{ p: 3, textAlign: 'center', color: 'text.secondary' }}>
                   <Typography variant="body2">No notifications yet</Typography>
                 </Box>
               ) : (
@@ -232,17 +232,17 @@ export const DashboardLayout: React.FC = () => {
                     key={n.id}
                     onClick={() => n.status === 'UNREAD' && handleMarkAsRead(n.id)}
                     sx={{
-                      py: 1.5, px: 2, borderBottom: '1px solid rgba(255,255,255,0.04)',
+                      py: 1.5, px: 2, borderBottom: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'}`,
                       whiteSpace: 'normal', display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
                       bgcolor: n.status === 'UNREAD' ? 'rgba(99, 102, 241, 0.05)' : 'transparent',
-                      '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' }
+                      '&:hover': { bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }
                     }}
                   >
-                    <Typography variant="body2" sx={{ color: n.status === 'UNREAD' ? '#f8fafc' : '#94a3b8', fontWeight: n.status === 'UNREAD' ? 600 : 400 }}>
+                    <Typography variant="body2" sx={{ color: n.status === 'UNREAD' ? 'text.primary' : 'text.secondary', fontWeight: n.status === 'UNREAD' ? 600 : 400 }}>
                       {n.message}
                     </Typography>
                     {n.status === 'UNREAD' && (
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5, color: '#818cf8' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5, color: 'primary.main' }}>
                         <CheckIcon sx={{ fontSize: 12 }} />
                         <Typography variant="caption">Mark as read</Typography>
                       </Box>
@@ -255,7 +255,7 @@ export const DashboardLayout: React.FC = () => {
             {/* Profile Avatar */}
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar sx={{ bgcolor: '#6366f1', color: '#fff', fontWeight: 700 }}>
+                <Avatar sx={{ bgcolor: 'primary.main', color: '#fff', fontWeight: 700 }}>
                   {user?.name?.charAt(0).toUpperCase()}
                 </Avatar>
               </IconButton>
@@ -271,17 +271,17 @@ export const DashboardLayout: React.FC = () => {
               onClose={handleCloseUserMenu}
               PaperProps={{
                 sx: {
-                  bgcolor: '#0f172a', border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: '16px', color: '#f8fafc', width: 180,
+                  bgcolor: 'background.paper', border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+                  borderRadius: '16px', color: 'text.primary', width: 180,
                   boxShadow: '0 10px 25px -5px rgba(0,0,0,0.5)'
                 }
               }}
             >
               <MenuItem onClick={() => { handleCloseUserMenu(); navigate(PATHS.PROFILE); }} sx={{ py: 1.2 }}>
-                <ListItemIcon sx={{ color: '#94a3b8' }}><AccountIcon fontSize="small" /></ListItemIcon>
+                <ListItemIcon sx={{ color: 'text.secondary' }}><AccountIcon fontSize="small" /></ListItemIcon>
                 <Typography variant="body2">My Profile</Typography>
               </MenuItem>
-              <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)' }} />
+              <Divider sx={{ borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }} />
               <MenuItem onClick={handleLogout} sx={{ py: 1.2, color: '#ef4444' }}>
                 <ListItemIcon sx={{ color: '#ef4444' }}><LogoutIcon fontSize="small" /></ListItemIcon>
                 <Typography variant="body2">Logout</Typography>

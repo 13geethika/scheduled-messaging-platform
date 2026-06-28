@@ -59,6 +59,13 @@ public class MessageController {
         return ResponseEntity.ok(ApiResponse.success("Scheduled message deleted successfully.", null));
     }
 
+    @PostMapping("/{id}/delete-for-me")
+    public ResponseEntity<ApiResponse<Void>> deleteMessageForMe(@PathVariable("id") Long id) {
+        User user = getAuthenticatedUser();
+        messageService.deleteMessageForMe(user, id);
+        return ResponseEntity.ok(ApiResponse.success("Message deleted for you.", null));
+    }
+
     @PostMapping("/{id}/pause")
     public ResponseEntity<ApiResponse<Void>> pauseMessage(@PathVariable("id") Long id) {
         User user = getAuthenticatedUser();

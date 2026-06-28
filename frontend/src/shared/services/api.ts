@@ -6,6 +6,14 @@ if (rawBaseUrl && !rawBaseUrl.endsWith('/api') && !rawBaseUrl.endsWith('/api/'))
 }
 const API_BASE_URL = rawBaseUrl;
 
+export const getMediaUrl = (url: string | null) => {
+  if (!url) return '';
+  if (url.startsWith('http://localhost:8080/uploads/')) {
+    const apiHost = API_BASE_URL.replace('/api', '');
+    return url.replace('http://localhost:8080', apiHost);
+  }
+  return url;
+};
 
 const api = axios.create({
   baseURL: API_BASE_URL,

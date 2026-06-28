@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,6 +71,7 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepository.save(notification);
     }
 
+    @Async
     @Override
     public void sendVerificationEmail(User user, String token) {
         String verificationUrl = "http://localhost:5173/verify-email?token=" + token;
@@ -82,6 +84,7 @@ public class NotificationServiceImpl implements NotificationService {
         sendEmail(user.getEmail(), subject, content);
     }
 
+    @Async
     @Override
     public void sendPasswordResetEmail(User user, String token) {
         String resetUrl = "http://localhost:5173/reset-password?token=" + token;

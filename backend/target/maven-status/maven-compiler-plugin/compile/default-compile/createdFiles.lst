@@ -21,6 +21,7 @@ com\enterprise\scheduler\security\CustomAccessDeniedHandler.class
 com\enterprise\scheduler\dashboard\DashboardService.class
 com\enterprise\scheduler\config\DatabaseSeeder.class
 com\enterprise\scheduler\auth\AuthServiceImpl.class
+com\enterprise\scheduler\config\WebSocketHandshakeInterceptor.class
 com\enterprise\scheduler\user\UserStatus.class
 com\enterprise\scheduler\auth\TokenRefreshResponse.class
 com\enterprise\scheduler\auth\TokenRefreshRequest.class
@@ -36,6 +37,7 @@ com\enterprise\scheduler\message\MessageController.class
 com\enterprise\scheduler\scheduler\AutoWiringSpringBeanJobFactory.class
 com\enterprise\scheduler\auth\JwtResponse.class
 com\enterprise\scheduler\notification\NotificationService.class
+com\enterprise\scheduler\audit\AuditLogRepository.class
 com\enterprise\scheduler\user\ContactResponse$ContactResponseBuilder.class
 com\enterprise\scheduler\user\ContactServiceImpl.class
 com\enterprise\scheduler\dashboard\DashboardServiceImpl.class
@@ -46,6 +48,8 @@ com\enterprise\scheduler\message\DeadLetterMessage.class
 com\enterprise\scheduler\auth\RegisterRequest.class
 com\enterprise\scheduler\audit\AuditLog.class
 com\enterprise\scheduler\notification\NotificationServiceImpl.class
+com\enterprise\scheduler\config\ChatWebSocketHandler.class
+com\enterprise\scheduler\config\WebSocketConfig.class
 com\enterprise\scheduler\message\MessageScheduleRequest.class
 com\enterprise\scheduler\user\ContactStatus.class
 com\enterprise\scheduler\user\ContactRepository.class

@@ -1,14 +1,21 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../store';
 import { useGetContactsQuery } from '../../store/contacts/contactsApi';
-import { useGetChatHistoryQuery, useScheduleMessageMutation } from '../../store/messages/messagesApi';
+import { 
+  messagesApi,
+  useGetChatHistoryQuery, 
+  useScheduleMessageMutation, 
+  useDeleteMessageMutation, 
+  useDeleteMessageForMeMutation 
+} from '../../store/messages/messagesApi';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from '../../routes/paths';
+import { getMediaUrl } from '../../shared/services/api';
 import {
   Box, Typography, Grid, Paper, TextField, Button, Avatar, List,
   ListItem, ListItemButton, ListItemAvatar, ListItemText, IconButton,
-  CircularProgress, Chip, InputAdornment
+  CircularProgress, Chip, InputAdornment, Menu, MenuItem
 } from '@mui/material';
 import {
   Send as SendIcon,
@@ -17,11 +24,13 @@ import {
   CheckCircle as DeliveredIcon,
   Error as FailedIcon,
   WatchLater as PendingIcon,
-  Chat as ChatIcon
+  Chat as ChatIcon,
+  MoreVert as MoreVertIcon
 } from '@mui/icons-material';
 
 export const Chats: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
 
   const [selectedContact, setSelectedContact] = useState<any>(null);
@@ -31,18 +40,103 @@ export const Chats: React.FC = () => {
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Connect to WebSocket for real-time updates
+  useEffect(() => {
+    if (!user) return;
+
+    const token = localStorage.getItem('accessToken') || '';
+    const baseApiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+    
+    let wsUrl = '';
+    if (baseApiUrl.startsWith('http')) {
+      wsUrl = baseApiUrl
+        .replace('http://', 'ws://')
+        .replace('https://', 'wss://');
+    } else {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const host = window.location.host;
+      wsUrl = `${protocol}//${host}${baseApiUrl}`;
+    }
+    
+    let cleanUrl = wsUrl;
+    if (cleanUrl.endsWith('/')) {
+      cleanUrl = cleanUrl.slice(0, -1);
+    }
+    if (cleanUrl.endsWith('/api')) {
+      cleanUrl = cleanUrl.slice(0, -4);
+    }
+    wsUrl = `${cleanUrl}/ws?token=${token}`;
+
+    const ws = new WebSocket(wsUrl);
+
+    ws.onmessage = (event) => {
+      try {
+        const payload = JSON.parse(event.data);
+        if (payload.event === 'MESSAGE_UPDATE' || payload.event === 'MESSAGE_DELETE') {
+          // Trigger immediate RTK Query cache tag invalidation
+          dispatch(messagesApi.util.invalidateTags([
+            { type: 'Message', id: 'LIST' },
+            { type: 'Dashboard', id: 'STATS' }
+          ]));
+        }
+      } catch (err) {
+        console.error('Failed to parse WS payload', err);
+      }
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, [user, dispatch]);
+
   // Queries
   const { data: contacts = [], isLoading: contactsLoading } = useGetContactsQuery('ACCEPTED');
   const { data: messages = [], isLoading: messagesLoading, refetch: refetchChatHistory } = useGetChatHistoryQuery(
     selectedContact?.email || '',
     {
-      pollingInterval: 4000,
       skip: !selectedContact,
     }
   );
 
   // Mutations
   const [sendMessageMutation] = useScheduleMessageMutation();
+  const [deleteMsg] = useDeleteMessageMutation();
+  const [deleteMsgForMe] = useDeleteMessageForMeMutation();
+
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [activeMenuMessage, setActiveMenuMessage] = useState<any>(null);
+
+  const handleOpenMessageMenu = (event: React.MouseEvent<HTMLElement>, message: any) => {
+    setMenuAnchorEl(event.currentTarget);
+    setActiveMenuMessage(message);
+  };
+
+  const handleCloseMessageMenu = () => {
+    setMenuAnchorEl(null);
+    setActiveMenuMessage(null);
+  };
+
+  const handleDeleteForEveryone = async () => {
+    if (!activeMenuMessage) return;
+    try {
+      await deleteMsg(activeMenuMessage.id).unwrap();
+      refetchChatHistory();
+    } catch (err) {
+      console.error('Failed to delete message for everyone', err);
+    }
+    handleCloseMessageMenu();
+  };
+
+  const handleDeleteForMe = async () => {
+    if (!activeMenuMessage) return;
+    try {
+      await deleteMsgForMe(activeMenuMessage.id).unwrap();
+      refetchChatHistory();
+    } catch (err) {
+      console.error('Failed to delete message for me', err);
+    }
+    handleCloseMessageMenu();
+  };
 
   // Auto-scroll to bottom of messages
   useEffect(() => {
@@ -290,80 +384,121 @@ export const Chats: React.FC = () => {
                           key={m.id}
                           sx={{
                             display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: isMe ? 'flex-end' : 'flex-start',
-                            maxWidth: '75%',
-                            alignSelf: isMe ? 'flex-end' : 'flex-start'
+                            flexDirection: isMe ? 'row-reverse' : 'row',
+                            alignItems: 'center',
+                            alignSelf: isMe ? 'flex-end' : 'flex-start',
+                            gap: 1.2,
+                            maxWidth: '85%',
+                            '&:hover .message-menu-btn': { opacity: 1 }
                           }}
                         >
-                          {/* Message bubble */}
+                          {/* Options trigger */}
+                          <IconButton
+                            className="message-menu-btn"
+                            size="small"
+                            onClick={(e) => handleOpenMessageMenu(e, m)}
+                            sx={{ opacity: 0, transition: 'opacity 0.2s', color: '#64748b' }}
+                          >
+                            <MoreVertIcon fontSize="small" />
+                          </IconButton>
+
                           <Box
                             sx={{
-                              p: 2,
-                              borderRadius: isMe ? '18px 18px 2px 18px' : '18px 18px 18px 2px',
-                              bgcolor: isMe ? '#4f46e5' : '#1e293b',
-                              border: isMe ? 'none' : '1px solid rgba(255,255,255,0.04)',
-                              color: '#f8fafc',
-                              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: isMe ? 'flex-end' : 'flex-start'
                             }}
                           >
-                            {m.messageType === 'TEXT' ? (
-                              <Typography variant="body2" sx={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>
-                                {m.content}
-                              </Typography>
-                            ) : (
-                              <Box>
-                                <Typography variant="caption" sx={{ display: 'block', mb: 1, color: isMe ? '#c7d2fe' : '#818cf8', fontWeight: 600 }}>
-                                  [{m.messageType} ATTACHMENT]
+                            {/* Message bubble */}
+                            <Box
+                              sx={{
+                                p: 2,
+                                borderRadius: isMe ? '18px 18px 2px 18px' : '18px 18px 18px 2px',
+                                bgcolor: isMe ? (m.status === 'SCHEDULED' ? 'rgba(99, 102, 241, 0.2)' : '#4f46e5') : '#1e293b',
+                                border: isMe ? (m.status === 'SCHEDULED' ? '1px dashed rgba(129, 140, 248, 0.4)' : 'none') : '1px solid rgba(255,255,255,0.04)',
+                                color: '#f8fafc',
+                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                              }}
+                            >
+                              {m.messageType === 'TEXT' ? (
+                                <Typography variant="body2" sx={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>
+                                  {m.content}
                                 </Typography>
-                                {m.content && (
-                                  <Typography variant="body2" sx={{ mb: 1.5, wordBreak: 'break-word' }}>
-                                    {m.content}
-                                  </Typography>
-                                )}
-                                <Button
-                                  variant="contained"
-                                  size="small"
-                                  href={m.fileUrl || '#'}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  sx={{
-                                    bgcolor: 'rgba(255,255,255,0.15)',
-                                    color: '#fff',
-                                    textTransform: 'none',
-                                    fontWeight: 600,
-                                    '&:hover': { bgcolor: 'rgba(255,255,255,0.25)' }
-                                  }}
-                                >
-                                  View Media
-                                </Button>
-                              </Box>
-                            )}
-                          </Box>
+                              ) : (
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                  {m.messageType === 'IMAGE' && m.fileUrl && (
+                                    <Box
+                                      component="img"
+                                      src={getMediaUrl(m.fileUrl)}
+                                      alt="Attachment"
+                                      sx={{
+                                        maxWidth: '100%',
+                                        maxHeight: 240,
+                                        borderRadius: '12px',
+                                        objectFit: 'cover',
+                                        cursor: 'pointer',
+                                        border: '1px solid rgba(255,255,255,0.1)'
+                                      }}
+                                      onClick={() => window.open(getMediaUrl(m.fileUrl), '_blank')}
+                                    />
+                                  )}
+                                  {m.messageType === 'VIDEO' && m.fileUrl && (
+                                    <Box
+                                      component="video"
+                                      src={getMediaUrl(m.fileUrl)}
+                                      controls
+                                      sx={{
+                                        maxWidth: '100%',
+                                        maxHeight: 240,
+                                        borderRadius: '12px',
+                                        border: '1px solid rgba(255,255,255,0.1)'
+                                      }}
+                                    />
+                                  )}
+                                  {m.messageType === 'AUDIO' && m.fileUrl && (
+                                    <Box
+                                      component="audio"
+                                      src={getMediaUrl(m.fileUrl)}
+                                      controls
+                                      sx={{
+                                        maxWidth: '100%',
+                                        minWidth: 220
+                                      }}
+                                    />
+                                  )}
+                                  {m.content && (
+                                    <Typography variant="body2" sx={{ mt: 0.5, wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
+                                      {m.content}
+                                    </Typography>
+                                  )}
+                                </Box>
+                              )}
+                            </Box>
 
-                          {/* Footer label (timestamp & status) */}
-                          <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5, px: 0.5 }}>
-                            <Typography variant="caption" sx={{ color: '#64748b', fontSize: '0.75rem' }}>
-                              {formattedDate} at {formattedTime}
-                            </Typography>
-                            {isMe && (
-                              <Box sx={{ display: 'flex', alignItems: 'center', ml: 0.8 }}>
-                                <Chip
-                                  label={m.status}
-                                  size="small"
-                                  variant="outlined"
-                                  sx={{
-                                    height: 16,
-                                    fontSize: '0.65rem',
-                                    fontWeight: 800,
-                                    color: m.status === 'DELIVERED' ? '#10b981' : m.status === 'FAILED' ? '#ef4444' : '#6366f1',
-                                    borderColor: m.status === 'DELIVERED' ? 'rgba(16, 185, 129, 0.2)' : m.status === 'FAILED' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(99, 102, 241, 0.2)',
-                                    px: 0.5
-                                  }}
-                                />
-                                {getStatusIcon(m.status)}
-                              </Box>
-                            )}
+                            {/* Footer label (timestamp & status) */}
+                            <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5, px: 0.5 }}>
+                              <Typography variant="caption" sx={{ color: '#64748b', fontSize: '0.75rem' }}>
+                                {formattedDate} at {formattedTime}
+                              </Typography>
+                              {isMe && (
+                                <Box sx={{ display: 'flex', alignItems: 'center', ml: 0.8 }}>
+                                  <Chip
+                                    label={m.status}
+                                    size="small"
+                                    variant="outlined"
+                                    sx={{
+                                      height: 16,
+                                      fontSize: '0.65rem',
+                                      fontWeight: 800,
+                                      color: m.status === 'DELIVERED' ? '#10b981' : m.status === 'FAILED' ? '#ef4444' : '#6366f1',
+                                      borderColor: m.status === 'DELIVERED' ? 'rgba(16, 185, 129, 0.2)' : m.status === 'FAILED' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(99, 102, 241, 0.2)',
+                                      px: 0.5
+                                    }}
+                                  />
+                                  {getStatusIcon(m.status)}
+                                </Box>
+                              )}
+                            </Box>
                           </Box>
                         </Box>
                       );
@@ -442,6 +577,38 @@ export const Chats: React.FC = () => {
           </Paper>
         </Grid>
       </Grid>
+
+      <Menu
+        anchorEl={menuAnchorEl}
+        open={Boolean(menuAnchorEl)}
+        onClose={handleCloseMessageMenu}
+        PaperProps={{
+          sx: {
+            bgcolor: 'background.paper',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: '12px',
+            color: 'text.primary',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+          }
+        }}
+      >
+        {activeMenuMessage?.status === 'SCHEDULED' ? (
+          <MenuItem onClick={handleDeleteForEveryone} sx={{ color: '#ef4444' }}>
+            Cancel Schedule
+          </MenuItem>
+        ) : (
+          [
+            <MenuItem key="delete-for-me" onClick={handleDeleteForMe}>
+              Delete for me
+            </MenuItem>,
+            activeMenuMessage?.senderEmail === user?.email && (
+              <MenuItem key="delete-for-everyone" onClick={handleDeleteForEveryone} sx={{ color: '#ef4444' }}>
+                Delete for everyone
+              </MenuItem>
+            )
+          ].filter(Boolean) as React.ReactElement[]
+        )}
+      </Menu>
     </Box>
   );
 };

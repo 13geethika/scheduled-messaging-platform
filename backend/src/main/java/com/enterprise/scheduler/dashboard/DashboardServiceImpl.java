@@ -24,10 +24,10 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public DashboardStatsResponse getDashboardStats(User user) {
-        long total = messageRepository.countAllBySender(user);
-        long delivered = messageRepository.countBySenderAndStatus(user, MessageStatus.DELIVERED);
-        long failed = messageRepository.countBySenderAndStatus(user, MessageStatus.FAILED);
-        long pending = messageRepository.countBySenderAndStatus(user, MessageStatus.SCHEDULED);
+        long total = messageRepository.countAllInAndOut(user, user);
+        long delivered = messageRepository.countDeliveredInAndOut(user, user);
+        long failed = messageRepository.countFailedBySender(user);
+        long pending = messageRepository.countPendingBySender(user);
 
         // Fetch upcoming 5 messages
         List<MessageResponse> upcoming = messageRepository.findUpcomingScheduled(user, Instant.now()).stream()

@@ -10,6 +10,7 @@ public interface MessageService {
     MessageResponse scheduleMessage(User user, MessageScheduleRequest request, MultipartFile file);
     MessageResponse editMessage(User user, Long messageId, MessageScheduleRequest request, MultipartFile file);
     void deleteMessage(User user, Long messageId);
+    void deleteMessageForMe(User user, Long messageId);
     void pauseMessage(User user, Long messageId);
     void resumeMessage(User user, Long messageId);
     List<MessageResponse> getMyMessages(User user);

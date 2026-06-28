@@ -11,6 +11,8 @@ import com.enterprise.scheduler.message.MessageRepository;
 import com.enterprise.scheduler.user.UserRepository;
 import com.enterprise.scheduler.media.FileStorageService;
 import com.enterprise.scheduler.message.MessageService;
+import com.enterprise.scheduler.config.ChatWebSocketHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.enterprise.scheduler.notification.NotificationService;
 import com.enterprise.scheduler.scheduler.QuartzSchedulerService;
 import org.slf4j.Logger;
@@ -37,6 +39,8 @@ public class MessageServiceImpl implements MessageService {
     private final QuartzSchedulerService quartzSchedulerService;
     private final NotificationService notificationService;
     private final DeadLetterMessageRepository deadLetterMessageRepository;
+    private final ChatWebSocketHandler chatWebSocketHandler;
+    private final ObjectMapper objectMapper;
 
     public MessageServiceImpl(MessageRepository messageRepository,
                               UserRepository userRepository,
@@ -44,7 +48,9 @@ public class MessageServiceImpl implements MessageService {
                               FileStorageService fileStorageService,
                               QuartzSchedulerService quartzSchedulerService,
                               NotificationService notificationService,
-                              DeadLetterMessageRepository deadLetterMessageRepository) {
+                              DeadLetterMessageRepository deadLetterMessageRepository,
+                              ChatWebSocketHandler chatWebSocketHandler,
+                              ObjectMapper objectMapper) {
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
         this.contactRepository = contactRepository;
@@ -52,6 +58,8 @@ public class MessageServiceImpl implements MessageService {
         this.quartzSchedulerService = quartzSchedulerService;
         this.notificationService = notificationService;
         this.deadLetterMessageRepository = deadLetterMessageRepository;
+        this.chatWebSocketHandler = chatWebSocketHandler;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -112,6 +120,7 @@ public class MessageServiceImpl implements MessageService {
             quartzSchedulerService.scheduleMessageJob(savedMessage);
         }
 
+        broadcastMessageUpdate(savedMessage, "MESSAGE_UPDATE");
         return mapToMessageResponse(savedMessage);
     }
 
@@ -158,9 +167,9 @@ public class MessageServiceImpl implements MessageService {
         // Update in Quartz
         quartzSchedulerService.rescheduleMessageJob(updatedMessage);
 
+        broadcastMessageUpdate(updatedMessage, "MESSAGE_UPDATE");
         return mapToMessageResponse(updatedMessage);
     }
-
     @Override
     @Transactional
     public void deleteMessage(User user, Long messageId) {
@@ -175,7 +184,48 @@ public class MessageServiceImpl implements MessageService {
         quartzSchedulerService.deleteMessageJob(messageId);
 
         // Delete from DB
+        String senderEmail = message.getSender().getEmail();
+        String receiverEmail = message.getReceiver().getEmail();
         messageRepository.delete(message);
+        
+        broadcastMessageDelete(messageId, senderEmail, receiverEmail);
+    }
+
+    @Override
+    @Transactional
+    public void deleteMessageForMe(User user, Long messageId) {
+        Message message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new ResourceNotFoundException("Message not found"));
+
+        boolean isSender = message.getSender().getId().equals(user.getId());
+        boolean isReceiver = message.getReceiver().getId().equals(user.getId());
+
+        if (!isSender && !isReceiver) {
+            throw new IllegalArgumentException("Unauthorized to delete this message");
+        }
+
+        if (isSender) {
+            message.setDeletedBySender(true);
+        }
+        if (isReceiver) {
+            message.setDeletedByReceiver(true);
+        }
+
+        // If both have deleted, clean it up completely
+        if (message.isDeletedBySender() && message.isDeletedByReceiver()) {
+            if (message.getStatus() == MessageStatus.SCHEDULED || message.getStatus() == MessageStatus.PENDING) {
+                quartzSchedulerService.deleteMessageJob(messageId);
+            }
+            messageRepository.delete(message);
+        } else {
+            messageRepository.save(message);
+            // If sender deletes a scheduled message, cancel Quartz delivery
+            if (isSender && (message.getStatus() == MessageStatus.SCHEDULED || message.getStatus() == MessageStatus.PENDING)) {
+                quartzSchedulerService.deleteMessageJob(messageId);
+            }
+        }
+        
+        broadcastMessageDelete(messageId, user.getEmail(), null);
     }
 
     @Override
@@ -193,10 +243,12 @@ public class MessageServiceImpl implements MessageService {
         }
 
         message.setStatus(MessageStatus.PENDING); // Mark as PENDING (paused)
-        messageRepository.save(message);
+        Message saved = messageRepository.save(message);
 
         // Pause Quartz Trigger
         quartzSchedulerService.pauseMessageJob(messageId);
+        
+        broadcastMessageUpdate(saved, "MESSAGE_UPDATE");
     }
 
     @Override
@@ -218,15 +270,17 @@ public class MessageServiceImpl implements MessageService {
         }
 
         message.setStatus(MessageStatus.SCHEDULED);
-        messageRepository.save(message);
+        Message saved = messageRepository.save(message);
 
         // Resume Quartz Trigger
         quartzSchedulerService.resumeMessageJob(messageId);
+        
+        broadcastMessageUpdate(saved, "MESSAGE_UPDATE");
     }
 
     @Override
     public List<MessageResponse> getMyMessages(User user) {
-        return messageRepository.findBySenderAndScheduledTimeIsNotNullOrderByScheduledTimeDesc(user).stream()
+        return messageRepository.findBySenderAndScheduledTimeIsNotNullAndDeletedBySenderFalseOrderByScheduledTimeDesc(user).stream()
                 .map(this::mapToMessageResponse)
                 .collect(Collectors.toList());
     }
@@ -236,7 +290,7 @@ public class MessageServiceImpl implements MessageService {
         User contact = userRepository.findByEmail(contactEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Contact not found with email: " + contactEmail));
 
-        return messageRepository.findChatHistory(user, contact).stream()
+        return messageRepository.findChatHistory(user, contact, contact, user).stream()
                 .map(this::mapToMessageResponse)
                 .collect(Collectors.toList());
     }
@@ -293,7 +347,8 @@ public class MessageServiceImpl implements MessageService {
             // Mark current message as DELIVERED
             message.setStatus(MessageStatus.DELIVERED);
             message.setSentTime(Instant.now());
-            messageRepository.save(message);
+            Message saved = messageRepository.save(message);
+            broadcastMessageUpdate(saved, "MESSAGE_UPDATE");
 
             // Notify Receiver
             notificationService.createNotification(message.getReceiver(), 
@@ -319,14 +374,15 @@ public class MessageServiceImpl implements MessageService {
             message.setStatus(MessageStatus.SCHEDULED);
             // Retry 1 minute later
             message.setScheduledTime(Instant.now().plus(java.time.Duration.ofMinutes(1)));
-            messageRepository.save(message);
+            Message saved = messageRepository.save(message);
             
             logger.info("Scheduling retry number {} for message ID: {} in 1 minute", newRetryCount, message.getId());
             quartzSchedulerService.rescheduleMessageJob(message);
+            broadcastMessageUpdate(saved, "MESSAGE_UPDATE");
         } else {
             message.setStatus(MessageStatus.FAILED);
             message.setErrorMessage(errorMsg);
-            messageRepository.save(message);
+            Message saved = messageRepository.save(message);
 
             logger.error("Message ID: {} failed completely after max retries.", message.getId());
             
@@ -344,6 +400,7 @@ public class MessageServiceImpl implements MessageService {
             // Notify Sender of failure
             notificationService.createNotification(message.getSender(), 
                     "Failed to deliver scheduled message to " + message.getReceiver().getName() + " after maximum retries.");
+            broadcastMessageUpdate(saved, "MESSAGE_UPDATE");
         }
     }
 
@@ -394,5 +451,44 @@ public class MessageServiceImpl implements MessageService {
                 .retryCount(message.getRetryCount())
                 .errorMessage(message.getErrorMessage())
                 .build();
+    }
+
+    private void broadcastMessageUpdate(Message message, String eventName) {
+        try {
+            MessageResponse response = mapToMessageResponse(message);
+            java.util.Map<String, Object> payload = java.util.Map.of(
+                "event", eventName,
+                "message", response
+            );
+            String json = objectMapper.writeValueAsString(payload);
+            
+            if (message.getSender() != null) {
+                chatWebSocketHandler.sendNotification(message.getSender().getEmail(), json);
+            }
+            if (message.getReceiver() != null) {
+                chatWebSocketHandler.sendNotification(message.getReceiver().getEmail(), json);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to broadcast WebSocket message update", e);
+        }
+    }
+
+    private void broadcastMessageDelete(Long messageId, String senderEmail, String receiverEmail) {
+        try {
+            java.util.Map<String, Object> payload = java.util.Map.of(
+                "event", "MESSAGE_DELETE",
+                "messageId", messageId
+            );
+            String json = objectMapper.writeValueAsString(payload);
+            
+            if (senderEmail != null) {
+                chatWebSocketHandler.sendNotification(senderEmail, json);
+            }
+            if (receiverEmail != null) {
+                chatWebSocketHandler.sendNotification(receiverEmail, json);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to broadcast WebSocket message delete", e);
+        }
     }
 }
