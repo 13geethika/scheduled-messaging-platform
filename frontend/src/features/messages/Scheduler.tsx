@@ -13,6 +13,7 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { getMediaUrl } from '../../shared/services/api';
 import {
   Box, Typography, Grid, Paper, TextField, Button, Select, MenuItem,
   FormControl, InputLabel, FormHelperText, Table, TableBody, TableCell,
@@ -448,7 +449,7 @@ export const Scheduler: React.FC = () => {
                         </TableCell>
                         <TableCell sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {m.messageType === 'TEXT' ? m.content : (
-                            <Link href={m.fileUrl || '#'} target="_blank" rel="noreferrer" sx={{ color: '#818cf8', textDecoration: 'none', fontWeight: 600 }}>
+                            <Link href={m.fileUrl ? getMediaUrl(m.fileUrl) : '#'} target="_blank" rel="noreferrer" sx={{ color: '#818cf8', textDecoration: 'none', fontWeight: 600 }}>
                               View Attachment
                             </Link>
                           )}

@@ -462,3 +462,62 @@ Unconditional classes:
 2026-07-02 17:40:12.400 [http-nio-8080-exec-4] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=c2b51520-b0d9-40d8-a979-6baa80b299d4] - WebSocket handshake successful for user: geethika@gmail.com
 2026-07-02 17:40:12.403 [http-nio-8080-exec-4] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: geethika@gmail.com
 2026-07-02 17:40:46.142 [http-nio-8080-exec-2] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: geethika@gmail.com with status: CloseStatus[code=1000, reason=null]
+2026-07-02 17:43:47.271 [http-nio-8080-exec-2] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=e87d0ad1-07ff-490e-bd46-19c8f56e86a9] - WebSocket handshake successful for user: geethika@gmail.com
+2026-07-02 17:43:47.273 [http-nio-8080-exec-2] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: geethika@gmail.com
+2026-07-02 17:43:47.274 [http-nio-8080-exec-2] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: geethika@gmail.com with status: CloseStatus[code=1006, reason=An established connection was aborted by the software in your host machine]
+2026-07-02 17:43:47.295 [http-nio-8080-exec-9] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=deec6c00-f91f-4b4a-baf4-55c833a37f9e] - WebSocket handshake successful for user: geethika@gmail.com
+2026-07-02 17:43:47.296 [http-nio-8080-exec-9] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: geethika@gmail.com
+2026-07-02 17:43:48.806 [http-nio-8080-exec-6] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: geethika@gmail.com with status: CloseStatus[code=1000, reason=null]
+2026-07-02 17:43:54.849 [http-nio-8080-exec-10] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=fa70814b-779f-4ab6-883f-11c6e31f895e] - WebSocket handshake successful for user: geethika@gmail.com
+2026-07-02 17:43:54.851 [http-nio-8080-exec-10] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: geethika@gmail.com
+2026-07-02 17:43:54.852 [http-nio-8080-exec-10] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: geethika@gmail.com with status: CloseStatus[code=1006, reason=An established connection was aborted by the software in your host machine]
+2026-07-02 17:43:54.865 [http-nio-8080-exec-1] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=4f49087f-23d0-4c86-a784-a059d62503dc] - WebSocket handshake successful for user: geethika@gmail.com
+2026-07-02 17:43:54.867 [http-nio-8080-exec-1] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: geethika@gmail.com
+2026-07-02 17:43:55.704 [http-nio-8080-exec-3] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: geethika@gmail.com with status: CloseStatus[code=1000, reason=null]
+2026-07-02 17:55:25.705 [http-nio-8080-exec-10] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=a2fc5166-9c6f-4abb-8f2f-a67ad8038b73] - WebSocket handshake successful for user: geethika@gmail.com
+2026-07-02 17:55:25.708 [http-nio-8080-exec-10] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: geethika@gmail.com
+2026-07-02 17:55:25.709 [http-nio-8080-exec-10] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: geethika@gmail.com with status: CloseStatus[code=1001, reason=null]
+2026-07-02 17:55:25.734 [http-nio-8080-exec-1] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=413e7da5-c3c2-4d44-9085-c5767279961f] - WebSocket handshake successful for user: geethika@gmail.com
+2026-07-02 17:55:25.736 [http-nio-8080-exec-1] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: geethika@gmail.com
+2026-07-02 17:55:27.324 [http-nio-8080-exec-3] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: geethika@gmail.com with status: CloseStatus[code=1000, reason=null]
+2026-07-02 17:55:42.319 [http-nio-8080-exec-10] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=8899d72f-d2b6-4f34-bd01-6f8e18d13f1c] - WebSocket handshake successful for user: geethika@gmail.com
+2026-07-02 17:55:42.321 [http-nio-8080-exec-10] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: geethika@gmail.com
+2026-07-02 17:55:42.322 [http-nio-8080-exec-10] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: geethika@gmail.com with status: CloseStatus[code=1006, reason=An established connection was aborted by the software in your host machine]
+2026-07-02 17:55:42.344 [http-nio-8080-exec-6] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=da516ec9-a8b8-474a-9d29-c7f18100a948] - WebSocket handshake successful for user: geethika@gmail.com
+2026-07-02 17:55:42.346 [http-nio-8080-exec-6] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: geethika@gmail.com
+2026-07-02 17:55:43.243 [http-nio-8080-exec-4] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: geethika@gmail.com with status: CloseStatus[code=1000, reason=null]
+2026-07-02 18:17:22.813 [File Watcher] INFO  o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener [traceId=] - Restarting due to 99 class path changes (0 additions, 95 deletions, 4 modifications)
+2026-07-02 18:17:22.844 [Thread-5] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler ScheduledMessagingScheduler_$_GeethikaChowdary1782994078560 paused.
+2026-07-02 18:17:22.851 [Thread-5] INFO  o.s.b.w.e.tomcat.GracefulShutdown [traceId=] - Commencing graceful shutdown. Waiting for active requests to complete
+2026-07-02 18:17:22.871 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown [traceId=] - Graceful shutdown complete
+2026-07-02 18:17:22.898 [Thread-5] INFO  o.s.s.quartz.SchedulerFactoryBean [traceId=] - Shutting down Quartz Scheduler
+2026-07-02 18:17:22.899 [Thread-5] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler ScheduledMessagingScheduler_$_GeethikaChowdary1782994078560 shutting down.
+2026-07-02 18:17:22.899 [Thread-5] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler ScheduledMessagingScheduler_$_GeethikaChowdary1782994078560 paused.
+2026-07-02 18:17:22.900 [Thread-5] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler ScheduledMessagingScheduler_$_GeethikaChowdary1782994078560 shutdown complete.
+2026-07-02 18:17:22.908 [Thread-5] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean [traceId=] - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-02 18:17:22.924 [Thread-5] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-1 - Shutdown initiated...
+2026-07-02 18:17:22.931 [Thread-5] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-1 - Shutdown completed.
+2026-07-02 18:17:23.412 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Starting ScheduledMessagingApplication using Java 26 with PID 9320 (C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\target\classes started by geeth in C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend)
+2026-07-02 18:17:23.413 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - The following 1 profile is active: "prod"
+2026-07-02 18:17:25.859 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration [traceId=] - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-02 18:17:26.541 [restartedMain] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration [traceId=] - 
+
+Using generated security password: 3c57758a-9e70-4a96-8328-45551993b853
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-07-02 18:17:26.819 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Started ScheduledMessagingApplication in 3.539 seconds (process running for 2378.323)
+2026-07-02 18:17:37.662 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Starting ScheduledMessagingApplication using Java 26 with PID 9320 (C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\target\classes started by geeth in C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend)
+2026-07-02 18:17:37.663 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - The following 1 profile is active: "prod"
+2026-07-02 18:17:39.369 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration [traceId=] - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-02 18:17:39.817 [restartedMain] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration [traceId=] - 
+
+Using generated security password: 3c585dce-0916-4011-993c-8cc3e30693ff
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-07-02 18:17:40.115 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Started ScheduledMessagingApplication in 2.532 seconds (process running for 2391.62)
+2026-07-02 18:17:47.318 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Starting ScheduledMessagingApplication using Java 26 with PID 9320 (C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\target\classes started by geeth in C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend)
+2026-07-02 18:17:47.319 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - The following 1 profile is active: "prod"
+2026-07-02 18:17:50.747 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration [traceId=] - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-02 18:17:51.672 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Started ScheduledMessagingApplication in 4.435 seconds (process running for 2403.176)

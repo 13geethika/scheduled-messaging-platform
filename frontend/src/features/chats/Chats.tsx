@@ -292,7 +292,7 @@ export const Chats: React.FC = () => {
                         >
                           <ListItemAvatar>
                             <Avatar 
-                              src={c.profilePhotoUrl || undefined}
+                              src={getMediaUrl(c.profilePhotoUrl) || undefined}
                               sx={{ bgcolor: isSelected ? '#818cf8' : '#334155', color: '#fff', fontWeight: 600 }}
                             >
                               {!c.profilePhotoUrl && c.name.charAt(0).toUpperCase()}
@@ -366,7 +366,7 @@ export const Chats: React.FC = () => {
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Avatar 
-                      src={selectedContact.profilePhotoUrl || undefined}
+                      src={getMediaUrl(selectedContact.profilePhotoUrl) || undefined}
                       sx={{ bgcolor: '#818cf8', color: '#fff', fontWeight: 700 }}
                     >
                       {!selectedContact.profilePhotoUrl && selectedContact.name.charAt(0).toUpperCase()}

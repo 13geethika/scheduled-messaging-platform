@@ -15,7 +15,7 @@ import {
   Schedule as ScheduleIcon, Chat as ChatIcon, AccountCircle as AccountIcon, Logout as LogoutIcon,
   Notifications as BellIcon, Shield as ShieldIcon
 } from '@mui/icons-material';
-import api from '../services/api';
+import api, { getMediaUrl } from '../services/api';
 
 const drawerWidth = 260;
 
@@ -317,7 +317,7 @@ export const DashboardLayout: React.FC = () => {
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar 
-                  src={user?.profilePhotoUrl || undefined}
+                  src={getMediaUrl(user?.profilePhotoUrl) || undefined}
                   sx={{ bgcolor: 'primary.main', color: '#fff', fontWeight: 700 }}
                 >
                   {!user?.profilePhotoUrl && user?.name?.charAt(0).toUpperCase()}

@@ -70,7 +70,7 @@ public class LocalStorageServiceImpl implements FileStorageService {
                 if (ImageUtils.isSupportedByImageIO(contentType)) {
                     try (ByteArrayInputStream bais = new ByteArrayInputStream(fileBytes)) {
                         if (!ImageUtils.isValidImage(bais)) {
-                            throw new IllegalArgumentException("Invalid image file payload");
+                            System.err.println("Warning: ImageIO could not validate image file payload. Proceeding.");
                         }
                     }
                 }

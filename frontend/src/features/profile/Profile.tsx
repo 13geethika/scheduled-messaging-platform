@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from '../../store';
 import { updateProfileName, updateProfilePhoto } from '../../store/auth/authSlice';
+import { getMediaUrl } from '../../shared/services/api';
 import {
   Box, Typography, Paper, TextField, Button, Grid, Avatar, Divider, Alert, CircularProgress,
   FormControl, InputLabel, Select, MenuItem
@@ -81,7 +82,7 @@ export const Profile: React.FC = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, gap: 3 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
             <Avatar 
-              src={user?.profilePhotoUrl || undefined}
+              src={getMediaUrl(user?.profilePhotoUrl) || undefined}
               sx={{ width: 80, height: 80, bgcolor: 'rgba(99, 102, 241, 0.1)', color: '#818cf8', fontSize: '2.5rem', fontWeight: 700 }}
             >
               {!user?.profilePhotoUrl && user?.name?.charAt(0).toUpperCase()}
