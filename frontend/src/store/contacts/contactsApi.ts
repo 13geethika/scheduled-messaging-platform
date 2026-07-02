@@ -6,6 +6,8 @@ export interface Contact {
   name: string;
   email: string;
   status: string;
+  profilePhotoUrl?: string;
+  unreadCount?: number;
 }
 
 export interface ApiResponse<T> {

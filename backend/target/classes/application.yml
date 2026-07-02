@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: prod
+    active: dev
   application:
     name: scheduled-messaging-platform
   sql:
@@ -47,5 +47,8 @@ app:
     refresh-expiration-ms: 86400000
 
 logging:
+  file:
+    name: logs/enterprise-backend.log
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [traceId=%X{correlationId}] - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [traceId=%X{correlationId}] - %msg%n"

@@ -100,4 +100,11 @@ public class MessageController {
         List<MessageResponse> list = messageService.getChatHistory(user, email);
         return ResponseEntity.ok(ApiResponse.success("Chat history retrieved successfully", list));
     }
+
+    @PostMapping("/chat/read")
+    public ResponseEntity<ApiResponse<Void>> markChatAsRead(@RequestParam("email") String email) {
+        User user = getAuthenticatedUser();
+        messageService.markChatAsRead(user, email);
+        return ResponseEntity.ok(ApiResponse.success("Chat marked as read successfully", null));
+    }
 }

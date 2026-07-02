@@ -491,4 +491,25 @@ public class MessageServiceImpl implements MessageService {
             logger.error("Failed to broadcast WebSocket message delete", e);
         }
     }
+
+    @Override
+    @Transactional
+    public void markChatAsRead(User user, String contactEmail) {
+        User contact = userRepository.findByEmail(contactEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Contact not found with email: " + contactEmail));
+
+        List<Message> unreadMessages = messageRepository.findBySenderAndReceiverAndStatusAndIsReadFalseAndDeletedByReceiverFalse(
+                contact,
+                user,
+                MessageStatus.DELIVERED
+        );
+
+        if (!unreadMessages.isEmpty()) {
+            for (Message msg : unreadMessages) {
+                msg.setRead(true);
+            }
+            messageRepository.saveAll(unreadMessages);
+            broadcastMessageUpdate(unreadMessages.get(0), "MESSAGE_UPDATE");
+        }
+    }
 }

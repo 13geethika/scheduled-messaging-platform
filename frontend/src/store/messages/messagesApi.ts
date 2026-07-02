@@ -153,6 +153,16 @@ export const messagesApi = apiSlice.injectEndpoints({
         { type: 'Dashboard', id: 'STATS' },
       ],
     }),
+    readChat: builder.mutation<ApiResponse<any>, string>({
+      query: (email) => ({
+        url: `/messages/chat/read?email=${email}`,
+        method: 'POST',
+      }),
+      invalidatesTags: (_result, _error, email) => [
+        { type: 'Contact', id: 'LIST' },
+        { type: 'Message', id: `CHAT_${email}` },
+      ],
+    }),
   }),
 });
 
@@ -167,4 +177,5 @@ export const {
   usePauseMessageMutation,
   useResumeMessageMutation,
   useRetryFailedMessageMutation,
+  useReadChatMutation,
 } = messagesApi;

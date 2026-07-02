@@ -56,6 +56,9 @@ public class User {
     @Column(name = "password_reset_token")
     private String passwordResetToken;
 
+    @Column(name = "profile_photo_url")
+    private String profilePhotoUrl;
+
     @Version
     private int version;
 

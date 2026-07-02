@@ -7,6 +7,7 @@ export interface User {
   email: string;
   role: string;
   status: string;
+  profilePhotoUrl?: string;
   createdAt?: string;
 }
 
@@ -47,6 +48,7 @@ export const login = createAsyncThunk(
         email: data.email,
         role: data.role,
         status: 'ACTIVE',
+        profilePhotoUrl: data.profilePhotoUrl
       };
       localStorage.setItem('user', JSON.stringify(user));
       
@@ -138,6 +140,29 @@ export const updateProfileName = createAsyncThunk(
   }
 );
 
+export const updateProfilePhoto = createAsyncThunk(
+  'auth/updateProfilePhoto',
+  async (file: File, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await api.post('/profile/photo', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      const photoUrl = response.data.data.profilePhotoUrl;
+      const stored = localStorage.getItem('user');
+      if (stored) {
+        const u = JSON.parse(stored);
+        u.profilePhotoUrl = photoUrl;
+        localStorage.setItem('user', JSON.stringify(u));
+      }
+      return photoUrl;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.error || 'Photo upload failed');
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -209,6 +234,21 @@ const authSlice = createSlice({
         if (state.user) {
           state.user.name = action.payload;
         }
+      })
+      // Update Photo
+      .addCase(updateProfilePhoto.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProfilePhoto.fulfilled, (state, action) => {
+        state.loading = false;
+        if (state.user) {
+          state.user.profilePhotoUrl = action.payload;
+        }
+      })
+      .addCase(updateProfilePhoto.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });

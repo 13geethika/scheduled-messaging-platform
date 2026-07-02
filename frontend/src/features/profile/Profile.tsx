@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from '../../store';
-import { updateProfileName } from '../../store/auth/authSlice';
+import { updateProfileName, updateProfilePhoto } from '../../store/auth/authSlice';
 import {
   Box, Typography, Paper, TextField, Button, Grid, Avatar, Divider, Alert, CircularProgress,
   FormControl, InputLabel, Select, MenuItem
@@ -22,8 +22,23 @@ export const Profile: React.FC = () => {
   const handleThemeChange = (e: any) => {
     const val = e.target.value as 'light' | 'dark';
     setThemeMode(val);
-    localStorage.setItem('themeMode', val);
-    window.dispatchEvent(new Event('theme-change'));
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setSuccess(null);
+    setError(null);
+
+    dispatch(updateProfilePhoto(file))
+      .then((res) => {
+        if (res.toString().includes('rejected')) {
+          setError('Failed to upload profile photo');
+        } else {
+          setSuccess('Profile photo updated successfully');
+        }
+      });
   };
 
   const handleUpdate = (e: React.FormEvent) => {
@@ -39,9 +54,11 @@ export const Profile: React.FC = () => {
     dispatch(updateProfileName(name.trim()))
       .then((res) => {
         if (res.toString().includes('rejected')) {
-          setError('Failed to update profile name');
+          setError('Failed to update profile details');
         } else {
-          setSuccess('Profile name updated successfully');
+          localStorage.setItem('themeMode', themeMode);
+          window.dispatchEvent(new Event('theme-change'));
+          setSuccess('Profile details updated successfully');
         }
       });
   };
@@ -60,11 +77,30 @@ export const Profile: React.FC = () => {
       {error && <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }}>{error}</Alert>}
       {success && <Alert severity="success" sx={{ mb: 3, borderRadius: '12px' }}>{success}</Alert>}
 
-      <Paper sx={{ p: 4, bgcolor: 'background.paper', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '20px' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, gap: 2.5 }}>
-          <Avatar sx={{ width: 64, height: 64, bgcolor: 'rgba(99, 102, 241, 0.1)', color: '#818cf8', fontSize: '2rem', fontWeight: 700 }}>
-            {user?.name?.charAt(0).toUpperCase()}
-          </Avatar>
+      <Paper sx={{ p: 4, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', borderRadius: '20px' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, gap: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+            <Avatar 
+              src={user?.profilePhotoUrl || undefined}
+              sx={{ width: 80, height: 80, bgcolor: 'rgba(99, 102, 241, 0.1)', color: '#818cf8', fontSize: '2.5rem', fontWeight: 700 }}
+            >
+              {!user?.profilePhotoUrl && user?.name?.charAt(0).toUpperCase()}
+            </Avatar>
+            <Button
+              variant="outlined"
+              component="label"
+              size="small"
+              sx={{ textTransform: 'none', borderColor: 'divider', color: 'text.primary', '&:hover': { borderColor: 'primary.main' } }}
+            >
+              Change Photo
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handlePhotoChange}
+              />
+            </Button>
+          </Box>
           <Box>
             <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary' }}>
               {user?.name}
@@ -75,7 +111,7 @@ export const Profile: React.FC = () => {
           </Box>
         </Box>
 
-        <Divider sx={{ borderColor: 'rgba(255,255,255,0.05)', mb: 4 }} />
+        <Divider sx={{ borderColor: 'divider', mb: 4 }} />
 
         <form onSubmit={handleUpdate}>
           <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -85,15 +121,7 @@ export const Profile: React.FC = () => {
                 label="Full Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
-                    '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.3)' },
-                    '&.Mui-focused fieldset': { borderColor: '#818cf8' },
-                  },
-                  '& .MuiInputLabel-root': { color: 'text.secondary' },
-                  '& .MuiInputLabel-root.Mui-focused': { color: '#818cf8' },
-                }}
+                sx={{}}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -102,7 +130,7 @@ export const Profile: React.FC = () => {
                 disabled
                 label="Email Address"
                 value={user?.email || ''}
-                sx={{ '& .MuiOutlinedInput-root fieldset': { borderColor: 'rgba(255,255,255,0.08)' } }}
+                sx={{}}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -112,12 +140,7 @@ export const Profile: React.FC = () => {
                   value={themeMode}
                   label="Application Theme"
                   onChange={handleThemeChange}
-                  sx={{
-                    color: 'text.primary',
-                    '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.15)' },
-                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.3)' },
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#818cf8' },
-                  }}
+                  sx={{ color: 'text.primary' }}
                 >
                   <MenuItem value="dark">Dark Theme</MenuItem>
                   <MenuItem value="light">Light Theme</MenuItem>

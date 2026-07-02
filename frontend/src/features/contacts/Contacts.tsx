@@ -129,11 +129,11 @@ export const Contacts: React.FC = () => {
   return (
     <Box>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 800, color: '#f8fafc', mb: 1 }}>
-          Contacts
+        <Typography variant="h4" sx={{ fontWeight: 800, color: 'text.primary', mb: 1 }}>
+          Contact Manager
         </Typography>
-        <Typography variant="body1" sx={{ color: '#94a3b8' }}>
-          Connect with colleagues, search contacts, and manage communication approvals.
+        <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+          Add connections, approve requests, and maintain your conversation pipeline.
         </Typography>
       </Box>
 
@@ -142,17 +142,18 @@ export const Contacts: React.FC = () => {
 
       <Grid container spacing={4}>
         <Grid item xs={12} md={8}>
-          <Paper sx={{ bgcolor: '#0f172a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '20px', overflow: 'hidden' }}>
+          <Paper sx={{ bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', borderRadius: '20px', overflow: 'hidden' }}>
             <Tabs
               value={activeTab}
               onChange={handleTabChange}
               textColor="inherit"
               indicatorColor="primary"
               sx={{
-                borderBottom: '1px solid rgba(255,255,255,0.05)',
+                borderBottom: '1px solid',
+                borderBottomColor: 'divider',
                 px: 2,
-                '& .MuiTab-root': { color: '#94a3b8', fontWeight: 600, py: 2 },
-                '& .Mui-selected': { color: '#818cf8' },
+                '& .MuiTab-root': { color: 'text.secondary', fontWeight: 600, py: 2 },
+                '& .Mui-selected': { color: 'primary.main' },
                 '& .MuiTabs-indicator': { backgroundColor: '#818cf8' }
               }}
             >
@@ -172,18 +173,7 @@ export const Contacts: React.FC = () => {
                     fullWidth
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    slotProps={{
-                      input: {
-                        style: { color: '#f8fafc' }
-                      }
-                    }}
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        '& fieldset': { borderColor: 'rgba(255,255,255,0.08)' },
-                        '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
-                        '&.Mui-focused fieldset': { borderColor: '#818cf8' },
-                      }
-                    }}
+                    sx={{}}
                   />
                 </Box>
 
@@ -202,7 +192,7 @@ export const Contacts: React.FC = () => {
                           <ListItemText
                             primary={c.name}
                             secondary={c.email}
-                            primaryTypographyProps={{ fontWeight: 600, color: '#f8fafc' }}
+                            primaryTypographyProps={{ fontWeight: 600, color: 'text.primary' }}
                             secondaryTypographyProps={{ color: '#64748b' }}
                           />
                           <ListItemSecondaryAction>
@@ -218,7 +208,7 @@ export const Contacts: React.FC = () => {
                             </Tooltip>
                           </ListItemSecondaryAction>
                         </ListItem>
-                        <Divider sx={{ borderColor: 'rgba(255,255,255,0.04)' }} />
+                        <Divider sx={{ borderColor: 'divider' }} />
                       </React.Fragment>
                     ))}
                   </List>
@@ -244,8 +234,8 @@ export const Contacts: React.FC = () => {
                           <ListItemText
                             primary={r.name}
                             secondary={r.email}
-                            primaryTypographyProps={{ fontWeight: 600, color: '#f8fafc' }}
-                            secondaryTypographyProps={{ color: '#64748b' }}
+                            primaryTypographyProps={{ fontWeight: 600, color: 'text.primary' }}
+                            secondaryTypographyProps={{ color: 'text.secondary' }}
                           />
                           <ListItemSecondaryAction>
                             <Tooltip title="Accept Request">
@@ -260,7 +250,7 @@ export const Contacts: React.FC = () => {
                             </Tooltip>
                           </ListItemSecondaryAction>
                         </ListItem>
-                        <Divider sx={{ borderColor: 'rgba(255,255,255,0.04)' }} />
+                        <Divider sx={{ borderColor: 'divider' }} />
                       </React.Fragment>
                     ))}
                   </List>
@@ -274,7 +264,7 @@ export const Contacts: React.FC = () => {
                 {loadingContacts ? (
                   <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}><CircularProgress size={30} /></Box>
                 ) : filteredContacts.length === 0 ? (
-                  <Typography variant="body2" sx={{ color: '#64748b', textAlign: 'center', py: 4 }}>No blocked users</Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', py: 4 }}>No blocked users</Typography>
                 ) : (
                   <List>
                     {filteredContacts.map((c) => (
@@ -286,8 +276,8 @@ export const Contacts: React.FC = () => {
                           <ListItemText
                             primary={c.name}
                             secondary={c.email}
-                            primaryTypographyProps={{ fontWeight: 600, color: '#f8fafc' }}
-                            secondaryTypographyProps={{ color: '#64748b' }}
+                            primaryTypographyProps={{ fontWeight: 600, color: 'text.primary' }}
+                            secondaryTypographyProps={{ color: 'text.secondary' }}
                           />
                           <ListItemSecondaryAction>
                             <Tooltip title="Unblock / Remove">
@@ -297,7 +287,7 @@ export const Contacts: React.FC = () => {
                             </Tooltip>
                           </ListItemSecondaryAction>
                         </ListItem>
-                        <Divider sx={{ borderColor: 'rgba(255,255,255,0.04)' }} />
+                        <Divider sx={{ borderColor: 'divider' }} />
                       </React.Fragment>
                     ))}
                   </List>
@@ -309,14 +299,14 @@ export const Contacts: React.FC = () => {
 
         {/* Add Connection Widget */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 4, bgcolor: '#0f172a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '20px' }}>
+          <Paper sx={{ p: 4, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', borderRadius: '20px' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
-              <AddIcon sx={{ color: '#818cf8' }} />
-              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#f8fafc' }}>
+              <AddIcon sx={{ color: 'primary.main' }} />
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'text.primary' }}>
                 Add Contact
               </Typography>
             </Box>
-            <Typography variant="body2" sx={{ color: '#94a3b8', mb: 3 }}>
+            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
               Send a request by email. Once they accept, you can schedule messages to them.
             </Typography>
             <form onSubmit={handleSubmit(onAddContact)} noValidate>
@@ -327,21 +317,7 @@ export const Contacts: React.FC = () => {
                 error={!!errors.email}
                 helperText={errors.email?.message}
                 {...register('email')}
-                slotProps={{
-                  input: {
-                    style: { color: '#f8fafc' }
-                  }
-                }}
-                sx={{
-                  mb: 3,
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
-                    '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.3)' },
-                    '&.Mui-focused fieldset': { borderColor: '#818cf8' },
-                  },
-                  '& .MuiInputLabel-root': { color: '#94a3b8' },
-                  '& .MuiInputLabel-root.Mui-focused': { color: '#818cf8' },
-                }}
+                sx={{ mb: 3 }}
               />
               <Button
                 type="submit"

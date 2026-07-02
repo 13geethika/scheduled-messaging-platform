@@ -254,10 +254,10 @@ export const Scheduler: React.FC = () => {
   return (
     <Box>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 800, color: '#f8fafc', mb: 1 }}>
+        <Typography variant="h4" sx={{ fontWeight: 800, color: 'text.primary', mb: 1 }}>
           Scheduler
         </Typography>
-        <Typography variant="body1" sx={{ color: '#94a3b8' }}>
+        <Typography variant="body1" sx={{ color: 'text.secondary' }}>
           Schedule new messages and media resources, view triggers, and toggle job parameters.
         </Typography>
       </Box>
@@ -268,10 +268,10 @@ export const Scheduler: React.FC = () => {
       <Grid container spacing={4} sx={{ mb: 5 }}>
         {/* Schedule Form */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 4, bgcolor: '#0f172a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '20px' }}>
+          <Paper sx={{ p: 4, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', borderRadius: '20px' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
-              <ScheduleIcon sx={{ color: '#818cf8' }} />
-              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#f8fafc' }}>
+              <ScheduleIcon sx={{ color: 'primary.main' }} />
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'text.primary' }}>
                 Create Schedule
               </Typography>
             </Box>
@@ -279,7 +279,7 @@ export const Scheduler: React.FC = () => {
             <form onSubmit={handleSubmit(onSchedule)} noValidate>
               {/* Recipient selection */}
               <FormControl fullWidth sx={{ mb: 2.5 }} error={!!errors.receiverEmail}>
-                <InputLabel sx={{ color: '#94a3b8' }}>Recipient</InputLabel>
+                <InputLabel>Recipient</InputLabel>
                 <Controller
                   name="receiverEmail"
                   control={control}
@@ -287,12 +287,7 @@ export const Scheduler: React.FC = () => {
                     <Select
                       {...field}
                       label="Recipient"
-                      sx={{
-                        color: '#f8fafc',
-                        '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.15)' },
-                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.3)' },
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#818cf8' },
-                      }}
+                      sx={{}}
                     >
                       {contacts.length === 0 ? (
                         <MenuItem disabled value="">No contacts available</MenuItem>
@@ -309,7 +304,7 @@ export const Scheduler: React.FC = () => {
 
               {/* Message Type */}
               <FormControl fullWidth sx={{ mb: 2.5 }}>
-                <InputLabel sx={{ color: '#94a3b8' }}>Message Type</InputLabel>
+                <InputLabel>Message Type</InputLabel>
                 <Controller
                   name="messageType"
                   control={control}
@@ -317,12 +312,7 @@ export const Scheduler: React.FC = () => {
                     <Select
                       {...field}
                       label="Message Type"
-                      sx={{
-                        color: '#f8fafc',
-                        '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.15)' },
-                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.3)' },
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#818cf8' },
-                      }}
+                      sx={{}}
                     >
                       <MenuItem value="TEXT">Text Message</MenuItem>
                       <MenuItem value="IMAGE">Image Attachment</MenuItem>
@@ -342,19 +332,7 @@ export const Scheduler: React.FC = () => {
                 error={!!errors.content}
                 helperText={errors.content?.message}
                 {...register('content')}
-                slotProps={{
-                  input: { style: { color: '#f8fafc' } }
-                }}
-                sx={{
-                  mb: 2.5,
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
-                    '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.3)' },
-                    '&.Mui-focused fieldset': { borderColor: '#818cf8' },
-                  },
-                  '& .MuiInputLabel-root': { color: '#94a3b8' },
-                  '& .MuiInputLabel-root.Mui-focused': { color: '#818cf8' },
-                }}
+                sx={{ mb: 2.5 }}
               />
 
               {/* Media Upload (visible if not text type) */}
@@ -366,8 +344,8 @@ export const Scheduler: React.FC = () => {
                     fullWidth
                     startIcon={<UploadIcon />}
                     sx={{
-                      py: 1.2, borderColor: 'rgba(255,255,255,0.15)', color: '#94a3b8', textTransform: 'none',
-                      '&:hover': { borderColor: 'rgba(255,255,255,0.3)', bgcolor: 'rgba(255,255,255,0.01)' }
+                      py: 1.2, borderColor: 'divider', color: 'text.secondary', textTransform: 'none',
+                      '&:hover': { borderColor: 'primary.main', bgcolor: 'action.hover' }
                     }}
                   >
                     Upload Media Attachment
@@ -390,23 +368,14 @@ export const Scheduler: React.FC = () => {
                 helperText={errors.scheduledTime?.message}
                 {...register('scheduledTime')}
                 slotProps={{
-                  inputLabel: { shrink: true, style: { color: '#94a3b8' } },
-                  input: { style: { color: '#f8fafc' } }
+                  inputLabel: { shrink: true }
                 }}
-                sx={{
-                  mb: 2.5,
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
-                    '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.3)' },
-                    '&.Mui-focused fieldset': { borderColor: '#818cf8' },
-                  },
-                  '& .MuiInputLabel-root.Mui-focused': { color: '#818cf8' },
-                }}
+                sx={{ mb: 2.5 }}
               />
 
               {/* Recurring schedule */}
               <FormControl fullWidth sx={{ mb: 3.5 }}>
-                <InputLabel sx={{ color: '#94a3b8' }}>Frequency</InputLabel>
+                <InputLabel>Frequency</InputLabel>
                 <Controller
                   name="recurringType"
                   control={control}
@@ -414,12 +383,7 @@ export const Scheduler: React.FC = () => {
                     <Select
                       {...field}
                       label="Frequency"
-                      sx={{
-                        color: '#f8fafc',
-                        '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.15)' },
-                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.3)' },
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#818cf8' },
-                      }}
+                      sx={{}}
                     >
                       <MenuItem value="NONE">Once (No Recurrence)</MenuItem>
                       <MenuItem value="DAILY">Daily</MenuItem>
@@ -451,8 +415,8 @@ export const Scheduler: React.FC = () => {
 
         {/* Schedules Table */}
         <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 3, bgcolor: '#0f172a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '20px' }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 3, color: '#f8fafc' }}>
+          <Paper sx={{ p: 3, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', borderRadius: '20px' }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 3, color: 'text.primary' }}>
               Job Schedules
             </Typography>
 
@@ -464,7 +428,7 @@ export const Scheduler: React.FC = () => {
               <TableContainer>
                 <Table>
                   <TableHead>
-                    <TableRow sx={{ '& th': { borderColor: 'rgba(255,255,255,0.05)', color: '#64748b', fontWeight: 700 } }}>
+                    <TableRow sx={{ '& th': { borderColor: 'divider', color: 'text.secondary', fontWeight: 700 } }}>
                       <TableCell>Recipient</TableCell>
                       <TableCell>Content / Attachment</TableCell>
                       <TableCell>Type</TableCell>
@@ -475,7 +439,7 @@ export const Scheduler: React.FC = () => {
                   </TableHead>
                   <TableBody>
                     {activeSchedules.map((m) => (
-                      <TableRow key={m.id} sx={{ '& td': { borderColor: 'rgba(255,255,255,0.05)', color: '#e2e8f0' } }}>
+                      <TableRow key={m.id} sx={{ '& td': { borderColor: 'divider', color: 'text.primary' } }}>
                         <TableCell>
                           <Box>
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>{m.receiverName}</Typography>
@@ -490,7 +454,7 @@ export const Scheduler: React.FC = () => {
                           )}
                         </TableCell>
                         <TableCell>
-                          <Chip label={m.messageType} size="small" sx={{ bgcolor: 'rgba(255,255,255,0.04)', color: '#f8fafc', fontWeight: 600 }} />
+                          <Chip label={m.messageType} size="small" sx={{ fontWeight: 600 }} />
                         </TableCell>
                         <TableCell>
                           <Typography variant="body2" sx={{ display: 'block', fontWeight: 500 }}>
@@ -564,7 +528,7 @@ export const Scheduler: React.FC = () => {
         open={openEditModal}
         onClose={handleEditClose}
         PaperProps={{
-          sx: { bgcolor: '#0f172a', color: '#f8fafc', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', width: '100%', maxWidth: 450 }
+          sx: { bgcolor: 'background.paper', color: 'text.primary', border: '1px solid', borderColor: 'divider', borderRadius: '20px', width: '100%', maxWidth: 450 }
         }}
       >
         <DialogTitle sx={{ fontWeight: 700 }}>Edit Scheduled Job</DialogTitle>
@@ -577,10 +541,7 @@ export const Scheduler: React.FC = () => {
                   disabled
                   label="Recipient"
                   value={editingMsg.receiverEmail}
-                  slotProps={{
-                    input: { style: { color: '#64748b' } }
-                  }}
-                  sx={{ '& .MuiOutlinedInput-root fieldset': { borderColor: 'rgba(255,255,255,0.08)' } }}
+                  sx={{}}
                 />
 
                 <TextField
@@ -590,18 +551,7 @@ export const Scheduler: React.FC = () => {
                   label="Message Content"
                   value={editingMsg.content || ''}
                   onChange={(e) => setEditingMsg({ ...editingMsg, content: e.target.value })}
-                  slotProps={{
-                    input: { style: { color: '#f8fafc' } }
-                  }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
-                      '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.3)' },
-                      '&.Mui-focused fieldset': { borderColor: '#818cf8' },
-                    },
-                    '& .MuiInputLabel-root': { color: '#94a3b8' },
-                    '& .MuiInputLabel-root.Mui-focused': { color: '#818cf8' },
-                  }}
+                  sx={{}}
                 />
 
                 {editingMsg.messageType !== 'TEXT' && (
@@ -611,7 +561,7 @@ export const Scheduler: React.FC = () => {
                       component="label"
                       fullWidth
                       startIcon={<UploadIcon />}
-                      sx={{ py: 1, borderColor: 'rgba(255,255,255,0.15)', color: '#94a3b8', textTransform: 'none' }}
+                      sx={{ py: 1, borderColor: 'divider', color: 'text.secondary', textTransform: 'none', '&:hover': { borderColor: 'primary.main', bgcolor: 'action.hover' } }}
                     >
                       Update Attachment File
                       <input type="file" hidden onChange={handleEditFileChange} accept={editingMsg.messageType === 'IMAGE' ? 'image/*' : editingMsg.messageType === 'VIDEO' ? 'video/*' : 'audio/*'} />
@@ -635,30 +585,18 @@ export const Scheduler: React.FC = () => {
                   value={editingMsg.scheduledTime}
                   onChange={(e) => setEditingMsg({ ...editingMsg, scheduledTime: e.target.value })}
                   slotProps={{
-                    inputLabel: { shrink: true, style: { color: '#94a3b8' } },
-                    input: { style: { color: '#f8fafc' } }
+                    inputLabel: { shrink: true }
                   }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
-                      '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.3)' },
-                      '&.Mui-focused fieldset': { borderColor: '#818cf8' },
-                    },
-                  }}
+                  sx={{}}
                 />
 
                 <FormControl fullWidth>
-                  <InputLabel sx={{ color: '#94a3b8' }}>Frequency</InputLabel>
+                  <InputLabel>Frequency</InputLabel>
                   <Select
                     value={editingMsg.recurringType}
                     label="Frequency"
                     onChange={(e) => setEditingMsg({ ...editingMsg, recurringType: e.target.value })}
-                    sx={{
-                      color: '#f8fafc',
-                      '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.15)' },
-                      '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.3)' },
-                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#818cf8' },
-                    }}
+                    sx={{}}
                   >
                     <MenuItem value="NONE">Once (No Recurrence)</MenuItem>
                     <MenuItem value="DAILY">Daily</MenuItem>

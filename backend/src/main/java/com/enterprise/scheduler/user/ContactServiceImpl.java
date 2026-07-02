@@ -10,6 +10,7 @@ import com.enterprise.scheduler.user.ContactRepository;
 import com.enterprise.scheduler.user.UserRepository;
 import com.enterprise.scheduler.user.ContactService;
 import com.enterprise.scheduler.notification.NotificationService;
+import com.enterprise.scheduler.message.MessageRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,13 +24,16 @@ public class ContactServiceImpl implements ContactService {
     private final ContactRepository contactRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final MessageRepository messageRepository;
 
     public ContactServiceImpl(ContactRepository contactRepository, 
                               UserRepository userRepository,
-                              NotificationService notificationService) {
+                              NotificationService notificationService,
+                              MessageRepository messageRepository) {
         this.contactRepository = contactRepository;
         this.userRepository = userRepository;
         this.notificationService = notificationService;
+        this.messageRepository = messageRepository;
     }
 
     @Override
@@ -74,7 +78,7 @@ public class ContactServiceImpl implements ContactService {
     public List<ContactResponse> getContacts(User user, String status) {
         ContactStatus contactStatus = ContactStatus.valueOf(status.toUpperCase());
         return contactRepository.findByUserAndStatus(user, contactStatus).stream()
-                .map(this::mapToContactResponse)
+                .map(c -> mapToContactResponse(c, user))
                 .collect(Collectors.toList());
     }
 
@@ -88,6 +92,8 @@ public class ContactServiceImpl implements ContactService {
                         .name(c.getUser().getName())
                         .email(c.getUser().getEmail())
                         .status(c.getStatus().name())
+                        .profilePhotoUrl(c.getUser().getProfilePhotoUrl())
+                        .unreadCount(0)
                         .build())
                 .collect(Collectors.toList());
     }
@@ -185,17 +191,24 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public List<ContactResponse> searchContacts(User user, String query) {
         return contactRepository.searchContacts(user.getId(), ContactStatus.ACCEPTED, query).stream()
-                .map(this::mapToContactResponse)
+                .map(c -> mapToContactResponse(c, user))
                 .collect(Collectors.toList());
     }
 
-    private ContactResponse mapToContactResponse(Contact contact) {
+    private ContactResponse mapToContactResponse(Contact contact, User currentUser) {
+        int unread = (int) messageRepository.countBySenderAndReceiverAndStatusAndIsReadFalseAndDeletedByReceiverFalse(
+                contact.getContactUser(),
+                currentUser,
+                com.enterprise.scheduler.message.MessageStatus.DELIVERED
+        );
         return ContactResponse.builder()
                 .id(contact.getId())
                 .contactId(contact.getContactUser().getId())
                 .name(contact.getContactUser().getName())
                 .email(contact.getContactUser().getEmail())
                 .status(contact.getStatus().name())
+                .profilePhotoUrl(contact.getContactUser().getProfilePhotoUrl())
+                .unreadCount(unread)
                 .build();
     }
 }

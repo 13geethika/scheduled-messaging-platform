@@ -43,4 +43,8 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
                                   @Param("receiverContact") User receiverContact,
                                   @Param("senderContact") User senderContact,
                                   @Param("receiverUser") User receiverUser);
+
+    long countBySenderAndReceiverAndStatusAndIsReadFalseAndDeletedByReceiverFalse(User sender, User receiver, MessageStatus status);
+
+    List<Message> findBySenderAndReceiverAndStatusAndIsReadFalseAndDeletedByReceiverFalse(User sender, User receiver, MessageStatus status);
 }

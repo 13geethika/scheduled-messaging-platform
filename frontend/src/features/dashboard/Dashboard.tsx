@@ -4,7 +4,7 @@ import type { RootState, AppDispatch } from '../../store';
 import { fetchDashboardStats } from '../../store/messages/messagesSlice';
 import {
   Grid, Card, CardContent, Typography, Box, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Paper, Chip, CircularProgress, Alert, Link
+  TableContainer, TableHead, TableRow, Paper, Chip, CircularProgress, Alert, Link, useTheme
 } from '@mui/material';
 import {
   Send as SendIcon, ErrorOutline as FailedIcon, HourglassEmpty as PendingIcon,
@@ -15,6 +15,7 @@ import {
 } from 'recharts';
 
 export const Dashboard: React.FC = () => {
+  const theme = useTheme();
   const dispatch = useDispatch<AppDispatch>();
   const { stats, loading, error } = useSelector((state: RootState) => state.messages);
 
@@ -69,10 +70,10 @@ export const Dashboard: React.FC = () => {
   return (
     <Box>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 800, color: '#f8fafc', mb: 1 }}>
+        <Typography variant="h4" sx={{ fontWeight: 800, color: 'text.primary', mb: 1 }}>
           Overview
         </Typography>
-        <Typography variant="body1" sx={{ color: '#94a3b8' }}>
+        <Typography variant="body1" sx={{ color: 'text.secondary' }}>
           Real-time tracking of message scheduling and Quartz execution statistics.
         </Typography>
       </Box>
@@ -83,24 +84,25 @@ export const Dashboard: React.FC = () => {
           <Grid item xs={12} sm={6} md={3} key={c.title}>
             <Card
               sx={{
-                bgcolor: '#0f172a',
-                border: '1px solid rgba(255,255,255,0.06)',
+                bgcolor: 'background.paper',
+                border: '1px solid',
+                borderColor: 'divider',
                 borderRadius: '16px',
                 backgroundImage: c.bg,
                 transition: 'transform 0.2s, box-shadow 0.2s',
                 '&:hover': {
                   transform: 'translateY(-4px)',
-                  boxShadow: '0 12px 20px -10px rgba(0,0,0,0.5)',
-                  borderColor: 'rgba(255,255,255,0.12)'
+                  boxShadow: theme.palette.mode === 'dark' ? '0 12px 20px -10px rgba(0,0,0,0.5)' : '0 12px 20px -10px rgba(0,0,0,0.1)',
+                  borderColor: theme.palette.primary.main
                 }
               }}
             >
               <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 3 }}>
                 <Box>
-                  <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 600, mb: 1 }}>
+                  <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600, mb: 1 }}>
                     {c.title}
                   </Typography>
-                  <Typography variant="h4" sx={{ color: '#f8fafc', fontWeight: 800 }}>
+                  <Typography variant="h4" sx={{ color: 'text.primary', fontWeight: 800 }}>
                     {c.value}
                   </Typography>
                 </Box>
@@ -116,19 +118,19 @@ export const Dashboard: React.FC = () => {
       {/* Analytics Graphs */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} md={7}>
-          <Paper sx={{ p: 3, bgcolor: '#0f172a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '20px', color: '#f8fafc' }}>
+          <Paper sx={{ p: 3, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', borderRadius: '20px', color: 'text.primary' }}>
             <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 3 }}>
               Delivery Overview
             </Typography>
             <Box sx={{ height: 260 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={barData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                  <XAxis dataKey="name" stroke="#64748b" tickLine={false} />
-                  <YAxis stroke="#64748b" tickLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.divider} />
+                  <XAxis dataKey="name" stroke={theme.palette.text.secondary} tickLine={false} />
+                  <YAxis stroke={theme.palette.text.secondary} tickLine={false} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
-                    labelStyle={{ color: '#f8fafc', fontWeight: 600 }}
+                    contentStyle={{ backgroundColor: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}`, borderRadius: '8px' }}
+                    labelStyle={{ color: theme.palette.text.primary, fontWeight: 600 }}
                   />
                   <Bar dataKey="Count" fill="#6366f1" radius={[8, 8, 0, 0]} />
                 </BarChart>
@@ -138,7 +140,7 @@ export const Dashboard: React.FC = () => {
         </Grid>
         
         <Grid item xs={12} md={5}>
-          <Paper sx={{ p: 3, bgcolor: '#0f172a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '20px', color: '#f8fafc', display: 'flex', flexDirection: 'column' }}>
+          <Paper sx={{ p: 3, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', borderRadius: '20px', color: 'text.primary', display: 'flex', flexDirection: 'column' }}>
             <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 3 }}>
               Status Breakdown
             </Typography>
@@ -159,8 +161,8 @@ export const Dashboard: React.FC = () => {
                     ))}
                   </Pie>
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
-                    itemStyle={{ color: '#f8fafc' }}
+                    contentStyle={{ backgroundColor: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}`, borderRadius: '8px' }}
+                    itemStyle={{ color: theme.palette.text.primary }}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -170,19 +172,19 @@ export const Dashboard: React.FC = () => {
       </Grid>
 
       {/* Upcoming Table */}
-      <Paper sx={{ p: 3, bgcolor: '#0f172a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '20px', color: '#f8fafc' }}>
+      <Paper sx={{ p: 3, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', borderRadius: '20px', color: 'text.primary' }}>
         <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2 }}>
           Upcoming Deliveries
         </Typography>
         {upcoming.length === 0 ? (
-          <Box sx={{ p: 3, textAlign: 'center', color: '#64748b' }}>
+          <Box sx={{ p: 3, textAlign: 'center', color: 'text.secondary' }}>
             <Typography variant="body2">No upcoming scheduled messages</Typography>
           </Box>
         ) : (
           <TableContainer>
             <Table>
               <TableHead>
-                <TableRow sx={{ '& th': { borderColor: 'rgba(255,255,255,0.05)', color: '#64748b', fontWeight: 700 } }}>
+                <TableRow sx={{ '& th': { borderColor: 'divider', color: 'text.secondary', fontWeight: 700 } }}>
                   <TableCell>Recipient</TableCell>
                   <TableCell>Content / Attachment</TableCell>
                   <TableCell>Type</TableCell>

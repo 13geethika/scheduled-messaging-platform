@@ -34,11 +34,11 @@ export const VirtualizedTable: React.FC<VirtualizedTableProps> = ({ columns, row
       component={Paper}
       ref={containerRef}
       onScroll={handleScroll}
-      style={{ height, overflowY: 'auto', backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '16px' }}
+      sx={{ height, overflowY: 'auto', bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', borderRadius: '16px' }}
     >
       <Table stickyHeader style={{ minWidth: 650 }}>
         <TableHead>
-          <TableRow sx={{ '& th': { backgroundColor: '#1e293b', borderColor: 'rgba(255,255,255,0.05)', color: '#94a3b8', fontWeight: 700 } }}>
+          <TableRow sx={{ '& th': { bgcolor: (theme) => theme.palette.mode === 'dark' ? '#1e293b' : '#f8fafc', borderColor: 'divider', color: 'text.secondary', fontWeight: 700 } }}>
             {columns.map((col) => (
               <TableCell key={col.field} style={{ width: col.width }}>
                 {col.headerName}
@@ -60,8 +60,8 @@ export const VirtualizedTable: React.FC<VirtualizedTableProps> = ({ columns, row
                 key={row.id || actualIndex}
                 style={{ height: rowHeight }}
                 sx={{
-                  '& td': { borderColor: 'rgba(255,255,255,0.05)', color: '#e2e8f0', py: 1.5 },
-                  '&:hover': { backgroundColor: 'rgba(255,255,255,0.01)' }
+                  '& td': { borderColor: 'divider', color: 'text.primary', py: 1.5 },
+                  '&:hover': { bgcolor: 'action.hover' }
                 }}
               >
                 {columns.map((col) => (

@@ -88,6 +88,10 @@ public class Message {
     @Builder.Default
     private boolean deletedByReceiver = false;
 
+    @Column(name = "is_read", nullable = false)
+    @Builder.Default
+    private boolean isRead = false;
+
     @CreatedBy
     @Column(name = "created_by")
     private String createdBy;

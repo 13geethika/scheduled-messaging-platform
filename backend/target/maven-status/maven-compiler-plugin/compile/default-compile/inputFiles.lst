@@ -17,6 +17,7 @@ C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\src\main\jav
 C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\src\main\java\com\enterprise\scheduler\auth\TokenRefreshRequest.java
 C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\src\main\java\com\enterprise\scheduler\auth\TokenRefreshResponse.java
 C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\src\main\java\com\enterprise\scheduler\common\ApiResponse.java
+C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\src\main\java\com\enterprise\scheduler\common\LogsController.java
 C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\src\main\java\com\enterprise\scheduler\config\ChatWebSocketHandler.java
 C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\src\main\java\com\enterprise\scheduler\config\DatabaseSeeder.java
 C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\src\main\java\com\enterprise\scheduler\config\JpaAuditingConfig.java

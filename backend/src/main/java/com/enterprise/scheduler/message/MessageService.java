@@ -17,4 +17,5 @@ public interface MessageService {
     List<MessageResponse> getChatHistory(User user, String contactEmail);
     void retryFailedMessage(User user, Long messageId);
     void deliverMessage(Long messageId);
+    void markChatAsRead(User user, String contactEmail);
 }

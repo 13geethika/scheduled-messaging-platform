@@ -1,0 +1,464 @@
+2026-07-02 17:34:30.609 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Starting ScheduledMessagingApplication using Java 26 with PID 19400 (C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\target\classes started by geeth in C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend)
+2026-07-02 17:34:30.611 [restartedMain] DEBUG c.e.s.ScheduledMessagingApplication [traceId=] - Running with Spring Boot v3.5.0, Spring v6.2.7
+2026-07-02 17:34:30.611 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - The following 1 profile is active: "dev"
+2026-07-02 17:34:31.757 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [traceId=] - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-02 17:34:31.768 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [traceId=] - Finished Spring Data repository scanning in 3 ms. Found 0 JPA repository interfaces.
+2026-07-02 17:34:32.028 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer [traceId=] - Tomcat initialized with port 8080 (http)
+2026-07-02 17:34:32.030 [restartedMain] INFO  o.a.catalina.core.StandardService [traceId=] - Starting service [Tomcat]
+2026-07-02 17:34:32.030 [restartedMain] INFO  o.a.catalina.core.StandardEngine [traceId=] - Starting Servlet engine: [Apache Tomcat/10.1.41]
+2026-07-02 17:34:32.134 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] [traceId=] - Initializing Spring embedded WebApplicationContext
+2026-07-02 17:34:32.134 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext [traceId=] - Root WebApplicationContext: initialization completed in 1516 ms
+2026-07-02 17:34:32.325 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-2 - Starting...
+2026-07-02 17:34:32.342 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool [traceId=] - HikariPool-2 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7c1ade6b
+2026-07-02 17:34:32.343 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-2 - Start completed.
+2026-07-02 17:34:32.397 [restartedMain] INFO  org.flywaydb.core.FlywayExecutor [traceId=] - Database: jdbc:mysql://localhost:3306/scheduled_messaging?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC (MySQL 8.0)
+2026-07-02 17:34:32.464 [restartedMain] INFO  o.f.core.internal.command.DbValidate [traceId=] - Successfully validated 6 migrations (execution time 00:00.041s)
+2026-07-02 17:34:32.485 [restartedMain] INFO  o.f.core.internal.command.DbMigrate [traceId=] - Current version of schema `scheduled_messaging`: 5
+2026-07-02 17:34:32.520 [restartedMain] INFO  o.f.core.internal.command.DbMigrate [traceId=] - Migrating schema `scheduled_messaging` to version "6 - add profile photo and is read"
+2026-07-02 17:34:32.901 [restartedMain] INFO  o.f.core.internal.command.DbMigrate [traceId=] - Successfully applied 1 migration to schema `scheduled_messaging`, now at version v6 (execution time 00:00.348s)
+2026-07-02 17:34:32.934 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper [traceId=] - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-02 17:34:32.943 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator [traceId=] - HHH000026: Second-level cache disabled
+2026-07-02 17:34:32.972 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo [traceId=] - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-02 17:34:32.978 [restartedMain] WARN  org.hibernate.orm.deprecation [traceId=] - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-07-02 17:34:32.979 [restartedMain] INFO  o.hibernate.orm.connections.pooling [traceId=] - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-2)']
+	Database driver: undefined/unknown
+	Database version: 8.0.45
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-07-02 17:34:33.044 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator [traceId=] - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-02 17:34:33.045 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean [traceId=] - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-02 17:34:33.156 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration [traceId=] - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-02 17:34:33.602 [restartedMain] INFO  org.quartz.impl.StdSchedulerFactory [traceId=] - Using default implementation for ThreadExecutor
+2026-07-02 17:34:33.605 [restartedMain] INFO  o.quartz.core.SchedulerSignalerImpl [traceId=] - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2026-07-02 17:34:33.605 [restartedMain] INFO  org.quartz.core.QuartzScheduler [traceId=] - Quartz Scheduler v2.5.0 created.
+2026-07-02 17:34:33.606 [restartedMain] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - Using db table-based data access locking (synchronization).
+2026-07-02 17:34:33.606 [restartedMain] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - JobStoreCMT initialized.
+2026-07-02 17:34:33.606 [restartedMain] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler meta-data: Quartz Scheduler (v2.5.0) 'ScheduledMessagingScheduler' with instanceId 'GeethikaChowdary1782993873603'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 10 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2026-07-02 17:34:33.606 [restartedMain] INFO  org.quartz.impl.StdSchedulerFactory [traceId=] - Quartz scheduler 'ScheduledMessagingScheduler' initialized from an externally provided properties instance.
+2026-07-02 17:34:33.607 [restartedMain] INFO  org.quartz.impl.StdSchedulerFactory [traceId=] - Quartz scheduler version: 2.5.0
+2026-07-02 17:34:33.607 [restartedMain] INFO  org.quartz.core.QuartzScheduler [traceId=] - JobFactory set to: org.springframework.scheduling.quartz.SpringBeanJobFactory@6d76111e
+2026-07-02 17:34:33.639 [restartedMain] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration [traceId=] - 
+
+Using generated security password: 7fb91ace-e649-4954-8cdf-ba9d0723e45c
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-07-02 17:34:33.643 [restartedMain] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer [traceId=] - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-07-02 17:34:33.712 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver [traceId=] - Exposing 3 endpoints beneath base path '/actuator'
+2026-07-02 17:34:33.813 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer [traceId=] - LiveReload server is running on port 35729
+2026-07-02 17:34:33.867 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer [traceId=] - Tomcat started on port 8080 (http) with context path '/'
+2026-07-02 17:34:33.868 [restartedMain] INFO  o.s.s.quartz.SchedulerFactoryBean [traceId=] - Starting Quartz Scheduler now
+2026-07-02 17:34:33.893 [restartedMain] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler ScheduledMessagingScheduler_$_GeethikaChowdary1782993873603 started.
+2026-07-02 17:34:33.910 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Started ScheduledMessagingApplication in 3.458 seconds (process running for 804.498)
+2026-07-02 17:34:33.945 [restartedMain] INFO  o.s.b.d.a.ConditionEvaluationDeltaLoggingListener [traceId=] - Condition evaluation delta:
+
+
+==========================
+CONDITION EVALUATION DELTA
+==========================
+
+
+Positive matches:
+-----------------
+
+   ManagementWebSecurityAutoConfiguration matched:
+      - found 'session' scope (OnWebApplicationCondition)
+      - AllNestedConditions 2 matched 0 did not; NestedCondition on DefaultWebSecurityCondition.Beans @ConditionalOnMissingBean (types: org.springframework.security.web.SecurityFilterChain; SearchStrategy: all) did not find any beans; NestedCondition on DefaultWebSecurityCondition.Classes @ConditionalOnClass found required classes 'org.springframework.security.web.SecurityFilterChain', 'org.springframework.security.config.annotation.web.builders.HttpSecurity' (DefaultWebSecurityCondition)
+
+   SpringBootWebSecurityConfiguration.WebSecurityEnablerConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.security.config.annotation.web.configuration.EnableWebSecurity' (OnClassCondition)
+      - @ConditionalOnMissingBean (names: springSecurityFilterChain; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   UserDetailsServiceAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.security.authentication.AuthenticationManager' (OnClassCondition)
+      - found 'session' scope (OnWebApplicationCondition)
+      - AnyNestedCondition 1 matched 2 did not; NestedCondition on UserDetailsServiceAutoConfiguration.MissingAlternativeOrUserPropertiesConfigured.PasswordConfigured @ConditionalOnProperty (spring.security.user.password) did not find property 'spring.security.user.password'; NestedCondition on UserDetailsServiceAutoConfiguration.MissingAlternativeOrUserPropertiesConfigured.NameConfigured @ConditionalOnProperty (spring.security.user.name) did not find property 'spring.security.user.name'; NestedCondition on UserDetailsServiceAutoConfiguration.MissingAlternativeOrUserPropertiesConfigured.MissingAlternative @ConditionalOnMissingClass did not find unwanted classes 'org.springframework.security.oauth2.client.registration.ClientRegistrationRepository', 'org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector', 'org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository' (UserDetailsServiceAutoConfiguration.MissingAlternativeOrUserPropertiesConfigured)
+      - @ConditionalOnBean (types: org.springframework.security.config.ObjectPostProcessor; SearchStrategy: all) found beans 'objectPostProcessor', 'webAuthorizationManagerPostProcessor', 'filterChainDecoratorPostProcessor', 'authenticationManagerPostProcessor'; @ConditionalOnMissingBean (types: org.springframework.security.authentication.AuthenticationManager,org.springframework.security.authentication.AuthenticationProvider,org.springframework.security.core.userdetails.UserDetailsService,org.springframework.security.authentication.AuthenticationManagerResolver,?; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+
+Negative matches:
+-----------------
+
+    None
+
+
+Exclusions:
+-----------
+
+    None
+
+
+Unconditional classes:
+----------------------
+
+    None
+
+
+
+2026-07-02 17:34:38.347 [File Watcher] INFO  o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener [traceId=] - Restarting due to 67 class path changes (67 additions, 0 deletions, 0 modifications)
+2026-07-02 17:34:38.349 [Thread-11] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler ScheduledMessagingScheduler_$_GeethikaChowdary1782993873603 paused.
+2026-07-02 17:34:38.350 [Thread-11] INFO  o.s.b.w.e.tomcat.GracefulShutdown [traceId=] - Commencing graceful shutdown. Waiting for active requests to complete
+2026-07-02 17:34:38.376 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown [traceId=] - Graceful shutdown complete
+2026-07-02 17:34:38.378 [Thread-11] INFO  o.s.s.quartz.SchedulerFactoryBean [traceId=] - Shutting down Quartz Scheduler
+2026-07-02 17:34:38.378 [Thread-11] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler ScheduledMessagingScheduler_$_GeethikaChowdary1782993873603 shutting down.
+2026-07-02 17:34:38.378 [Thread-11] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler ScheduledMessagingScheduler_$_GeethikaChowdary1782993873603 paused.
+2026-07-02 17:34:38.379 [Thread-11] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler ScheduledMessagingScheduler_$_GeethikaChowdary1782993873603 shutdown complete.
+2026-07-02 17:34:38.380 [Thread-11] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean [traceId=] - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-02 17:34:38.381 [Thread-11] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-2 - Shutdown initiated...
+2026-07-02 17:34:38.385 [Thread-11] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-2 - Shutdown completed.
+2026-07-02 17:34:38.582 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Starting ScheduledMessagingApplication using Java 26 with PID 19400 (C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\target\classes started by geeth in C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend)
+2026-07-02 17:34:38.583 [restartedMain] DEBUG c.e.s.ScheduledMessagingApplication [traceId=] - Running with Spring Boot v3.5.0, Spring v6.2.7
+2026-07-02 17:34:38.583 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - The following 1 profile is active: "dev"
+2026-07-02 17:34:39.392 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [traceId=] - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-02 17:34:39.447 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [traceId=] - Finished Spring Data repository scanning in 54 ms. Found 5 JPA repository interfaces.
+2026-07-02 17:34:39.658 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer [traceId=] - Tomcat initialized with port 8080 (http)
+2026-07-02 17:34:39.659 [restartedMain] INFO  o.a.catalina.core.StandardService [traceId=] - Starting service [Tomcat]
+2026-07-02 17:34:39.659 [restartedMain] INFO  o.a.catalina.core.StandardEngine [traceId=] - Starting Servlet engine: [Apache Tomcat/10.1.41]
+2026-07-02 17:34:39.722 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] [traceId=] - Initializing Spring embedded WebApplicationContext
+2026-07-02 17:34:39.722 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext [traceId=] - Root WebApplicationContext: initialization completed in 1135 ms
+2026-07-02 17:34:39.828 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-3 - Starting...
+2026-07-02 17:34:39.833 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool [traceId=] - HikariPool-3 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5f4d27d5
+2026-07-02 17:34:39.833 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-3 - Start completed.
+2026-07-02 17:34:39.859 [restartedMain] INFO  org.flywaydb.core.FlywayExecutor [traceId=] - Database: jdbc:mysql://localhost:3306/scheduled_messaging?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC (MySQL 8.0)
+2026-07-02 17:34:39.888 [restartedMain] INFO  o.f.core.internal.command.DbValidate [traceId=] - Successfully validated 6 migrations (execution time 00:00.018s)
+2026-07-02 17:34:39.900 [restartedMain] INFO  o.f.core.internal.command.DbMigrate [traceId=] - Current version of schema `scheduled_messaging`: 6
+2026-07-02 17:34:39.900 [restartedMain] INFO  o.f.core.internal.command.DbMigrate [traceId=] - Schema `scheduled_messaging` is up to date. No migration necessary.
+2026-07-02 17:34:39.935 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper [traceId=] - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-02 17:34:39.941 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator [traceId=] - HHH000026: Second-level cache disabled
+2026-07-02 17:34:39.960 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo [traceId=] - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-02 17:34:39.963 [restartedMain] WARN  org.hibernate.orm.deprecation [traceId=] - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-07-02 17:34:39.963 [restartedMain] INFO  o.hibernate.orm.connections.pooling [traceId=] - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-3)']
+	Database driver: undefined/unknown
+	Database version: 8.0.45
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-07-02 17:34:40.332 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator [traceId=] - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-02 17:34:40.516 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean [traceId=] - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-02 17:34:40.717 [restartedMain] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext [traceId=] - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'authController' defined in file [C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\target\classes\com\enterprise\scheduler\auth\AuthController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'authServiceImpl' defined in file [C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\target\classes\com\enterprise\scheduler\auth\AuthServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 2: No qualifying bean of type 'org.springframework.security.crypto.password.PasswordEncoder' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+2026-07-02 17:34:40.718 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean [traceId=] - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-02 17:34:40.719 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-3 - Shutdown initiated...
+2026-07-02 17:34:40.729 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-3 - Shutdown completed.
+2026-07-02 17:34:40.730 [restartedMain] INFO  o.a.catalina.core.StandardService [traceId=] - Stopping service [Tomcat]
+2026-07-02 17:34:40.750 [restartedMain] INFO  o.s.b.a.l.ConditionEvaluationReportLogger [traceId=] - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-07-02 17:34:40.803 [restartedMain] ERROR o.s.b.d.LoggingFailureAnalysisReporter [traceId=] - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 2 of constructor in com.enterprise.scheduler.auth.AuthServiceImpl required a bean of type 'org.springframework.security.crypto.password.PasswordEncoder' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'org.springframework.security.crypto.password.PasswordEncoder' in your configuration.
+
+2026-07-02 17:35:46.928 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Starting ScheduledMessagingApplication using Java 26 with PID 19400 (C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\target\classes started by geeth in C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend)
+2026-07-02 17:35:46.928 [restartedMain] DEBUG c.e.s.ScheduledMessagingApplication [traceId=] - Running with Spring Boot v3.5.0, Spring v6.2.7
+2026-07-02 17:35:46.929 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - The following 1 profile is active: "dev"
+2026-07-02 17:35:47.462 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [traceId=] - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-02 17:35:47.464 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [traceId=] - Finished Spring Data repository scanning in 0 ms. Found 0 JPA repository interfaces.
+2026-07-02 17:35:47.594 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer [traceId=] - Tomcat initialized with port 8080 (http)
+2026-07-02 17:35:47.596 [restartedMain] INFO  o.a.catalina.core.StandardService [traceId=] - Starting service [Tomcat]
+2026-07-02 17:35:47.596 [restartedMain] INFO  o.a.catalina.core.StandardEngine [traceId=] - Starting Servlet engine: [Apache Tomcat/10.1.41]
+2026-07-02 17:35:47.661 [restartedMain] INFO  o.a.c.c.C.[Tomcat-1].[localhost].[/] [traceId=] - Initializing Spring embedded WebApplicationContext
+2026-07-02 17:35:47.661 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext [traceId=] - Root WebApplicationContext: initialization completed in 730 ms
+2026-07-02 17:35:47.754 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-4 - Starting...
+2026-07-02 17:35:47.760 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool [traceId=] - HikariPool-4 - Added connection com.mysql.cj.jdbc.ConnectionImpl@46507f71
+2026-07-02 17:35:47.761 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-4 - Start completed.
+2026-07-02 17:35:47.781 [restartedMain] INFO  org.flywaydb.core.FlywayExecutor [traceId=] - Database: jdbc:mysql://localhost:3306/scheduled_messaging?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC (MySQL 8.0)
+2026-07-02 17:35:47.806 [restartedMain] INFO  o.f.core.internal.command.DbValidate [traceId=] - Successfully validated 6 migrations (execution time 00:00.016s)
+2026-07-02 17:35:47.816 [restartedMain] INFO  o.f.core.internal.command.DbMigrate [traceId=] - Current version of schema `scheduled_messaging`: 6
+2026-07-02 17:35:47.818 [restartedMain] INFO  o.f.core.internal.command.DbMigrate [traceId=] - Schema `scheduled_messaging` is up to date. No migration necessary.
+2026-07-02 17:35:47.838 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper [traceId=] - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-02 17:35:47.843 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator [traceId=] - HHH000026: Second-level cache disabled
+2026-07-02 17:35:47.856 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo [traceId=] - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-02 17:35:47.859 [restartedMain] WARN  org.hibernate.orm.deprecation [traceId=] - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-07-02 17:35:47.859 [restartedMain] INFO  o.hibernate.orm.connections.pooling [traceId=] - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-4)']
+	Database driver: undefined/unknown
+	Database version: 8.0.45
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-07-02 17:35:47.888 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator [traceId=] - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-02 17:35:47.888 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean [traceId=] - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-02 17:35:47.942 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration [traceId=] - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-02 17:35:48.222 [restartedMain] INFO  org.quartz.impl.StdSchedulerFactory [traceId=] - Using default implementation for ThreadExecutor
+2026-07-02 17:35:48.224 [restartedMain] INFO  o.quartz.core.SchedulerSignalerImpl [traceId=] - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2026-07-02 17:35:48.225 [restartedMain] INFO  org.quartz.core.QuartzScheduler [traceId=] - Quartz Scheduler v2.5.0 created.
+2026-07-02 17:35:48.225 [restartedMain] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - Using db table-based data access locking (synchronization).
+2026-07-02 17:35:48.225 [restartedMain] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - JobStoreCMT initialized.
+2026-07-02 17:35:48.225 [restartedMain] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler meta-data: Quartz Scheduler (v2.5.0) 'ScheduledMessagingScheduler' with instanceId 'GeethikaChowdary1782993948223'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 10 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2026-07-02 17:35:48.225 [restartedMain] INFO  org.quartz.impl.StdSchedulerFactory [traceId=] - Quartz scheduler 'ScheduledMessagingScheduler' initialized from an externally provided properties instance.
+2026-07-02 17:35:48.225 [restartedMain] INFO  org.quartz.impl.StdSchedulerFactory [traceId=] - Quartz scheduler version: 2.5.0
+2026-07-02 17:35:48.225 [restartedMain] INFO  org.quartz.core.QuartzScheduler [traceId=] - JobFactory set to: org.springframework.scheduling.quartz.SpringBeanJobFactory@4a11086c
+2026-07-02 17:35:48.247 [restartedMain] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration [traceId=] - 
+
+Using generated security password: 67c41f6f-498e-4c09-9ed1-294a4dcfa34c
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-07-02 17:35:48.249 [restartedMain] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer [traceId=] - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-07-02 17:35:48.274 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver [traceId=] - Exposing 3 endpoints beneath base path '/actuator'
+2026-07-02 17:35:48.344 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer [traceId=] - LiveReload server is running on port 35729
+2026-07-02 17:35:48.365 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer [traceId=] - Tomcat started on port 8080 (http) with context path '/'
+2026-07-02 17:35:48.366 [restartedMain] INFO  o.s.s.quartz.SchedulerFactoryBean [traceId=] - Starting Quartz Scheduler now
+2026-07-02 17:35:48.378 [restartedMain] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - ClusterManager: detected 2 failed or restarted instances.
+2026-07-02 17:35:48.378 [restartedMain] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - ClusterManager: Scanning for instance "GeethikaChowdary1782993087317"'s failed in-progress jobs.
+2026-07-02 17:35:48.380 [restartedMain] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - ClusterManager: Scanning for instance "GeethikaChowdary1782993873603"'s failed in-progress jobs.
+2026-07-02 17:35:48.386 [restartedMain] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler ScheduledMessagingScheduler_$_GeethikaChowdary1782993948223 started.
+2026-07-02 17:35:48.396 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Started ScheduledMessagingApplication in 1.516 seconds (process running for 878.984)
+2026-07-02 17:35:48.398 [restartedMain] INFO  o.s.b.d.a.ConditionEvaluationDeltaLoggingListener [traceId=] - Condition evaluation unchanged
+2026-07-02 17:35:50.748 [File Watcher] INFO  o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener [traceId=] - Restarting due to 95 class path changes (95 additions, 0 deletions, 0 modifications)
+2026-07-02 17:35:50.751 [Thread-17] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler ScheduledMessagingScheduler_$_GeethikaChowdary1782993948223 paused.
+2026-07-02 17:35:50.751 [Thread-17] INFO  o.s.b.w.e.tomcat.GracefulShutdown [traceId=] - Commencing graceful shutdown. Waiting for active requests to complete
+2026-07-02 17:35:50.764 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown [traceId=] - Graceful shutdown complete
+2026-07-02 17:35:50.768 [Thread-17] INFO  o.s.s.quartz.SchedulerFactoryBean [traceId=] - Shutting down Quartz Scheduler
+2026-07-02 17:35:50.769 [Thread-17] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler ScheduledMessagingScheduler_$_GeethikaChowdary1782993948223 shutting down.
+2026-07-02 17:35:50.769 [Thread-17] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler ScheduledMessagingScheduler_$_GeethikaChowdary1782993948223 paused.
+2026-07-02 17:35:50.770 [Thread-17] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler ScheduledMessagingScheduler_$_GeethikaChowdary1782993948223 shutdown complete.
+2026-07-02 17:35:50.771 [Thread-17] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean [traceId=] - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-02 17:35:50.772 [Thread-17] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-4 - Shutdown initiated...
+2026-07-02 17:35:50.779 [Thread-17] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-4 - Shutdown completed.
+2026-07-02 17:35:50.954 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Starting ScheduledMessagingApplication using Java 26 with PID 19400 (C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\target\classes started by geeth in C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend)
+2026-07-02 17:35:50.955 [restartedMain] DEBUG c.e.s.ScheduledMessagingApplication [traceId=] - Running with Spring Boot v3.5.0, Spring v6.2.7
+2026-07-02 17:35:50.955 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - The following 1 profile is active: "dev"
+2026-07-02 17:35:51.839 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [traceId=] - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-02 17:35:51.919 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [traceId=] - Finished Spring Data repository scanning in 78 ms. Found 7 JPA repository interfaces.
+2026-07-02 17:35:52.238 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer [traceId=] - Tomcat initialized with port 8080 (http)
+2026-07-02 17:35:52.239 [restartedMain] INFO  o.a.catalina.core.StandardService [traceId=] - Starting service [Tomcat]
+2026-07-02 17:35:52.239 [restartedMain] INFO  o.a.catalina.core.StandardEngine [traceId=] - Starting Servlet engine: [Apache Tomcat/10.1.41]
+2026-07-02 17:35:52.319 [restartedMain] INFO  o.a.c.c.C.[Tomcat-1].[localhost].[/] [traceId=] - Initializing Spring embedded WebApplicationContext
+2026-07-02 17:35:52.319 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext [traceId=] - Root WebApplicationContext: initialization completed in 1361 ms
+2026-07-02 17:35:52.493 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-5 - Starting...
+2026-07-02 17:35:52.501 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool [traceId=] - HikariPool-5 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4b45c4a1
+2026-07-02 17:35:52.502 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-5 - Start completed.
+2026-07-02 17:35:52.541 [restartedMain] INFO  org.flywaydb.core.FlywayExecutor [traceId=] - Database: jdbc:mysql://localhost:3306/scheduled_messaging?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC (MySQL 8.0)
+2026-07-02 17:35:52.578 [restartedMain] INFO  o.f.core.internal.command.DbValidate [traceId=] - Successfully validated 6 migrations (execution time 00:00.022s)
+2026-07-02 17:35:52.593 [restartedMain] INFO  o.f.core.internal.command.DbMigrate [traceId=] - Current version of schema `scheduled_messaging`: 6
+2026-07-02 17:35:52.595 [restartedMain] INFO  o.f.core.internal.command.DbMigrate [traceId=] - Schema `scheduled_messaging` is up to date. No migration necessary.
+2026-07-02 17:35:52.635 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper [traceId=] - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-02 17:35:52.639 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator [traceId=] - HHH000026: Second-level cache disabled
+2026-07-02 17:35:52.650 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo [traceId=] - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-02 17:35:52.653 [restartedMain] WARN  org.hibernate.orm.deprecation [traceId=] - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-07-02 17:35:52.653 [restartedMain] INFO  o.hibernate.orm.connections.pooling [traceId=] - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-5)']
+	Database driver: undefined/unknown
+	Database version: 8.0.45
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-07-02 17:35:52.883 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator [traceId=] - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-02 17:35:52.921 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean [traceId=] - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-02 17:35:53.109 [restartedMain] DEBUG c.e.s.s.JwtAuthenticationFilter [traceId=] - Filter 'jwtAuthenticationFilter' configured for use
+2026-07-02 17:35:53.109 [restartedMain] DEBUG c.e.s.monitoring.CorrelationIdFilter [traceId=] - Filter 'correlationIdFilter' configured for use
+2026-07-02 17:35:53.537 [restartedMain] INFO  org.quartz.impl.StdSchedulerFactory [traceId=] - Using default implementation for ThreadExecutor
+2026-07-02 17:35:53.540 [restartedMain] INFO  o.quartz.core.SchedulerSignalerImpl [traceId=] - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2026-07-02 17:35:53.540 [restartedMain] INFO  org.quartz.core.QuartzScheduler [traceId=] - Quartz Scheduler v2.5.0 created.
+2026-07-02 17:35:53.541 [restartedMain] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - Using db table-based data access locking (synchronization).
+2026-07-02 17:35:53.542 [restartedMain] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - JobStoreCMT initialized.
+2026-07-02 17:35:53.542 [restartedMain] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler meta-data: Quartz Scheduler (v2.5.0) 'ScheduledMessagingScheduler' with instanceId 'GeethikaChowdary1782993953539'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 10 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2026-07-02 17:35:53.542 [restartedMain] INFO  org.quartz.impl.StdSchedulerFactory [traceId=] - Quartz scheduler 'ScheduledMessagingScheduler' initialized from an externally provided properties instance.
+2026-07-02 17:35:53.542 [restartedMain] INFO  org.quartz.impl.StdSchedulerFactory [traceId=] - Quartz scheduler version: 2.5.0
+2026-07-02 17:35:53.542 [restartedMain] INFO  org.quartz.core.QuartzScheduler [traceId=] - JobFactory set to: com.enterprise.scheduler.scheduler.AutoWiringSpringBeanJobFactory@32f39710
+2026-07-02 17:35:53.758 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration [traceId=] - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-02 17:35:54.051 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver [traceId=] - Exposing 3 endpoints beneath base path '/actuator'
+2026-07-02 17:35:54.118 [restartedMain] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer [traceId=] - Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-07-02 17:35:54.466 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer [traceId=] - LiveReload server is running on port 35729
+2026-07-02 17:35:54.510 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer [traceId=] - Tomcat started on port 8080 (http) with context path '/'
+2026-07-02 17:35:54.511 [restartedMain] INFO  o.s.s.quartz.SchedulerFactoryBean [traceId=] - Will start Quartz Scheduler [ScheduledMessagingScheduler] in 5 seconds
+2026-07-02 17:35:54.528 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Started ScheduledMessagingApplication in 3.638 seconds (process running for 885.115)
+2026-07-02 17:35:54.735 [restartedMain] INFO  o.s.b.d.a.ConditionEvaluationDeltaLoggingListener [traceId=] - Condition evaluation delta:
+
+
+==========================
+CONDITION EVALUATION DELTA
+==========================
+
+
+Positive matches:
+-----------------
+
+   LocalStorageServiceImpl matched:
+      - @ConditionalOnProperty (app.storage.type=local) matched (OnPropertyCondition)
+
+
+Negative matches:
+-----------------
+
+   CloudinaryStorageServiceImpl:
+      Did not match:
+         - @ConditionalOnProperty (app.storage.type=cloudinary) found different value in property 'app.storage.type' (OnPropertyCondition)
+
+   ManagementWebSecurityAutoConfiguration:
+      Did not match:
+         - AllNestedConditions 1 matched 1 did not; NestedCondition on DefaultWebSecurityCondition.Beans @ConditionalOnMissingBean (types: org.springframework.security.web.SecurityFilterChain; SearchStrategy: all) found beans of type 'org.springframework.security.web.SecurityFilterChain' filterChain; NestedCondition on DefaultWebSecurityCondition.Classes @ConditionalOnClass found required classes 'org.springframework.security.web.SecurityFilterChain', 'org.springframework.security.config.annotation.web.builders.HttpSecurity' (DefaultWebSecurityCondition)
+      Matched:
+         - found 'session' scope (OnWebApplicationCondition)
+
+   S3Config:
+      Did not match:
+         - @ConditionalOnProperty (app.storage.type=s3) found different value in property 'app.storage.type' (OnPropertyCondition)
+
+   S3StorageServiceImpl:
+      Did not match:
+         - @ConditionalOnProperty (app.storage.type=s3) found different value in property 'app.storage.type' (OnPropertyCondition)
+
+   SpringBootWebSecurityConfiguration.WebSecurityEnablerConfiguration:
+      Did not match:
+         - @ConditionalOnMissingBean (names: springSecurityFilterChain; SearchStrategy: all) found beans named springSecurityFilterChain (OnBeanCondition)
+      Matched:
+         - @ConditionalOnClass found required class 'org.springframework.security.config.annotation.web.configuration.EnableWebSecurity' (OnClassCondition)
+
+   UserDetailsServiceAutoConfiguration:
+      Did not match:
+         - @ConditionalOnMissingBean (types: org.springframework.security.authentication.AuthenticationManager,org.springframework.security.authentication.AuthenticationProvider,org.springframework.security.core.userdetails.UserDetailsService,org.springframework.security.authentication.AuthenticationManagerResolver,?; SearchStrategy: all) found beans of type 'org.springframework.security.authentication.AuthenticationManager' authenticationManager and found beans of type 'org.springframework.security.core.userdetails.UserDetailsService' customUserDetailsService (OnBeanCondition)
+      Matched:
+         - @ConditionalOnClass found required class 'org.springframework.security.authentication.AuthenticationManager' (OnClassCondition)
+         - found 'session' scope (OnWebApplicationCondition)
+         - AnyNestedCondition 1 matched 2 did not; NestedCondition on UserDetailsServiceAutoConfiguration.MissingAlternativeOrUserPropertiesConfigured.PasswordConfigured @ConditionalOnProperty (spring.security.user.password) did not find property 'spring.security.user.password'; NestedCondition on UserDetailsServiceAutoConfiguration.MissingAlternativeOrUserPropertiesConfigured.NameConfigured @ConditionalOnProperty (spring.security.user.name) did not find property 'spring.security.user.name'; NestedCondition on UserDetailsServiceAutoConfiguration.MissingAlternativeOrUserPropertiesConfigured.MissingAlternative @ConditionalOnMissingClass did not find unwanted classes 'org.springframework.security.oauth2.client.registration.ClientRegistrationRepository', 'org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector', 'org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository' (UserDetailsServiceAutoConfiguration.MissingAlternativeOrUserPropertiesConfigured)
+
+
+Exclusions:
+-----------
+
+    None
+
+
+Unconditional classes:
+----------------------
+
+    None
+
+
+
+2026-07-02 17:35:59.524 [Quartz Scheduler [ScheduledMessagingScheduler]] INFO  o.s.s.quartz.SchedulerFactoryBean [traceId=] - Starting Quartz Scheduler now, after delay of 5 seconds
+2026-07-02 17:35:59.555 [Quartz Scheduler [ScheduledMessagingScheduler]] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler ScheduledMessagingScheduler_$_GeethikaChowdary1782993953539 started.
+2026-07-02 17:36:19.600 [QuartzScheduler_ScheduledMessagingScheduler-GeethikaChowdary1782993953539_ClusterManager] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - ClusterManager: detected 1 failed or restarted instances.
+2026-07-02 17:36:19.600 [QuartzScheduler_ScheduledMessagingScheduler-GeethikaChowdary1782993953539_ClusterManager] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - ClusterManager: Scanning for instance "GeethikaChowdary1782993948223"'s failed in-progress jobs.
+2026-07-02 17:36:22.281 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat-1].[localhost].[/] [traceId=] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-02 17:36:22.281 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet [traceId=] - Initializing Servlet 'dispatcherServlet'
+2026-07-02 17:36:22.283 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet [traceId=] - Completed initialization in 2 ms
+2026-07-02 17:37:49.269 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Starting ScheduledMessagingApplication using Java 26 with PID 9320 (C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\target\classes started by geeth in C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend)
+2026-07-02 17:37:49.271 [restartedMain] DEBUG c.e.s.ScheduledMessagingApplication [traceId=] - Running with Spring Boot v3.5.0, Spring v6.2.7
+2026-07-02 17:37:49.271 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - The following 1 profile is active: "dev"
+2026-07-02 17:37:49.309 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor [traceId=] - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-07-02 17:37:49.310 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor [traceId=] - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-07-02 17:37:50.287 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [traceId=] - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-02 17:37:50.352 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [traceId=] - Finished Spring Data repository scanning in 57 ms. Found 7 JPA repository interfaces.
+2026-07-02 17:37:50.961 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer [traceId=] - Tomcat initialized with port 8080 (http)
+2026-07-02 17:37:50.975 [restartedMain] INFO  o.a.catalina.core.StandardService [traceId=] - Starting service [Tomcat]
+2026-07-02 17:37:50.975 [restartedMain] INFO  o.a.catalina.core.StandardEngine [traceId=] - Starting Servlet engine: [Apache Tomcat/10.1.41]
+2026-07-02 17:37:51.020 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] [traceId=] - Initializing Spring embedded WebApplicationContext
+2026-07-02 17:37:51.020 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext [traceId=] - Root WebApplicationContext: initialization completed in 1710 ms
+2026-07-02 17:37:51.190 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-1 - Starting...
+2026-07-02 17:37:51.335 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool [traceId=] - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@339f99e8
+2026-07-02 17:37:51.336 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-1 - Start completed.
+2026-07-02 17:37:51.560 [restartedMain] INFO  org.flywaydb.core.FlywayExecutor [traceId=] - Database: jdbc:mysql://localhost:3306/scheduled_messaging?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC (MySQL 8.0)
+2026-07-02 17:37:51.694 [restartedMain] INFO  o.f.core.internal.command.DbValidate [traceId=] - Successfully validated 6 migrations (execution time 00:00.084s)
+2026-07-02 17:37:51.723 [restartedMain] INFO  o.f.core.internal.command.DbMigrate [traceId=] - Current version of schema `scheduled_messaging`: 6
+2026-07-02 17:37:51.730 [restartedMain] INFO  o.f.core.internal.command.DbMigrate [traceId=] - Schema `scheduled_messaging` is up to date. No migration necessary.
+2026-07-02 17:37:51.896 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper [traceId=] - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-02 17:37:51.995 [restartedMain] INFO  org.hibernate.Version [traceId=] - HHH000412: Hibernate ORM core version 6.6.15.Final
+2026-07-02 17:37:52.050 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator [traceId=] - HHH000026: Second-level cache disabled
+2026-07-02 17:37:52.815 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo [traceId=] - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-02 17:37:52.930 [restartedMain] WARN  org.hibernate.orm.deprecation [traceId=] - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-07-02 17:37:52.957 [restartedMain] INFO  o.hibernate.orm.connections.pooling [traceId=] - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.45
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-07-02 17:37:55.142 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator [traceId=] - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-02 17:37:55.304 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean [traceId=] - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-02 17:37:56.096 [restartedMain] DEBUG c.e.s.s.JwtAuthenticationFilter [traceId=] - Filter 'jwtAuthenticationFilter' configured for use
+2026-07-02 17:37:56.097 [restartedMain] DEBUG c.e.s.monitoring.CorrelationIdFilter [traceId=] - Filter 'correlationIdFilter' configured for use
+2026-07-02 17:37:56.515 [restartedMain] INFO  o.s.d.j.r.query.QueryEnhancerFactory [traceId=] - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-07-02 17:37:58.554 [restartedMain] INFO  org.quartz.impl.StdSchedulerFactory [traceId=] - Using default implementation for ThreadExecutor
+2026-07-02 17:37:58.568 [restartedMain] INFO  o.quartz.core.SchedulerSignalerImpl [traceId=] - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2026-07-02 17:37:58.568 [restartedMain] INFO  org.quartz.core.QuartzScheduler [traceId=] - Quartz Scheduler v2.5.0 created.
+2026-07-02 17:37:58.571 [restartedMain] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - Using db table-based data access locking (synchronization).
+2026-07-02 17:37:58.573 [restartedMain] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - JobStoreCMT initialized.
+2026-07-02 17:37:58.573 [restartedMain] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler meta-data: Quartz Scheduler (v2.5.0) 'ScheduledMessagingScheduler' with instanceId 'GeethikaChowdary1782994078560'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 10 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2026-07-02 17:37:58.574 [restartedMain] INFO  org.quartz.impl.StdSchedulerFactory [traceId=] - Quartz scheduler 'ScheduledMessagingScheduler' initialized from an externally provided properties instance.
+2026-07-02 17:37:58.574 [restartedMain] INFO  org.quartz.impl.StdSchedulerFactory [traceId=] - Quartz scheduler version: 2.5.0
+2026-07-02 17:37:58.574 [restartedMain] INFO  org.quartz.core.QuartzScheduler [traceId=] - JobFactory set to: com.enterprise.scheduler.scheduler.AutoWiringSpringBeanJobFactory@6f35c1b2
+2026-07-02 17:37:58.768 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration [traceId=] - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-02 17:37:58.993 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver [traceId=] - Exposing 3 endpoints beneath base path '/actuator'
+2026-07-02 17:37:59.031 [restartedMain] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer [traceId=] - Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-07-02 17:37:59.380 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer [traceId=] - LiveReload server is running on port 35729
+2026-07-02 17:37:59.434 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer [traceId=] - Tomcat started on port 8080 (http) with context path '/'
+2026-07-02 17:37:59.435 [restartedMain] INFO  o.s.s.quartz.SchedulerFactoryBean [traceId=] - Will start Quartz Scheduler [ScheduledMessagingScheduler] in 5 seconds
+2026-07-02 17:37:59.444 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Started ScheduledMessagingApplication in 10.562 seconds (process running for 10.948)
+2026-07-02 17:37:59.517 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] [traceId=] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-02 17:37:59.517 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet [traceId=] - Initializing Servlet 'dispatcherServlet'
+2026-07-02 17:37:59.518 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet [traceId=] - Completed initialization in 1 ms
+2026-07-02 17:38:04.436 [Quartz Scheduler [ScheduledMessagingScheduler]] INFO  o.s.s.quartz.SchedulerFactoryBean [traceId=] - Starting Quartz Scheduler now, after delay of 5 seconds
+2026-07-02 17:38:04.479 [Quartz Scheduler [ScheduledMessagingScheduler]] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - ClusterManager: detected 1 failed or restarted instances.
+2026-07-02 17:38:04.480 [Quartz Scheduler [ScheduledMessagingScheduler]] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - ClusterManager: Scanning for instance "GeethikaChowdary1782993953539"'s failed in-progress jobs.
+2026-07-02 17:38:04.494 [Quartz Scheduler [ScheduledMessagingScheduler]] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler ScheduledMessagingScheduler_$_GeethikaChowdary1782994078560 started.
+2026-07-02 17:38:06.925 [http-nio-8080-exec-4] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=2f8af236-0e90-48cd-b3cc-5e615841d5a9] - WebSocket handshake successful for user: gnanitha@gmail.com
+2026-07-02 17:38:06.934 [http-nio-8080-exec-9] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=65b592f5-a5a7-4409-95c3-18625d19248e] - WebSocket handshake successful for user: gnanitha@gmail.com
+2026-07-02 17:38:07.006 [http-nio-8080-exec-9] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: gnanitha@gmail.com
+2026-07-02 17:38:07.006 [http-nio-8080-exec-4] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: gnanitha@gmail.com
+2026-07-02 17:38:07.021 [http-nio-8080-exec-4] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: gnanitha@gmail.com with status: CloseStatus[code=1006, reason=An established connection was aborted by the software in your host machine]
+2026-07-02 17:38:21.824 [http-nio-8080-exec-8] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: gnanitha@gmail.com with status: CloseStatus[code=1000, reason=null]
+2026-07-02 17:38:51.498 [http-nio-8080-exec-3] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=fdcbe794-cf79-401e-977b-301e78f286eb] - WebSocket handshake successful for user: gnanitha@gmail.com
+2026-07-02 17:38:51.503 [http-nio-8080-exec-3] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: gnanitha@gmail.com
+2026-07-02 17:38:56.582 [http-nio-8080-exec-2] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: gnanitha@gmail.com with status: CloseStatus[code=1000, reason=null]
+2026-07-02 17:39:13.080 [http-nio-8080-exec-2] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=501c9499-3bd8-4e50-8dcd-a3701b7e8f7e] - WebSocket handshake successful for user: geethika@gmail.com
+2026-07-02 17:39:13.085 [http-nio-8080-exec-2] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: geethika@gmail.com
+2026-07-02 17:39:13.087 [http-nio-8080-exec-2] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: geethika@gmail.com with status: CloseStatus[code=1006, reason=An established connection was aborted by the software in your host machine]
+2026-07-02 17:39:13.095 [http-nio-8080-exec-7] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=cb290de2-f50b-45cc-8ffd-ab6d92ca2119] - WebSocket handshake successful for user: geethika@gmail.com
+2026-07-02 17:39:13.099 [http-nio-8080-exec-7] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: geethika@gmail.com
+2026-07-02 17:39:14.176 [http-nio-8080-exec-10] INFO  c.e.s.config.ChatWebSocketHandler [traceId=73a8c2d8-0966-43b8-8d74-ef92308363bd] - WebSocket notification sent to: geethika@gmail.com
+2026-07-02 17:40:08.764 [http-nio-8080-exec-1] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: geethika@gmail.com with status: CloseStatus[code=1000, reason=null]
+2026-07-02 17:40:12.381 [http-nio-8080-exec-9] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=0996855f-afdc-4111-9301-db8e3e08a85b] - WebSocket handshake successful for user: geethika@gmail.com
+2026-07-02 17:40:12.384 [http-nio-8080-exec-9] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: geethika@gmail.com
+2026-07-02 17:40:12.385 [http-nio-8080-exec-9] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: geethika@gmail.com with status: CloseStatus[code=1006, reason=An established connection was aborted by the software in your host machine]
+2026-07-02 17:40:12.400 [http-nio-8080-exec-4] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=c2b51520-b0d9-40d8-a979-6baa80b299d4] - WebSocket handshake successful for user: geethika@gmail.com
+2026-07-02 17:40:12.403 [http-nio-8080-exec-4] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: geethika@gmail.com
+2026-07-02 17:40:46.142 [http-nio-8080-exec-2] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: geethika@gmail.com with status: CloseStatus[code=1000, reason=null]

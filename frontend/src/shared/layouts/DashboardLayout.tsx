@@ -4,15 +4,16 @@ import { useSelector, useDispatch } from 'react-redux';
 import type { RootState, AppDispatch } from '../../store';
 import { logout } from '../../store/auth/authSlice';
 import { PATHS } from '../../routes/paths';
+import { useGetContactsQuery } from '../../store/contacts/contactsApi';
 import {
   Box, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton,
   ListItem, ListItemButton, ListItemIcon, ListItemText, Avatar, Menu,
-  MenuItem, Badge, Tooltip, useMediaQuery, useTheme
+  MenuItem, Badge, Tooltip, useMediaQuery, useTheme, Button
 } from '@mui/material';
 import {
   Menu as MenuIcon, Dashboard as DashboardIcon, People as PeopleIcon,
   Schedule as ScheduleIcon, Chat as ChatIcon, AccountCircle as AccountIcon, Logout as LogoutIcon,
-  Notifications as BellIcon, Check as CheckIcon, Shield as ShieldIcon
+  Notifications as BellIcon, Shield as ShieldIcon
 } from '@mui/icons-material';
 import api from '../services/api';
 
@@ -84,6 +85,24 @@ export const DashboardLayout: React.FC = () => {
     }
   };
 
+  const handleMarkAsUnread = async (id: number) => {
+    try {
+      await api.put(`/notifications/${id}/unread`);
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, status: 'UNREAD' } : n));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDeleteNotification = async (id: number) => {
+    try {
+      await api.delete(`/notifications/${id}`);
+      setNotifications(prev => prev.filter(n => n.id !== id));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleLogout = () => {
     dispatch(logout()).then(() => {
       navigate(PATHS.LOGIN);
@@ -101,6 +120,9 @@ export const DashboardLayout: React.FC = () => {
   if (user?.role === 'ROLE_ADMIN') {
     menuItems.push({ text: 'Audit Logs', icon: <ShieldIcon />, path: PATHS.AUDIT_LOGS });
   }
+
+  const { data: contacts = [] } = useGetContactsQuery('ACCEPTED', { skip: !user });
+  const unreadChatsCount = contacts.filter(c => c.unreadCount && c.unreadCount > 0).length;
 
   const unreadCount = notifications.filter(n => n.status === 'UNREAD').length;
 
@@ -146,6 +168,23 @@ export const DashboardLayout: React.FC = () => {
                   {item.icon}
                 </ListItemIcon>
                 <ListItemText primary={item.text} primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 600 }} />
+                {item.text === 'Chats' && unreadChatsCount > 0 && (
+                  <Box sx={{
+                    bgcolor: '#818cf8',
+                    color: '#fff',
+                    borderRadius: '10px',
+                    px: 1,
+                    py: 0.25,
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    minWidth: '16px',
+                    textAlign: 'center',
+                    lineHeight: 1,
+                    ml: 1
+                  }}>
+                    {unreadChatsCount}
+                  </Box>
+                )}
               </ListItemButton>
             </ListItem>
           );
@@ -228,26 +267,48 @@ export const DashboardLayout: React.FC = () => {
                 </Box>
               ) : (
                 notifications.map((n) => (
-                  <MenuItem
+                  <Box
                     key={n.id}
-                    onClick={() => n.status === 'UNREAD' && handleMarkAsRead(n.id)}
                     sx={{
                       py: 1.5, px: 2, borderBottom: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'}`,
                       whiteSpace: 'normal', display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
-                      bgcolor: n.status === 'UNREAD' ? 'rgba(99, 102, 241, 0.05)' : 'transparent',
-                      '&:hover': { bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }
+                      bgcolor: n.status === 'UNREAD' ? 'rgba(99, 102, 241, 0.04)' : 'transparent',
+                      width: '100%', boxSizing: 'border-box'
                     }}
                   >
-                    <Typography variant="body2" sx={{ color: n.status === 'UNREAD' ? 'text.primary' : 'text.secondary', fontWeight: n.status === 'UNREAD' ? 600 : 400 }}>
+                    <Typography variant="body2" sx={{ color: n.status === 'UNREAD' ? 'text.primary' : 'text.secondary', fontWeight: n.status === 'UNREAD' ? 600 : 400, mb: 1 }}>
                       {n.message}
                     </Typography>
-                    {n.status === 'UNREAD' && (
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5, color: 'primary.main' }}>
-                        <CheckIcon sx={{ fontSize: 12 }} />
-                        <Typography variant="caption">Mark as read</Typography>
-                      </Box>
-                    )}
-                  </MenuItem>
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                      {n.status === 'UNREAD' ? (
+                        <Button 
+                          size="small" 
+                          variant="text" 
+                          onClick={() => handleMarkAsRead(n.id)}
+                          sx={{ p: 0, minWidth: 0, textTransform: 'none', fontSize: '0.75rem', color: 'primary.main', fontWeight: 600 }}
+                        >
+                          Mark as read
+                        </Button>
+                      ) : (
+                        <Button 
+                          size="small" 
+                          variant="text" 
+                          onClick={() => handleMarkAsUnread(n.id)}
+                          sx={{ p: 0, minWidth: 0, textTransform: 'none', fontSize: '0.75rem', color: 'text.secondary', fontWeight: 600 }}
+                        >
+                          Mark as unread
+                        </Button>
+                      )}
+                      <Button 
+                        size="small" 
+                        variant="text" 
+                        onClick={() => handleDeleteNotification(n.id)}
+                        sx={{ p: 0, minWidth: 0, textTransform: 'none', fontSize: '0.75rem', color: '#ef4444', fontWeight: 600 }}
+                      >
+                        Delete
+                      </Button>
+                    </Box>
+                  </Box>
                 ))
               )}
             </Menu>
@@ -255,8 +316,11 @@ export const DashboardLayout: React.FC = () => {
             {/* Profile Avatar */}
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar sx={{ bgcolor: 'primary.main', color: '#fff', fontWeight: 700 }}>
-                  {user?.name?.charAt(0).toUpperCase()}
+                <Avatar 
+                  src={user?.profilePhotoUrl || undefined}
+                  sx={{ bgcolor: 'primary.main', color: '#fff', fontWeight: 700 }}
+                >
+                  {!user?.profilePhotoUrl && user?.name?.charAt(0).toUpperCase()}
                 </Avatar>
               </IconButton>
             </Tooltip>

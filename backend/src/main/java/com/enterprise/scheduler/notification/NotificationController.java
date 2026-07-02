@@ -43,4 +43,18 @@ public class NotificationController {
         notificationService.markAsRead(id, user);
         return ResponseEntity.ok(ApiResponse.success("Notification marked as read", null));
     }
+
+    @PutMapping("/{id}/unread")
+    public ResponseEntity<ApiResponse<Void>> markAsUnread(@PathVariable("id") Long id) {
+        User user = getAuthenticatedUser();
+        notificationService.markAsUnread(id, user);
+        return ResponseEntity.ok(ApiResponse.success("Notification marked as unread", null));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteNotification(@PathVariable("id") Long id) {
+        User user = getAuthenticatedUser();
+        notificationService.deleteNotification(id, user);
+        return ResponseEntity.ok(ApiResponse.success("Notification deleted successfully", null));
+    }
 }

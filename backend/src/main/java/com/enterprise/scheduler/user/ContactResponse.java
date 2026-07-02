@@ -15,4 +15,6 @@ public class ContactResponse {
     private String name;
     private String email;
     private String status;
+    private String profilePhotoUrl;
+    private int unreadCount;
 }

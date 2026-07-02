@@ -4,9 +4,11 @@ import com.enterprise.scheduler.user.User;
 import com.enterprise.scheduler.exception.ResourceNotFoundException;
 import com.enterprise.scheduler.user.UserRepository;
 import com.enterprise.scheduler.common.ApiResponse;
+import com.enterprise.scheduler.media.FileStorageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +18,11 @@ import java.util.Map;
 public class ProfileController {
 
     private final UserRepository userRepository;
+    private final FileStorageService fileStorageService;
 
-    public ProfileController(UserRepository userRepository) {
+    public ProfileController(UserRepository userRepository, FileStorageService fileStorageService) {
         this.userRepository = userRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     private User getAuthenticatedUser() {
@@ -38,6 +42,7 @@ public class ProfileController {
         profile.put("role", user.getRole().name());
         profile.put("status", user.getStatus().name());
         profile.put("createdAt", user.getCreatedAt());
+        profile.put("profilePhotoUrl", user.getProfilePhotoUrl());
         
         return ResponseEntity.ok(ApiResponse.success("Profile retrieved successfully", profile));
     }
@@ -58,5 +63,27 @@ public class ProfileController {
         response.put("name", user.getName());
         
         return ResponseEntity.ok(ApiResponse.success("Profile updated successfully", response));
+    }
+
+    @PostMapping(value = "/photo", consumes = {"multipart/form-data"})
+    public ResponseEntity<ApiResponse<Map<String, Object>>> uploadProfilePhoto(@RequestParam("file") MultipartFile file) {
+        User user = getAuthenticatedUser();
+        
+        if (user.getProfilePhotoUrl() != null) {
+            try {
+                fileStorageService.deleteFile(user.getProfilePhotoUrl());
+            } catch (Exception e) {
+                // Ignore if not deletable
+            }
+        }
+
+        String photoUrl = fileStorageService.storeFile(file);
+        user.setProfilePhotoUrl(photoUrl);
+        userRepository.save(user);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("profilePhotoUrl", photoUrl);
+
+        return ResponseEntity.ok(ApiResponse.success("Profile photo uploaded successfully", response));
     }
 }

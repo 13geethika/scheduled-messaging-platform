@@ -71,6 +71,33 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepository.save(notification);
     }
 
+    @Override
+    @Transactional
+    public void markAsUnread(Long notificationId, User user) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
+        
+        if (!notification.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("Unauthorized access to notification");
+        }
+
+        notification.setStatus(NotificationStatus.UNREAD);
+        notificationRepository.save(notification);
+    }
+
+    @Override
+    @Transactional
+    public void deleteNotification(Long notificationId, User user) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
+        
+        if (!notification.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("Unauthorized access to notification");
+        }
+
+        notificationRepository.delete(notification);
+    }
+
     @Async
     @Override
     public void sendVerificationEmail(User user, String token) {

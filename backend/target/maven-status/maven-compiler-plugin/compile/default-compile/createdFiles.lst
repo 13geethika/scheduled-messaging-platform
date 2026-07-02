@@ -6,6 +6,7 @@ com\enterprise\scheduler\auth\AuthService.class
 com\enterprise\scheduler\dashboard\DashboardStatsResponse.class
 com\enterprise\scheduler\message\MessageResponse$MessageResponseBuilder.class
 com\enterprise\scheduler\message\MessageStatus.class
+com\enterprise\scheduler\common\LogsController.class
 com\enterprise\scheduler\user\ContactResponse.class
 com\enterprise\scheduler\message\MessageServiceImpl$1.class
 com\enterprise\scheduler\scheduler\QuartzConfig.class
