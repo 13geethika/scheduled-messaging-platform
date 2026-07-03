@@ -14,6 +14,7 @@ export interface Message {
   recurringType: string;
   retryCount: number;
   errorMessage: string | null;
+  isRead: boolean;
 }
 
 export interface DashboardStats {

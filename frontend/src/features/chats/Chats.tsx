@@ -16,17 +16,20 @@ import { getMediaUrl } from '../../shared/services/api';
 import {
   Box, Typography, Grid, Paper, TextField, Button, Avatar, List,
   ListItem, ListItemButton, ListItemAvatar, ListItemText, IconButton,
-  CircularProgress, Chip, InputAdornment, Menu, MenuItem, useTheme
+  CircularProgress, Chip, InputAdornment, Menu, MenuItem, useTheme,
+  Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import {
   Send as SendIcon,
   Search as SearchIcon,
   Schedule as ScheduleIcon,
-  CheckCircle as DeliveredIcon,
   Error as FailedIcon,
-  WatchLater as PendingIcon,
   Chat as ChatIcon,
-  MoreVert as MoreVertIcon
+  MoreVert as MoreVertIcon,
+  Check as CheckIcon,
+  Mic as MicIcon,
+  CameraAlt as CameraIcon,
+  Close as CloseIcon
 } from '@mui/icons-material';
 
 export const Chats: React.FC = () => {
@@ -81,6 +84,7 @@ export const Chats: React.FC = () => {
             { type: 'Dashboard', id: 'STATS' },
             { type: 'Contact', id: 'LIST' }
           ]));
+          window.dispatchEvent(new Event('notification-ws-update'));
         }
       } catch (err) {
         console.error('Failed to parse WS payload', err);
@@ -185,23 +189,234 @@ export const Chats: React.FC = () => {
     navigate(PATHS.SCHEDULER, { state: { prefilledEmail: selectedContact.email } });
   };
 
+  // Camera Capture State
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const [capturedPhotoUrl, setCapturedPhotoUrl] = useState<string | null>(null);
+  const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Audio Recording State
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordingTimerRef = useRef<any>(null);
+
+  const stopCameraStream = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+  };
+
+  const startCamera = async () => {
+    try {
+      setCapturedPhotoUrl(null);
+      setPhotoBlob(null);
+      setIsCameraOpen(true);
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+      setCameraStream(stream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (err) {
+      console.error('Failed to open camera', err);
+      alert('Camera access denied or unavailable.');
+      setIsCameraOpen(false);
+    }
+  };
+
+  const handleCapturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const context = canvas.getContext('2d');
+      if (context) {
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 480;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob((blob) => {
+          if (blob) {
+            setPhotoBlob(blob);
+            setCapturedPhotoUrl(URL.createObjectURL(blob));
+          }
+        }, 'image/jpeg', 0.9);
+      }
+    }
+  };
+
+  const handleRetakePhoto = () => {
+    setCapturedPhotoUrl(null);
+    setPhotoBlob(null);
+  };
+
+  const handleSendPhoto = async () => {
+    if (!photoBlob || !selectedContact) return;
+    setSending(true);
+    try {
+      const file = new File([photoBlob], 'camera-capture.jpg', { type: 'image/jpeg' });
+      const formData = new FormData();
+      formData.append('receiverEmail', selectedContact.email);
+      formData.append('messageType', 'IMAGE');
+      formData.append('recurringType', 'NONE');
+      formData.append('content', 'Captured Photo');
+      formData.append('file', file);
+
+      await sendMessageMutation(formData).unwrap();
+      handleCloseCamera();
+      refetchChatHistory();
+    } catch (err) {
+      console.error('Failed to send photo', err);
+      alert('Failed to send photo attachment');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleCloseCamera = () => {
+    stopCameraStream();
+    setIsCameraOpen(false);
+    setCapturedPhotoUrl(null);
+    setPhotoBlob(null);
+  };
+
+  const startRecording = async () => {
+    try {
+      audioChunksRef.current = [];
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) {
+          audioChunksRef.current.push(e.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        stream.getTracks().forEach(track => track.stop());
+
+        if (audioChunksRef.current.length > 0 && selectedContact) {
+          setSending(true);
+          try {
+            const file = new File([audioBlob], 'voice-recording.webm', { type: 'audio/webm' });
+            const formData = new FormData();
+            formData.append('receiverEmail', selectedContact.email);
+            formData.append('messageType', 'AUDIO');
+            formData.append('recurringType', 'NONE');
+            formData.append('content', 'Voice Recording');
+            formData.append('file', file);
+
+            await sendMessageMutation(formData).unwrap();
+            refetchChatHistory();
+          } catch (err) {
+            console.error('Failed to send audio recording', err);
+            alert('Failed to send audio recording.');
+          } finally {
+            setSending(false);
+          }
+        }
+      };
+
+      mediaRecorderRef.current = mediaRecorder;
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingSeconds(0);
+
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingSeconds(prev => prev + 1);
+      }, 1000);
+
+    } catch (err) {
+      console.error('Failed to start audio recording', err);
+      alert('Microphone access denied or unavailable.');
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    }
+    if (recordingTimerRef.current) {
+      clearInterval(recordingTimerRef.current);
+      recordingTimerRef.current = null;
+    }
+    setIsRecording(false);
+  };
+
+  const cancelRecording = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.onstop = () => {
+        if (mediaRecorderRef.current) {
+          mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+        }
+      };
+      if (mediaRecorderRef.current.state !== 'inactive') {
+        mediaRecorderRef.current.stop();
+      }
+    }
+    if (recordingTimerRef.current) {
+      clearInterval(recordingTimerRef.current);
+      recordingTimerRef.current = null;
+    }
+    setIsRecording(false);
+  };
+
+  const formatRecordingTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  useEffect(() => {
+    if (isCameraOpen && cameraStream && videoRef.current) {
+      videoRef.current.srcObject = cameraStream;
+    }
+  }, [isCameraOpen, cameraStream]);
+
+  useEffect(() => {
+    return () => {
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+      }
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [cameraStream]);
+
   // Filter contacts by query
   const filteredContacts = contacts.filter(c =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status: string, isRead: boolean) => {
     switch (status) {
       case 'DELIVERED':
-        return <DeliveredIcon sx={{ fontSize: 13, color: '#10b981', ml: 0.5 }} />;
+        if (isRead) {
+          return (
+            <Box sx={{ display: 'inline-flex', alignItems: 'center', position: 'relative', width: 16, height: 13, ml: 0.5 }}>
+              <CheckIcon sx={{ fontSize: 14, color: '#34b7f1', position: 'absolute', left: 0 }} />
+              <CheckIcon sx={{ fontSize: 14, color: '#34b7f1', position: 'absolute', left: 4 }} />
+            </Box>
+          );
+        } else {
+          return (
+            <Box sx={{ display: 'inline-flex', alignItems: 'center', position: 'relative', width: 16, height: 13, ml: 0.5 }}>
+              <CheckIcon sx={{ fontSize: 14, color: 'text.secondary', position: 'absolute', left: 0 }} />
+              <CheckIcon sx={{ fontSize: 14, color: 'text.secondary', position: 'absolute', left: 4 }} />
+            </Box>
+          );
+        }
       case 'FAILED':
         return <FailedIcon sx={{ fontSize: 13, color: '#ef4444', ml: 0.5 }} />;
       case 'PENDING':
-        return <PendingIcon sx={{ fontSize: 13, color: '#f59e0b', ml: 0.5 }} />;
       case 'SCHEDULED':
       default:
-        return <ScheduleIcon sx={{ fontSize: 13, color: '#6366f1', ml: 0.5 }} />;
+        return <CheckIcon sx={{ fontSize: 14, color: 'text.secondary', ml: 0.5 }} />;
     }
   };
 
@@ -547,7 +762,7 @@ export const Chats: React.FC = () => {
                                       px: 0.5
                                     }}
                                   />
-                                  {getStatusIcon(m.status)}
+                                  {getStatusIcon(m.status, m.isRead)}
                                 </Box>
                               )}
                             </Box>
@@ -563,7 +778,7 @@ export const Chats: React.FC = () => {
                 <Box
                   component="form"
                   onSubmit={handleSendMessage}
-                   sx={{
+                  sx={{
                      p: 2,
                      borderTop: '1px solid',
                      borderTopColor: 'divider',
@@ -573,43 +788,81 @@ export const Chats: React.FC = () => {
                      gap: 1.5
                    }}
                 >
-                  <TextField
-                    fullWidth
-                    size="small"
-                    placeholder="Type a message..."
-                    value={typedMessage}
-                    onChange={(e) => setTypedMessage(e.target.value)}
-                    disabled={sending}
-                    autoComplete="off"
-                     slotProps={{
-                       input: {
-                         style: { color: theme.palette.text.primary }
-                       }
-                     }}
-                     sx={{
-                       '& .MuiOutlinedInput-root': {
-                         bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
-                         borderRadius: '24px',
-                         '& fieldset': { borderColor: 'divider' },
-                         '&:hover fieldset': { borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)' },
-                         '&.Mui-focused fieldset': { borderColor: theme.palette.primary.main },
-                       }
-                     }}
-                  />
-                  <IconButton
-                    type="submit"
-                    disabled={!typedMessage.trim() || sending}
-                    sx={{
-                      bgcolor: '#4f46e5',
-                      color: '#fff',
-                      '&:hover': { bgcolor: '#6366f1' },
-                       '&.Mui-disabled': { bgcolor: 'action.disabledBackground', color: 'text.disabled' },
-                      width: 40,
-                      height: 40
-                    }}
-                  >
-                    <SendIcon fontSize="small" />
-                  </IconButton>
+                  {isRecording ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 2, bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)', py: 0.5, px: 2, borderRadius: '24px' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexGrow: 1 }}>
+                        <Box
+                          sx={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: '50%',
+                            bgcolor: '#ef4444',
+                            animation: 'pulse 1.2s infinite',
+                            '@keyframes pulse': {
+                              '0%': { opacity: 0.3 },
+                              '50%': { opacity: 1 },
+                              '100%': { opacity: 0.3 }
+                            }
+                          }}
+                        />
+                        <Typography variant="body2" sx={{ color: 'text.primary', fontWeight: 600 }}>
+                          Recording Audio... {formatRecordingTime(recordingSeconds)}
+                        </Typography>
+                      </Box>
+                      <IconButton onClick={cancelRecording} color="error" size="small" disabled={sending}>
+                        <CloseIcon />
+                      </IconButton>
+                      <IconButton onClick={stopRecording} sx={{ bgcolor: '#10b981', color: '#fff', '&:hover': { bgcolor: '#059669' } }} size="small" disabled={sending}>
+                        <SendIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  ) : (
+                    <>
+                      <IconButton onClick={startCamera} color="primary" size="small" disabled={sending}>
+                        <CameraIcon />
+                      </IconButton>
+                      <IconButton onClick={startRecording} color="primary" size="small" disabled={sending}>
+                        <MicIcon />
+                      </IconButton>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        placeholder="Type a message..."
+                        value={typedMessage}
+                        onChange={(e) => setTypedMessage(e.target.value)}
+                        disabled={sending}
+                        autoComplete="off"
+                        slotProps={{
+                          input: {
+                            style: { color: theme.palette.text.primary }
+                          }
+                        }}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
+                            borderRadius: '24px',
+                            '& fieldset': { borderColor: 'divider' },
+                            '&:hover fieldset': { borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)' },
+                            '&.Mui-focused fieldset': { borderColor: theme.palette.primary.main },
+                          }
+                        }}
+                      />
+                      <IconButton
+                        type="submit"
+                        disabled={!typedMessage.trim() || sending}
+                        sx={{
+                          bgcolor: '#4f46e5',
+                          color: '#fff',
+                          '&:hover': { bgcolor: '#6366f1' },
+                          '&.Mui-disabled': { bgcolor: 'action.disabledBackground', color: 'text.disabled' },
+                          width: 40,
+                          height: 40
+                        }}
+                      >
+                        <SendIcon fontSize="small" />
+                      </IconButton>
+                    </>
+                  )}
                 </Box>
               </>
             ) : (
@@ -662,6 +915,80 @@ export const Chats: React.FC = () => {
           ].filter(Boolean) as React.ReactElement[]
         )}
       </Menu>
+
+      <Dialog
+        open={isCameraOpen}
+        onClose={handleCloseCamera}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            bgcolor: 'background.paper',
+            borderRadius: '16px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+            border: '1px solid',
+            borderColor: 'divider',
+            overflow: 'hidden'
+          }
+        }}
+      >
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'text.primary' }}>
+            Capture and Send Photo
+          </Typography>
+          <IconButton onClick={handleCloseCamera} size="small" sx={{ color: 'text.secondary' }}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent sx={{ p: 0, bgcolor: '#000', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 360 }}>
+          {capturedPhotoUrl ? (
+            <Box
+              component="img"
+              src={capturedPhotoUrl}
+              alt="Captured"
+              sx={{ width: '100%', height: 'auto', maxHeight: 400, objectFit: 'contain' }}
+            />
+          ) : (
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              style={{ width: '100%', maxHeight: 400, objectFit: 'contain', display: 'block' }}
+            />
+          )}
+          <canvas ref={canvasRef} style={{ display: 'none' }} />
+        </DialogContent>
+        <DialogActions sx={{ p: 2, display: 'flex', justifyContent: 'space-between' }}>
+          {capturedPhotoUrl ? (
+            <>
+              <Button onClick={handleRetakePhoto} variant="outlined" color="primary">
+                Retake
+              </Button>
+              <Button
+                onClick={handleSendPhoto}
+                variant="contained"
+                sx={{ bgcolor: '#10b981', '&:hover': { bgcolor: '#059669' } }}
+                disabled={sending}
+              >
+                {sending ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Send Photo'}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button onClick={handleCloseCamera} variant="outlined" color="secondary">
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCapturePhoto}
+                variant="contained"
+                sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#6366f1' } }}
+              >
+                Capture
+              </Button>
+            </>
+          )}
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

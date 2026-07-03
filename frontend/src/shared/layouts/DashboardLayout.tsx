@@ -52,8 +52,17 @@ export const DashboardLayout: React.FC = () => {
 
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 5000); // refresh every 15s
-    return () => clearInterval(interval);
+    const interval = setInterval(fetchNotifications, 5000); // refresh every 5s
+
+    const handleWsUpdate = () => {
+      fetchNotifications();
+    };
+    window.addEventListener('notification-ws-update', handleWsUpdate);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('notification-ws-update', handleWsUpdate);
+    };
   }, []);
 
   const handleDrawerToggle = () => {

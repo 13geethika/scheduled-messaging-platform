@@ -114,7 +114,8 @@ public class MessageServiceImpl implements MessageService {
         if (isImmediate) {
             notificationService.createNotification(receiver, 
                     "New message received from " + user.getName() + ": " + 
-                    (type == MessageType.TEXT ? message.getContent() : "[" + type + " Attachment]"));
+                    (type == MessageType.TEXT ? message.getContent() : "[" + type + " Attachment]"),
+                    savedMessage.getId());
         } else {
             // Schedule in Quartz
             quartzSchedulerService.scheduleMessageJob(savedMessage);
@@ -186,6 +187,8 @@ public class MessageServiceImpl implements MessageService {
         // Delete from DB
         String senderEmail = message.getSender().getEmail();
         String receiverEmail = message.getReceiver().getEmail();
+        
+        notificationService.deleteMessageNotifications(messageId);
         messageRepository.delete(message);
         
         broadcastMessageDelete(messageId, senderEmail, receiverEmail);
@@ -353,7 +356,8 @@ public class MessageServiceImpl implements MessageService {
             // Notify Receiver
             notificationService.createNotification(message.getReceiver(), 
                     "New message received from " + message.getSender().getName() + ": " + 
-                    (message.getMessageType() == MessageType.TEXT ? message.getContent() : "[" + message.getMessageType() + " Attachment]"));
+                    (message.getMessageType() == MessageType.TEXT ? message.getContent() : "[" + message.getMessageType() + " Attachment]"),
+                    message.getId());
 
             // Handle Recurring schedules
             if (message.getRecurringType() != RecurringType.NONE) {
@@ -450,6 +454,7 @@ public class MessageServiceImpl implements MessageService {
                 .recurringType(message.getRecurringType().name())
                 .retryCount(message.getRetryCount())
                 .errorMessage(message.getErrorMessage())
+                .isRead(message.isRead())
                 .build();
     }
 

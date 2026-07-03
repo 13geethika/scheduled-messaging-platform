@@ -24,4 +24,5 @@ public class MessageResponse {
     private String recurringType;
     private int retryCount;
     private String errorMessage;
+    private boolean isRead;
 }

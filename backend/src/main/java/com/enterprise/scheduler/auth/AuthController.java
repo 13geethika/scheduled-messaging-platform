@@ -27,7 +27,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<Void>> registerUser(@Valid @RequestBody RegisterRequest request) {
         authService.registerUser(request);
-        return ResponseEntity.ok(ApiResponse.success("Registration successful. Please check your email to verify your account.", null));
+        return ResponseEntity.ok(ApiResponse.success("Registration successful. You can now login with your credentials.", null));
     }
 
     @PostMapping("/login")

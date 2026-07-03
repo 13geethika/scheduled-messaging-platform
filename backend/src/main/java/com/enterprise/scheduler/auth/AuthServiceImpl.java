@@ -73,8 +73,8 @@ public class AuthServiceImpl implements AuthService {
         // Audit Log
         auditLogService.logEvent("USER_REGISTER", request.getEmail(), "Successfully registered account with name: " + request.getName());
 
-        // Send confirmation email
-        notificationService.sendVerificationEmail(user, verificationToken);
+        // Send confirmation email (Commented out to bypass Mailpit dependency)
+        // notificationService.sendVerificationEmail(user, verificationToken);
     }
 
     @Override

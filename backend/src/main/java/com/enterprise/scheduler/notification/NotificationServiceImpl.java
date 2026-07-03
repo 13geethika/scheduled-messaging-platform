@@ -35,9 +35,16 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional
     public void createNotification(User user, String message) {
+        createNotification(user, message, null);
+    }
+
+    @Override
+    @Transactional
+    public void createNotification(User user, String message, Long messageId) {
         Notification notification = Notification.builder()
                 .user(user)
                 .message(message)
+                .messageId(messageId)
                 .status(NotificationStatus.UNREAD)
                 .createdAt(Instant.now())
                 .build();
@@ -96,6 +103,16 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         notificationRepository.delete(notification);
+    }
+
+    @Override
+    @Transactional
+    public void deleteMessageNotifications(Long messageId) {
+        List<Notification> notifications = notificationRepository.findByMessageId(messageId);
+        for (Notification n : notifications) {
+            n.setMessage("Message is deleted");
+            notificationRepository.save(n);
+        }
     }
 
     @Async
