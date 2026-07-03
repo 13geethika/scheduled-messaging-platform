@@ -59,7 +59,7 @@ export const AuthLayout: React.FC = () => {
             ChronosMsg
           </Typography>
           <Typography variant="body2" sx={{ color: '#94a3b8' }}>
-            Enterprise Scheduled Messaging Engine
+            Scheduled Messaging Application
           </Typography>
         </Box>
         <Paper

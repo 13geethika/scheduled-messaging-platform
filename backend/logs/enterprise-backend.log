@@ -115,3 +115,107 @@
 2026-07-03 14:36:16.568 [http-nio-8080-exec-7] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=77809002-b7f4-4371-b271-a7a32da6c079] - WebSocket handshake successful for user: gnanitha@gmail.com
 2026-07-03 14:36:16.571 [http-nio-8080-exec-7] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: gnanitha@gmail.com
 2026-07-03 14:36:31.982 [http-nio-8080-exec-8] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: gnanitha@gmail.com with status: CloseStatus[code=1000, reason=null]
+2026-07-03 14:42:29.243 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Starting ScheduledMessagingApplication using Java 26 with PID 36024 (C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\target\classes started by geeth in C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend)
+2026-07-03 14:42:29.245 [restartedMain] DEBUG c.e.s.ScheduledMessagingApplication [traceId=] - Running with Spring Boot v3.5.0, Spring v6.2.7
+2026-07-03 14:42:29.245 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - The following 1 profile is active: "dev"
+2026-07-03 14:42:29.279 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor [traceId=] - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-07-03 14:42:29.279 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor [traceId=] - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-07-03 14:42:30.145 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [traceId=] - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-03 14:42:30.208 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [traceId=] - Finished Spring Data repository scanning in 57 ms. Found 7 JPA repository interfaces.
+2026-07-03 14:42:30.801 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer [traceId=] - Tomcat initialized with port 8080 (http)
+2026-07-03 14:42:30.814 [restartedMain] INFO  o.a.catalina.core.StandardService [traceId=] - Starting service [Tomcat]
+2026-07-03 14:42:30.814 [restartedMain] INFO  o.a.catalina.core.StandardEngine [traceId=] - Starting Servlet engine: [Apache Tomcat/10.1.41]
+2026-07-03 14:42:30.857 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] [traceId=] - Initializing Spring embedded WebApplicationContext
+2026-07-03 14:42:30.857 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext [traceId=] - Root WebApplicationContext: initialization completed in 1577 ms
+2026-07-03 14:42:31.021 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-1 - Starting...
+2026-07-03 14:42:31.159 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool [traceId=] - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@48c4c35f
+2026-07-03 14:42:31.161 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource [traceId=] - HikariPool-1 - Start completed.
+2026-07-03 14:42:31.295 [restartedMain] INFO  org.flywaydb.core.FlywayExecutor [traceId=] - Database: jdbc:mysql://localhost:3306/scheduled_messaging?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC (MySQL 8.0)
+2026-07-03 14:42:31.345 [restartedMain] INFO  o.f.core.internal.command.DbValidate [traceId=] - Successfully validated 7 migrations (execution time 00:00.029s)
+2026-07-03 14:42:31.357 [restartedMain] INFO  o.f.core.internal.command.DbMigrate [traceId=] - Current version of schema `scheduled_messaging`: 7
+2026-07-03 14:42:31.360 [restartedMain] INFO  o.f.core.internal.command.DbMigrate [traceId=] - Schema `scheduled_messaging` is up to date. No migration necessary.
+2026-07-03 14:42:31.424 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper [traceId=] - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-03 14:42:31.518 [restartedMain] INFO  org.hibernate.Version [traceId=] - HHH000412: Hibernate ORM core version 6.6.15.Final
+2026-07-03 14:42:31.617 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator [traceId=] - HHH000026: Second-level cache disabled
+2026-07-03 14:42:32.137 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo [traceId=] - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-03 14:42:32.285 [restartedMain] WARN  org.hibernate.orm.deprecation [traceId=] - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-07-03 14:42:32.316 [restartedMain] INFO  o.hibernate.orm.connections.pooling [traceId=] - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.45
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-07-03 14:42:34.376 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator [traceId=] - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-03 14:42:34.517 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean [traceId=] - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-03 14:42:35.244 [restartedMain] DEBUG c.e.s.s.JwtAuthenticationFilter [traceId=] - Filter 'jwtAuthenticationFilter' configured for use
+2026-07-03 14:42:35.244 [restartedMain] DEBUG c.e.s.monitoring.CorrelationIdFilter [traceId=] - Filter 'correlationIdFilter' configured for use
+2026-07-03 14:42:35.642 [restartedMain] INFO  o.s.d.j.r.query.QueryEnhancerFactory [traceId=] - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-07-03 14:42:38.472 [restartedMain] INFO  org.quartz.impl.StdSchedulerFactory [traceId=] - Using default implementation for ThreadExecutor
+2026-07-03 14:42:38.501 [restartedMain] INFO  o.quartz.core.SchedulerSignalerImpl [traceId=] - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2026-07-03 14:42:38.501 [restartedMain] INFO  org.quartz.core.QuartzScheduler [traceId=] - Quartz Scheduler v2.5.0 created.
+2026-07-03 14:42:38.504 [restartedMain] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - Using db table-based data access locking (synchronization).
+2026-07-03 14:42:38.506 [restartedMain] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - JobStoreCMT initialized.
+2026-07-03 14:42:38.507 [restartedMain] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler meta-data: Quartz Scheduler (v2.5.0) 'ScheduledMessagingScheduler' with instanceId 'GeethikaChowdary1783069958484'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 10 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2026-07-03 14:42:38.507 [restartedMain] INFO  org.quartz.impl.StdSchedulerFactory [traceId=] - Quartz scheduler 'ScheduledMessagingScheduler' initialized from an externally provided properties instance.
+2026-07-03 14:42:38.508 [restartedMain] INFO  org.quartz.impl.StdSchedulerFactory [traceId=] - Quartz scheduler version: 2.5.0
+2026-07-03 14:42:38.508 [restartedMain] INFO  org.quartz.core.QuartzScheduler [traceId=] - JobFactory set to: com.enterprise.scheduler.scheduler.AutoWiringSpringBeanJobFactory@353c607
+2026-07-03 14:42:38.956 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration [traceId=] - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-03 14:42:39.424 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver [traceId=] - Exposing 3 endpoints beneath base path '/actuator'
+2026-07-03 14:42:39.494 [restartedMain] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer [traceId=] - Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-07-03 14:42:40.262 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer [traceId=] - LiveReload server is running on port 35729
+2026-07-03 14:42:40.460 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer [traceId=] - Tomcat started on port 8080 (http) with context path '/'
+2026-07-03 14:42:40.462 [restartedMain] INFO  o.s.s.quartz.SchedulerFactoryBean [traceId=] - Will start Quartz Scheduler [ScheduledMessagingScheduler] in 5 seconds
+2026-07-03 14:42:40.479 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Started ScheduledMessagingApplication in 11.601 seconds (process running for 11.973)
+2026-07-03 14:42:41.709 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] [traceId=] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-03 14:42:41.710 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet [traceId=] - Initializing Servlet 'dispatcherServlet'
+2026-07-03 14:42:41.713 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet [traceId=] - Completed initialization in 3 ms
+2026-07-03 14:42:45.478 [Quartz Scheduler [ScheduledMessagingScheduler]] INFO  o.s.s.quartz.SchedulerFactoryBean [traceId=] - Starting Quartz Scheduler now, after delay of 5 seconds
+2026-07-03 14:42:45.523 [Quartz Scheduler [ScheduledMessagingScheduler]] INFO  org.quartz.core.QuartzScheduler [traceId=] - Scheduler ScheduledMessagingScheduler_$_GeethikaChowdary1783069958484 started.
+2026-07-03 14:43:05.546 [QuartzScheduler_ScheduledMessagingScheduler-GeethikaChowdary1783069958484_ClusterManager] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - ClusterManager: detected 1 failed or restarted instances.
+2026-07-03 14:43:05.547 [QuartzScheduler_ScheduledMessagingScheduler-GeethikaChowdary1783069958484_ClusterManager] INFO  o.s.s.quartz.LocalDataSourceJobStore [traceId=] - ClusterManager: Scanning for instance "GeethikaChowdary1783069349939"'s failed in-progress jobs.
+2026-07-03 14:45:26.342 [http-nio-8080-exec-6] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=a346471a-19ba-43a4-8772-99ac65391a84] - WebSocket handshake successful for user: gnanitha@gmail.com
+2026-07-03 14:45:26.367 [http-nio-8080-exec-5] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=e80d1bc6-57fa-438f-ac97-17be0568a710] - WebSocket handshake successful for user: gnanitha@gmail.com
+2026-07-03 14:45:26.424 [http-nio-8080-exec-6] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: gnanitha@gmail.com
+2026-07-03 14:45:26.424 [http-nio-8080-exec-5] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: gnanitha@gmail.com
+2026-07-03 14:45:26.430 [http-nio-8080-exec-6] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: gnanitha@gmail.com with status: CloseStatus[code=1006, reason=An established connection was aborted by the software in your host machine]
+2026-07-03 14:45:36.546 [http-nio-8080-exec-9] INFO  c.e.s.n.NotificationServiceImpl [traceId=33ceaa4c-a95c-4394-adeb-d47a1faf3e26] - Created alert for user: geethika@gmail.com
+2026-07-03 14:46:01.951 [http-nio-8080-exec-3] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: gnanitha@gmail.com with status: CloseStatus[code=1000, reason=null]
+2026-07-03 14:46:04.014 [http-nio-8080-exec-4] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=f77df140-7cde-4c93-a007-52043d5b7b7c] - WebSocket handshake successful for user: gnanitha@gmail.com
+2026-07-03 14:46:04.017 [http-nio-8080-exec-4] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: gnanitha@gmail.com
+2026-07-03 14:46:04.019 [http-nio-8080-exec-4] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: gnanitha@gmail.com with status: CloseStatus[code=1006, reason=An established connection was aborted by the software in your host machine]
+2026-07-03 14:46:04.034 [http-nio-8080-exec-5] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=1601d453-41ed-4b7c-a7dc-9d5cfb5ce3d2] - WebSocket handshake successful for user: gnanitha@gmail.com
+2026-07-03 14:46:04.037 [http-nio-8080-exec-5] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: gnanitha@gmail.com
+2026-07-03 14:46:32.091 [http-nio-8080-exec-7] INFO  c.e.s.n.NotificationServiceImpl [traceId=20bc26e5-8103-4388-a204-6801b6d66fc0] - Created alert for user: geethika@gmail.com
+2026-07-03 14:46:32.095 [http-nio-8080-exec-7] INFO  c.e.s.config.ChatWebSocketHandler [traceId=20bc26e5-8103-4388-a204-6801b6d66fc0] - WebSocket notification sent to: gnanitha@gmail.com
+2026-07-03 14:46:49.699 [http-nio-8080-exec-1] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: gnanitha@gmail.com with status: CloseStatus[code=1000, reason=null]
+2026-07-03 14:46:59.295 [http-nio-8080-exec-9] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=689e04b6-cf1e-483d-8671-9de905d365bc] - WebSocket handshake successful for user: gnanitha@gmail.com
+2026-07-03 14:46:59.299 [http-nio-8080-exec-9] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: gnanitha@gmail.com
+2026-07-03 14:46:59.301 [http-nio-8080-exec-9] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: gnanitha@gmail.com with status: CloseStatus[code=1006, reason=An established connection was aborted by the software in your host machine]
+2026-07-03 14:46:59.322 [http-nio-8080-exec-10] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=bc4815bc-5979-4613-9dae-04ebfa0f0043] - WebSocket handshake successful for user: gnanitha@gmail.com
+2026-07-03 14:46:59.325 [http-nio-8080-exec-10] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: gnanitha@gmail.com
+2026-07-03 14:47:05.224 [http-nio-8080-exec-7] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: gnanitha@gmail.com with status: CloseStatus[code=1000, reason=null]
+2026-07-03 14:47:17.793 [http-nio-8080-exec-5] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=58118ad7-a035-45c9-bb0a-9d537af08dee] - WebSocket handshake successful for user: geethika@gmail.com
+2026-07-03 14:47:17.795 [http-nio-8080-exec-5] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: geethika@gmail.com
+2026-07-03 14:47:17.796 [http-nio-8080-exec-5] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: geethika@gmail.com with status: CloseStatus[code=1006, reason=An established connection was aborted by the software in your host machine]
+2026-07-03 14:47:17.812 [http-nio-8080-exec-4] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=49aae3b7-987a-4ff0-9ad7-6984d6c6cce4] - WebSocket handshake successful for user: geethika@gmail.com
+2026-07-03 14:47:17.815 [http-nio-8080-exec-4] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: geethika@gmail.com
+2026-07-03 14:47:18.970 [http-nio-8080-exec-10] INFO  c.e.s.config.ChatWebSocketHandler [traceId=502485f1-a1c6-4e07-9f56-3f240c3c3f68] - WebSocket notification sent to: geethika@gmail.com
+2026-07-03 14:47:50.239 [http-nio-8080-exec-4] INFO  c.e.s.n.NotificationServiceImpl [traceId=81547a70-13c7-47c1-aa1a-5f28689fd6f2] - Created alert for user: gnanitha@gmail.com
+2026-07-03 14:47:50.240 [http-nio-8080-exec-4] INFO  c.e.s.config.ChatWebSocketHandler [traceId=81547a70-13c7-47c1-aa1a-5f28689fd6f2] - WebSocket notification sent to: geethika@gmail.com
+2026-07-03 14:47:55.503 [http-nio-8080-exec-4] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: geethika@gmail.com with status: CloseStatus[code=1000, reason=null]
+2026-07-03 14:48:00.656 [http-nio-8080-exec-1] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=0762d862-10b5-4538-b372-18e235a872fb] - WebSocket handshake successful for user: gnanitha@gmail.com
+2026-07-03 14:48:00.659 [http-nio-8080-exec-1] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: gnanitha@gmail.com
+2026-07-03 14:48:00.660 [http-nio-8080-exec-1] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: gnanitha@gmail.com with status: CloseStatus[code=1006, reason=An established connection was aborted by the software in your host machine]
+2026-07-03 14:48:00.675 [http-nio-8080-exec-8] INFO  c.e.s.c.WebSocketHandshakeInterceptor [traceId=97236e77-f8bd-41c0-91f2-8341c965eb96] - WebSocket handshake successful for user: gnanitha@gmail.com
+2026-07-03 14:48:00.678 [http-nio-8080-exec-8] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection established for user: gnanitha@gmail.com
+2026-07-03 14:48:01.744 [http-nio-8080-exec-2] INFO  c.e.s.config.ChatWebSocketHandler [traceId=16ab8f5a-5fbe-4a66-a899-652a30c84c4e] - WebSocket notification sent to: gnanitha@gmail.com
+2026-07-03 14:48:43.611 [http-nio-8080-exec-4] INFO  c.e.s.config.ChatWebSocketHandler [traceId=] - WebSocket connection closed for user: gnanitha@gmail.com with status: CloseStatus[code=1000, reason=null]
