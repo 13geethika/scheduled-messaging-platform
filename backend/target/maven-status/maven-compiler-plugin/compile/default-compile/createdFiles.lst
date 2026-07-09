@@ -25,6 +25,7 @@ com\enterprise\scheduler\auth\AuthServiceImpl.class
 com\enterprise\scheduler\config\WebSocketHandshakeInterceptor.class
 com\enterprise\scheduler\user\UserStatus.class
 com\enterprise\scheduler\auth\TokenRefreshResponse.class
+com\enterprise\scheduler\config\DatabaseConfig.class
 com\enterprise\scheduler\auth\TokenRefreshRequest.class
 com\enterprise\scheduler\notification\NotificationResponse.class
 com\enterprise\scheduler\notification\Notification$NotificationBuilder.class

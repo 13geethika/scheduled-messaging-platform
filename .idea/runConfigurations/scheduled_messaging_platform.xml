@@ -9,7 +9,7 @@
             <map>
               <entry key="APP_SERVER_URL" value="https://scheduled-messaging-platform.onrender.com" />
               <entry key="DB_PASSWORD" value="xn6Fb2KPHTlXoWg3C0EsftRP1GVA5Nij" />
-              <entry key="DB_URL" value="jdbc:postgresql://scheduledmessaging_o1ty_user:xn6Fb2KPHTlXoWg3C0EsftRP1GVA5Nij@dpg-d97ivnbtqb8s73d3u9m0-a.ohio-postgres.render.com/scheduledmessaging_o1ty" />
+              <entry key="DB_URL" value="jdbc:postgresql://scheduledmessaging_o1ty_user:xn6Fb2KPHTlXoWg3C0EsftRP1GVA5Nij@dpg-d97ivnbtqb8s73d3u9m0-a/scheduledmessaging_o1ty" />
               <entry key="DB_USERNAME" value="scheduledmessaging_o1ty_user" />
               <entry key="FRONTEND_URL" value="https://scheduled-messaging-platform.vercel.app" />
               <entry key="SPRING_MAIL_HOST" value="http://localhost:8025/" />
