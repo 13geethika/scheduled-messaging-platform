@@ -8,9 +8,9 @@
           <option name="environmentProperties">
             <map>
               <entry key="APP_SERVER_URL" value="https://scheduled-messaging-platform.onrender.com" />
-              <entry key="DB_PASSWORD" value="QR3jzMC5P2SahlMCEO1rjjLXTTCzIJR8" />
-              <entry key="DB_URL" value="jdbc:postgresql://dpg-d8ili6ddt1ts73fg2ndg-a.ohio-postgres.render.com:5432/scheduledmessaging" />
-              <entry key="DB_USERNAME" value="scheduledmessaging_user" />
+              <entry key="DB_PASSWORD" value="xn6Fb2KPHTlXoWg3C0EsftRP1GVA5Nij" />
+              <entry key="DB_URL" value="jdbc:postgresql://scheduledmessaging_o1ty_user:xn6Fb2KPHTlXoWg3C0EsftRP1GVA5Nij@dpg-d97ivnbtqb8s73d3u9m0-a.ohio-postgres.render.com/scheduledmessaging_o1ty" />
+              <entry key="DB_USERNAME" value="scheduledmessaging_o1ty_user" />
               <entry key="FRONTEND_URL" value="https://scheduled-messaging-platform.vercel.app" />
               <entry key="SPRING_MAIL_HOST" value="http://localhost:8025/" />
               <entry key="SPRING_MAIL_PASSWORD" value="vvit@123" />
