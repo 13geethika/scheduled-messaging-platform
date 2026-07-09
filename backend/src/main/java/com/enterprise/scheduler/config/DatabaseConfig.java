@@ -34,51 +34,78 @@ public class DatabaseConfig {
         if (dbUrl == null || dbUrl.isEmpty()) {
             dbUrl = System.getenv("DATABASE_URL");
         }
+        if (dbUrl == null || dbUrl.isEmpty()) {
+            dbUrl = defaultUrl;
+        }
 
-        if (dbUrl != null && (dbUrl.startsWith("postgres://") || dbUrl.startsWith("postgresql://"))) {
-            logger.info("Found Heroku/Render-style postgres/postgresql database URL. Parsing and converting to JDBC URL...");
-            try {
-                URI uri = new URI(dbUrl);
-                String userInfo = uri.getUserInfo();
-                String username = defaultUsername;
-                String password = defaultPassword;
+        if (dbUrl != null) {
+            String cleanUrl = dbUrl;
+            boolean wasJdbc = false;
+            if (cleanUrl.startsWith("jdbc:postgresql://")) {
+                cleanUrl = cleanUrl.substring(5); // strip "jdbc:" -> "postgresql://"
+                wasJdbc = true;
+            } else if (cleanUrl.startsWith("jdbc:mysql://")) {
+                cleanUrl = cleanUrl.substring(5); // strip "jdbc:" -> "mysql://"
+                wasJdbc = true;
+            }
 
-                if (userInfo != null && userInfo.contains(":")) {
-                    String[] parts = userInfo.split(":");
-                    username = parts[0];
-                    password = parts[1];
-                }
-
-                String host = uri.getHost();
-                int port = uri.getPort();
-                if (port == -1) {
-                    port = 5432;
-                }
-                String path = uri.getPath();
-                
-                String jdbcUrl = "jdbc:postgresql://" + host + ":" + port + path;
-                
-                // Render PostgreSQL requires SSL (sslmode=require)
-                if (!jdbcUrl.contains("sslmode")) {
-                    if (jdbcUrl.contains("?")) {
-                        jdbcUrl += "&sslmode=require";
-                    } else {
-                        jdbcUrl += "?sslmode=require";
+            if (cleanUrl.startsWith("postgres://") || cleanUrl.startsWith("postgresql://") || cleanUrl.startsWith("mysql://") || (wasJdbc && cleanUrl.contains("@"))) {
+                logger.info("Found database URL with embedded credentials. Parsing and converting to standard JDBC format...");
+                try {
+                    String uriString = cleanUrl;
+                    // Ensure scheme is valid for URI class
+                    if (uriString.startsWith("postgres://")) {
+                        uriString = "postgresql://" + uriString.substring(11);
                     }
+
+                    URI uri = new URI(uriString);
+                    String userInfo = uri.getUserInfo();
+                    String username = defaultUsername;
+                    String password = defaultPassword;
+
+                    if (userInfo != null && userInfo.contains(":")) {
+                        String[] parts = userInfo.split(":");
+                        username = parts[0];
+                        password = parts[1];
+                    }
+
+                    String host = uri.getHost();
+                    int port = uri.getPort();
+                    String path = uri.getPath();
+
+                    String protocol = "jdbc:postgresql://";
+                    if (dbUrl.startsWith("jdbc:mysql:") || uriString.startsWith("mysql:")) {
+                        protocol = "jdbc:mysql://";
+                    }
+
+                    if (port == -1) {
+                        port = protocol.contains("mysql") ? 3306 : 5432;
+                    }
+
+                    String jdbcUrl = protocol + host + ":" + port + path;
+
+                    // Render PostgreSQL requires SSL (sslmode=require)
+                    if (protocol.contains("postgresql") && !jdbcUrl.contains("sslmode")) {
+                        if (jdbcUrl.contains("?")) {
+                            jdbcUrl += "&sslmode=require";
+                        } else {
+                            jdbcUrl += "?sslmode=require";
+                        }
+                    }
+
+                    logger.info("Configuring HikariDataSource with auto-converted JDBC URL: {}", jdbcUrl);
+
+                    HikariConfig config = new HikariConfig();
+                    config.setJdbcUrl(jdbcUrl);
+                    config.setUsername(username);
+                    config.setPassword(password);
+                    config.setDriverClassName(protocol.contains("mysql") ? "com.mysql.cj.jdbc.Driver" : "org.postgresql.Driver");
+
+                    return new HikariDataSource(config);
+
+                } catch (URISyntaxException e) {
+                    logger.error("Failed to parse database URL: {}", dbUrl, e);
                 }
-
-                logger.info("Configuring HikariDataSource with parsed JDBC URL: {}", jdbcUrl);
-
-                HikariConfig config = new HikariConfig();
-                config.setJdbcUrl(jdbcUrl);
-                config.setUsername(username);
-                config.setPassword(password);
-                config.setDriverClassName("org.postgresql.Driver");
-
-                return new HikariDataSource(config);
-
-            } catch (URISyntaxException e) {
-                logger.error("Failed to parse database URL: {}", dbUrl, e);
             }
         }
 

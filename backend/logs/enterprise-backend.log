@@ -17,3 +17,39 @@ This generated password is for development use only. Your security configuration
 2026-07-09 11:16:04.056 [restartedMain] INFO  c.e.scheduler.config.DatabaseConfig [traceId=] - Using standard DataSource configuration with url: jdbc:mysql://localhost:3306/scheduled_messaging?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
 2026-07-09 11:16:08.096 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration [traceId=] - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
 2026-07-09 11:16:10.730 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Started ScheduledMessagingApplication in 15.447 seconds (process running for 452.913)
+2026-07-09 11:20:47.928 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Starting ScheduledMessagingApplication using Java 26 with PID 29396 (C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\target\classes started by geeth in C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend)
+2026-07-09 11:20:47.930 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - The following 1 profile is active: "prod"
+2026-07-09 11:20:51.074 [restartedMain] INFO  c.e.scheduler.config.DatabaseConfig [traceId=] - Using standard DataSource configuration with url: jdbc:mysql://localhost:3306/scheduled_messaging?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+2026-07-09 11:20:56.548 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration [traceId=] - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-09 11:20:57.465 [restartedMain] WARN  o.s.b.d.a.OptionalLiveReloadServer [traceId=] - Unable to start LiveReload server
+2026-07-09 11:20:57.534 [restartedMain] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext [traceId=] - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-07-09 11:20:57.586 [restartedMain] ERROR o.s.b.d.LoggingFailureAnalysisReporter [traceId=] - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+2026-07-09 11:25:33.388 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Starting ScheduledMessagingApplication using Java 26 with PID 9868 (C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\target\classes started by geeth in C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend)
+2026-07-09 11:25:33.389 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - The following 1 profile is active: "prod"
+2026-07-09 11:25:34.132 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration [traceId=] - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-09 11:25:34.557 [restartedMain] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration [traceId=] - 
+
+Using generated security password: a4d905a8-ef32-48f5-a4fe-0bd58d4dcaa1
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-07-09 11:25:34.676 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Started ScheduledMessagingApplication in 1.321 seconds (process running for 1016.88)
+2026-07-09 11:25:54.725 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Starting ScheduledMessagingApplication using Java 26 with PID 9868 (C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend\target\classes started by geeth in C:\Users\geeth\522\ReactCourse\scheduled-messaging-platform\backend)
+2026-07-09 11:25:54.725 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - The following 1 profile is active: "prod"
+2026-07-09 11:25:56.271 [restartedMain] INFO  c.e.scheduler.config.DatabaseConfig [traceId=] - Found database URL with embedded credentials. Parsing and converting to standard JDBC format...
+2026-07-09 11:25:56.277 [restartedMain] INFO  c.e.scheduler.config.DatabaseConfig [traceId=] - Configuring HikariDataSource with auto-converted JDBC URL: jdbc:mysql://localhost:3306/scheduled_messaging
+2026-07-09 11:25:59.685 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration [traceId=] - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-09 11:26:00.959 [restartedMain] INFO  c.e.s.ScheduledMessagingApplication [traceId=] - Started ScheduledMessagingApplication in 6.303 seconds (process running for 1043.163)
