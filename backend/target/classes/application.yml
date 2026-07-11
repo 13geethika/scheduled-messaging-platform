@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: prod
+    active: dev
   application:
     name: scheduled-messaging-platform
   sql:
@@ -10,6 +10,8 @@ spring:
     enabled: true
     baseline-on-migrate: true
     baseline-version: 0
+    repair-on-migrate: true
+    validate-on-migrate: false
     locations: classpath:db/migration/{vendor}
   servlet:
     multipart:

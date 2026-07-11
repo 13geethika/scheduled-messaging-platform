@@ -73,6 +73,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                 .setAuthentication(authentication);
 
                         System.out.println("Authentication Set Successfully");
+                        
+                        // Update last activity seen timestamp
+                        customUserDetailsService.updateLastSeen(username);
                     }
                 }
             }

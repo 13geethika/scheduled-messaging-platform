@@ -92,6 +92,10 @@ public class Message {
     @Builder.Default
     private boolean isRead = false;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reply_to_message_id")
+    private Message replyToMessage;
+
     @CreatedBy
     @Column(name = "created_by")
     private String createdBy;

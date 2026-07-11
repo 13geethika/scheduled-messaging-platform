@@ -15,6 +15,9 @@ export interface Message {
   retryCount: number;
   errorMessage: string | null;
   isRead: boolean;
+  replyToMessageId?: number | null;
+  replyToMessageContent?: string | null;
+  replyToMessageSenderName?: string | null;
 }
 
 export interface DashboardStats {

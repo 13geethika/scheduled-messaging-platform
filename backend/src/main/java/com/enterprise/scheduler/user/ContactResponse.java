@@ -17,4 +17,8 @@ public class ContactResponse {
     private String status;
     private String profilePhotoUrl;
     private int unreadCount;
+    private int unblockCount;
+    private String onlineStatus;
+    private java.time.Instant lastSeen;
+    private String customName;
 }

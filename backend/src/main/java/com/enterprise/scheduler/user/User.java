@@ -73,4 +73,7 @@ public class User {
     @LastModifiedDate
     @Column(name = "last_modified_date")
     private Instant lastModifiedDate;
+
+    @Column(name = "last_seen")
+    private Instant lastSeen;
 }

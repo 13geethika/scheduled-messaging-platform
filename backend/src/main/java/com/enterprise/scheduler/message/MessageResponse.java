@@ -25,4 +25,7 @@ public class MessageResponse {
     private int retryCount;
     private String errorMessage;
     private boolean isRead;
+    private Long replyToMessageId;
+    private String replyToMessageContent;
+    private String replyToMessageSenderName;
 }

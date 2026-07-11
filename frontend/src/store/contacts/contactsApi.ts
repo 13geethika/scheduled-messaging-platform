@@ -8,6 +8,10 @@ export interface Contact {
   status: string;
   profilePhotoUrl?: string;
   unreadCount?: number;
+  unblockCount?: number;
+  onlineStatus?: string;
+  lastSeen?: string;
+  customName?: string;
 }
 
 export interface ApiResponse<T> {
@@ -84,6 +88,20 @@ export const contactsApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: [{ type: 'Contact', id: 'LIST' }],
     }),
+    unblockContact: builder.mutation<ApiResponse<any>, number>({
+      query: (id) => ({
+        url: `/contacts/${id}/unblock`,
+        method: 'POST',
+      }),
+      invalidatesTags: [{ type: 'Contact', id: 'LIST' }],
+    }),
+    updateContactAlias: builder.mutation<ApiResponse<any>, { id: number; alias: string }>({
+      query: ({ id, alias }) => ({
+        url: `/contacts/${id}/alias?alias=${encodeURIComponent(alias)}`,
+        method: 'PUT',
+      }),
+      invalidatesTags: [{ type: 'Contact', id: 'LIST' }],
+    }),
   }),
 });
 
@@ -95,4 +113,6 @@ export const {
   useRejectContactRequestMutation,
   useBlockContactMutation,
   useRemoveContactMutation,
+  useUnblockContactMutation,
+  useUpdateContactAliasMutation,
 } = contactsApi;

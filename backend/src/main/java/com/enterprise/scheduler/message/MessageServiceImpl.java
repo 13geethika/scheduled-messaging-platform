@@ -95,6 +95,11 @@ public class MessageServiceImpl implements MessageService {
             throw new IllegalArgumentException("Scheduled time must be in the future");
         }
 
+        Message replyTo = null;
+        if (request.getReplyToMessageId() != null) {
+            replyTo = messageRepository.findById(request.getReplyToMessageId()).orElse(null);
+        }
+
         Message message = Message.builder()
                 .sender(user)
                 .receiver(receiver)
@@ -107,6 +112,7 @@ public class MessageServiceImpl implements MessageService {
                 .recurringType(RecurringType.valueOf(request.getRecurringType().toUpperCase()))
                 .retryCount(0)
                 .maxRetries(3)
+                .replyToMessage(replyTo)
                 .build();
 
         Message savedMessage = messageRepository.save(message);
@@ -440,6 +446,15 @@ public class MessageServiceImpl implements MessageService {
     }
 
     private MessageResponse mapToMessageResponse(Message message) {
+        Long replyToId = null;
+        String replyToContent = null;
+        String replyToSenderName = null;
+        if (message.getReplyToMessage() != null) {
+            replyToId = message.getReplyToMessage().getId();
+            replyToContent = message.getReplyToMessage().getContent();
+            replyToSenderName = message.getReplyToMessage().getSender().getName();
+        }
+
         return MessageResponse.builder()
                 .id(message.getId())
                 .senderEmail(message.getSender().getEmail())
@@ -455,6 +470,9 @@ public class MessageServiceImpl implements MessageService {
                 .retryCount(message.getRetryCount())
                 .errorMessage(message.getErrorMessage())
                 .isRead(message.isRead())
+                .replyToMessageId(replyToId)
+                .replyToMessageContent(replyToContent)
+                .replyToMessageSenderName(replyToSenderName)
                 .build();
     }
 

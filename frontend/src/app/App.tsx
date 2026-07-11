@@ -172,7 +172,14 @@ function App() {
       <ThemeProvider theme={activeTheme}>
         <CssBaseline />
         <BrowserRouter>
-          <AppContent />
+          <React.Suspense fallback={
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: mode === 'light' ? '#f8fafc' : '#020617' }}>
+              <div style={{ width: '45px', height: '45px', border: '4px solid #818cf8', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+              <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            </div>
+          }>
+            <AppContent />
+          </React.Suspense>
         </BrowserRouter>
       </ThemeProvider>
     </Provider>

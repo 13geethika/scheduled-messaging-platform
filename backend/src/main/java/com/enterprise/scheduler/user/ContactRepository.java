@@ -23,4 +23,14 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
     List<Contact> searchContacts(@Param("userId") Long userId, 
                                  @Param("status") ContactStatus status, 
                                  @Param("query") String query);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.transaction.annotation.Transactional
+    @Query(value = "DELETE FROM contacts WHERE id = :id", nativeQuery = true)
+    void hardDeleteById(@Param("id") Long id);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.transaction.annotation.Transactional
+    @Query(value = "DELETE FROM contacts WHERE user_id = :userId AND contact_user_id = :contactUserId", nativeQuery = true)
+    void hardDeleteByUserAndContactUser(@Param("userId") Long userId, @Param("contactUserId") Long contactUserId);
 }

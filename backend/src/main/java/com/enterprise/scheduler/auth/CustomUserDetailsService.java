@@ -38,4 +38,15 @@ public class CustomUserDetailsService implements UserDetailsService {
                 Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()))
         );
     }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void updateLastSeen(String email) {
+        userRepository.findByEmail(email).ifPresent(user -> {
+            java.time.Instant now = java.time.Instant.now();
+            if (user.getLastSeen() == null || java.time.Duration.between(user.getLastSeen(), now).getSeconds() > 30) {
+                user.setLastSeen(now);
+                userRepository.save(user);
+            }
+        });
+    }
 }

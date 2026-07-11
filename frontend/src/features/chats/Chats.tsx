@@ -44,6 +44,15 @@ export const Chats: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const wsRef = useRef<WebSocket | null>(null);
+
+  // Status & Typing States
+  const [typingUsers, setTypingUsers] = useState<Record<string, boolean>>({});
+  const [userStatuses, setUserStatuses] = useState<Record<string, { onlineStatus: string; lastSeen?: string }>>({});
+  const [replyingToMessage, setReplyingToMessage] = useState<any>(null);
+
+  const isTypingRef = useRef(false);
+  const typingTimeoutRef = useRef<any>(null);
 
   // Connect to WebSocket for real-time updates
   useEffect(() => {
@@ -73,6 +82,7 @@ export const Chats: React.FC = () => {
     wsUrl = `${cleanUrl}/ws?token=${token}`;
 
     const ws = new WebSocket(wsUrl);
+    wsRef.current = ws;
 
     ws.onmessage = (event) => {
       try {
@@ -85,6 +95,18 @@ export const Chats: React.FC = () => {
             { type: 'Contact', id: 'LIST' }
           ]));
           window.dispatchEvent(new Event('notification-ws-update'));
+        } else if (payload.event === 'TYPING_START') {
+          setTypingUsers(prev => ({ ...prev, [payload.senderEmail]: true }));
+        } else if (payload.event === 'TYPING_STOP') {
+          setTypingUsers(prev => ({ ...prev, [payload.senderEmail]: false }));
+        } else if (payload.event === 'USER_STATUS_CHANGE') {
+          setUserStatuses(prev => ({
+            ...prev,
+            [payload.email]: {
+              onlineStatus: payload.status,
+              lastSeen: payload.lastSeen
+            }
+          }));
         }
       } catch (err) {
         console.error('Failed to parse WS payload', err);
@@ -93,6 +115,7 @@ export const Chats: React.FC = () => {
 
     return () => {
       ws.close();
+      wsRef.current = null;
     };
   }, [user, dispatch]);
 
@@ -104,6 +127,88 @@ export const Chats: React.FC = () => {
       skip: !selectedContact,
     }
   );
+
+  // Initialize statuses from contacts list
+  useEffect(() => {
+    if (contacts && contacts.length > 0) {
+      const initial: Record<string, { onlineStatus: string; lastSeen?: string }> = {};
+      contacts.forEach(c => {
+        initial[c.email] = {
+          onlineStatus: (c as any).onlineStatus || 'OFFLINE',
+          lastSeen: (c as any).lastSeen
+        };
+      });
+      setUserStatuses(prev => ({ ...initial, ...prev }));
+    }
+  }, [contacts]);
+
+  const getStatusText = (email: string) => {
+    const statusObj = userStatuses[email];
+    if (!statusObj) return 'Offline';
+    if (statusObj.onlineStatus === 'ONLINE') return 'Online';
+    if (statusObj.onlineStatus === 'AWAY') return 'Away';
+    return formatLastSeen(statusObj.lastSeen);
+  };
+
+  const formatLastSeen = (lastSeenStr?: string) => {
+    if (!lastSeenStr) return 'Offline';
+    const date = new Date(lastSeenStr);
+    const now = new Date();
+    
+    if (date.toDateString() === now.toDateString()) {
+      return `Last seen today at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    }
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    if (date.toDateString() === yesterday.toDateString()) {
+      return `Last seen yesterday at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    }
+    
+    return `Last seen on ${date.toLocaleDateString()} at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setTypedMessage(val);
+
+    if (!selectedContact || !wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+
+    if (!isTypingRef.current && val.trim() !== '') {
+      isTypingRef.current = true;
+      wsRef.current.send(JSON.stringify({
+        event: 'TYPING_START',
+        receiverEmail: selectedContact.email
+      }));
+    }
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    typingTimeoutRef.current = setTimeout(() => {
+      if (isTypingRef.current) {
+        isTypingRef.current = false;
+        wsRef.current?.send(JSON.stringify({
+          event: 'TYPING_STOP',
+          receiverEmail: selectedContact.email
+        }));
+      }
+    }, 2000);
+  };
+
+  const stopTyping = () => {
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = null;
+    }
+    if (isTypingRef.current && selectedContact && wsRef.current?.readyState === WebSocket.OPEN) {
+      isTypingRef.current = false;
+      wsRef.current.send(JSON.stringify({
+        event: 'TYPING_STOP',
+        receiverEmail: selectedContact.email
+      }));
+    }
+  };
 
   // Mutations
   const [sendMessageMutation] = useScheduleMessageMutation();
@@ -130,6 +235,19 @@ export const Chats: React.FC = () => {
   const handleCloseMessageMenu = () => {
     setMenuAnchorEl(null);
     setActiveMenuMessage(null);
+  };
+
+  const handleReply = () => {
+    if (!activeMenuMessage) return;
+    // Map replyToMessageSenderName based on sender email
+    const senderName = activeMenuMessage.senderEmail === user?.email ? 'You' : (selectedContact?.name || activeMenuMessage.senderEmail);
+    setReplyingToMessage({
+      id: activeMenuMessage.id,
+      content: activeMenuMessage.content || (activeMenuMessage.messageType !== 'TEXT' ? `[${activeMenuMessage.messageType}]` : ''),
+      replyToMessageSenderName: senderName,
+      senderEmail: activeMenuMessage.senderEmail
+    });
+    handleCloseMessageMenu();
   };
 
   const handleDeleteForEveryone = async () => {
@@ -164,6 +282,7 @@ export const Chats: React.FC = () => {
     e.preventDefault();
     if (!typedMessage.trim() || !selectedContact || sending) return;
 
+    stopTyping();
     setSending(true);
     try {
       const formData = new FormData();
@@ -171,9 +290,13 @@ export const Chats: React.FC = () => {
       formData.append('messageType', 'TEXT');
       formData.append('recurringType', 'NONE');
       formData.append('content', typedMessage.trim());
+      if (replyingToMessage) {
+        formData.append('replyToMessageId', replyingToMessage.id.toString());
+      }
 
       await sendMessageMutation(formData).unwrap();
       setTypedMessage('');
+      setReplyingToMessage(null);
       refetchChatHistory();
     } catch (err: any) {
       console.error('Failed to send message', err);
@@ -263,8 +386,12 @@ export const Chats: React.FC = () => {
       formData.append('recurringType', 'NONE');
       formData.append('content', 'Captured Photo');
       formData.append('file', file);
+      if (replyingToMessage) {
+        formData.append('replyToMessageId', replyingToMessage.id.toString());
+      }
 
       await sendMessageMutation(formData).unwrap();
+      setReplyingToMessage(null);
       handleCloseCamera();
       refetchChatHistory();
     } catch (err) {
@@ -308,8 +435,12 @@ export const Chats: React.FC = () => {
             formData.append('recurringType', 'NONE');
             formData.append('content', 'Voice Recording');
             formData.append('file', file);
+            if (replyingToMessage) {
+              formData.append('replyToMessageId', replyingToMessage.id.toString());
+            }
 
             await sendMessageMutation(formData).unwrap();
+            setReplyingToMessage(null);
             refetchChatHistory();
           } catch (err) {
             console.error('Failed to send audio recording', err);
@@ -506,12 +637,28 @@ export const Chats: React.FC = () => {
                           }}
                         >
                           <ListItemAvatar>
-                            <Avatar 
-                              src={getMediaUrl(c.profilePhotoUrl) || undefined}
-                              sx={{ bgcolor: isSelected ? '#818cf8' : '#334155', color: '#fff', fontWeight: 600 }}
-                            >
-                              {!c.profilePhotoUrl && c.name.charAt(0).toUpperCase()}
-                            </Avatar>
+                            <Box sx={{ position: 'relative' }}>
+                              <Avatar 
+                                src={getMediaUrl(c.profilePhotoUrl) || undefined}
+                                sx={{ bgcolor: isSelected ? '#818cf8' : '#334155', color: '#fff', fontWeight: 600 }}
+                              >
+                                {!c.profilePhotoUrl && c.name.charAt(0).toUpperCase()}
+                              </Avatar>
+                              {userStatuses[c.email] && (
+                                <Box sx={{
+                                  position: 'absolute',
+                                  bottom: 2,
+                                  right: 2,
+                                  width: '12px',
+                                  height: '12px',
+                                  borderRadius: '50%',
+                                  bgcolor: userStatuses[c.email].onlineStatus === 'ONLINE' ? '#10b981' : 
+                                           userStatuses[c.email].onlineStatus === 'AWAY' ? '#f59e0b' : '#94a3b8',
+                                  border: '2px solid',
+                                  borderColor: theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff'
+                                }} />
+                              )}
+                            </Box>
                           </ListItemAvatar>
                           <ListItemText
                             primary={
@@ -537,8 +684,16 @@ export const Chats: React.FC = () => {
                                 )}
                               </Box>
                             }
-                             secondary={c.email}
-                             secondaryTypographyProps={{ color: 'text.secondary', fontSize: '0.8rem' }}
+                            secondary={
+                              typingUsers[c.email] ? (
+                                <Typography component="span" variant="body2" sx={{ color: '#10b981', fontStyle: 'italic', fontWeight: 600, fontSize: '0.8rem', display: 'block' }}>
+                                  typing...
+                                </Typography>
+                              ) : (
+                                c.email
+                              )
+                            }
+                            secondaryTypographyProps={{ color: 'text.secondary', fontSize: '0.8rem' }}
                           />
                         </ListItemButton>
                       </ListItem>
@@ -586,15 +741,21 @@ export const Chats: React.FC = () => {
                     >
                       {!selectedContact.profilePhotoUrl && selectedContact.name.charAt(0).toUpperCase()}
                     </Avatar>
-                     <Box>
-                       <Typography variant="subtitle1" sx={{ color: 'text.primary', fontWeight: 700 }}>
-                         {selectedContact.name}
-                       </Typography>
-                       <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                         {selectedContact.email}
-                       </Typography>
-                     </Box>
-                  </Box>
+                      <Box>
+                        <Typography variant="subtitle1" sx={{ color: 'text.primary', fontWeight: 700, lineHeight: 1.2 }}>
+                          {selectedContact.name}
+                        </Typography>
+                        {typingUsers[selectedContact.email] ? (
+                          <Typography variant="caption" sx={{ color: '#10b981', fontStyle: 'italic', fontWeight: 600 }}>
+                            typing...
+                          </Typography>
+                        ) : (
+                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                            {getStatusText(selectedContact.email)}
+                          </Typography>
+                        )}
+                      </Box>
+                   </Box>
 
                   <Button
                     variant="outlined"
@@ -638,6 +799,7 @@ export const Chats: React.FC = () => {
                       
                       return (
                         <Box
+                          id={`message-${m.id}`}
                           key={m.id}
                           sx={{
                             display: 'flex',
@@ -687,6 +849,44 @@ export const Chats: React.FC = () => {
                                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                               }}
                             >
+                               {m.replyToMessageId && (
+                                 <Box
+                                   onClick={() => {
+                                     const el = document.getElementById(`message-${m.replyToMessageId}`);
+                                     el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                   }}
+                                   sx={{
+                                     p: 1,
+                                     mb: 1,
+                                     borderRadius: '6px',
+                                     bgcolor: isMe ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                                     borderLeft: '4px solid',
+                                     borderColor: isMe ? '#ec4899' : '#818cf8',
+                                     cursor: 'pointer',
+                                     display: 'flex',
+                                     flexDirection: 'column',
+                                     gap: 0.25,
+                                     maxWidth: '100%',
+                                     '&:hover': {
+                                       bgcolor: isMe ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.1)'
+                                     }
+                                   }}
+                                 >
+                                   <Typography variant="caption" sx={{ fontWeight: 700, color: isMe ? '#f472b6' : '#a5b4fc', fontSize: '0.75rem' }}>
+                                     {m.replyToMessageSenderName}
+                                   </Typography>
+                                   <Typography variant="body2" sx={{
+                                     fontSize: '0.8rem',
+                                     color: isMe ? 'rgba(255,255,255,0.8)' : 'text.secondary',
+                                     whiteSpace: 'nowrap',
+                                     overflow: 'hidden',
+                                     textOverflow: 'ellipsis',
+                                     maxWidth: '240px'
+                                   }}>
+                                     {m.replyToMessageContent}
+                                   </Typography>
+                                 </Box>
+                               )}
                               {m.messageType === 'TEXT' ? (
                                 <Typography variant="body2" sx={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>
                                   {m.content}
@@ -776,93 +976,134 @@ export const Chats: React.FC = () => {
 
                 {/* Input Tray */}
                 <Box
-                  component="form"
-                  onSubmit={handleSendMessage}
                   sx={{
-                     p: 2,
-                     borderTop: '1px solid',
-                     borderTopColor: 'divider',
-                     bgcolor: 'transparent',
-                     display: 'flex',
-                     alignItems: 'center',
-                     gap: 1.5
-                   }}
+                    borderTop: '1px solid',
+                    borderTopColor: 'divider',
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}
                 >
-                  {isRecording ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 2, bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)', py: 0.5, px: 2, borderRadius: '24px' }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexGrow: 1 }}>
-                        <Box
+                  {replyingToMessage && (
+                    <Box
+                      sx={{
+                        p: 1.5,
+                        px: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
+                        borderBottom: '1px solid',
+                        borderBottomColor: 'divider',
+                        borderLeft: '4px solid #818cf8'
+                      }}
+                    >
+                      <Box sx={{ minWidth: 0 }}>
+                        <Typography variant="caption" sx={{ fontWeight: 700, color: 'primary.main', display: 'block' }}>
+                          Replying to {replyingToMessage.replyToMessageSenderName}
+                        </Typography>
+                        <Typography variant="body2" sx={{
+                          fontSize: '0.85rem',
+                          color: 'text.secondary',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          maxWidth: '500px'
+                        }}>
+                          {replyingToMessage.content}
+                        </Typography>
+                      </Box>
+                      <IconButton size="small" onClick={() => setReplyingToMessage(null)}>
+                        <CloseIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  )}
+                  <Box
+                    component="form"
+                    onSubmit={handleSendMessage}
+                    sx={{
+                       p: 2,
+                       bgcolor: 'transparent',
+                       display: 'flex',
+                       alignItems: 'center',
+                       gap: 1.5
+                     }}
+                  >
+                    {isRecording ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 2, bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)', py: 0.5, px: 2, borderRadius: '24px' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexGrow: 1 }}>
+                          <Box
+                            sx={{
+                              width: 8,
+                              height: 8,
+                              borderRadius: '50%',
+                              bgcolor: '#ef4444',
+                              animation: 'pulse 1.2s infinite',
+                              '@keyframes pulse': {
+                                '0%': { opacity: 0.3 },
+                                '50%': { opacity: 1 },
+                                '100%': { opacity: 0.3 }
+                              }
+                            }}
+                          />
+                          <Typography variant="body2" sx={{ color: 'text.primary', fontWeight: 600 }}>
+                            Recording Audio... {formatRecordingTime(recordingSeconds)}
+                          </Typography>
+                        </Box>
+                        <IconButton onClick={cancelRecording} color="error" size="small" disabled={sending}>
+                          <CloseIcon />
+                        </IconButton>
+                        <IconButton onClick={stopRecording} sx={{ bgcolor: '#10b981', color: '#fff', '&:hover': { bgcolor: '#059669' } }} size="small" disabled={sending}>
+                          <SendIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    ) : (
+                      <>
+                        <IconButton onClick={startCamera} color="primary" size="small" disabled={sending}>
+                          <CameraIcon />
+                        </IconButton>
+                        <IconButton onClick={startRecording} color="primary" size="small" disabled={sending}>
+                          <MicIcon />
+                        </IconButton>
+                        <TextField
+                          fullWidth
+                          size="small"
+                          placeholder="Type a message..."
+                          value={typedMessage}
+                          onChange={handleInputChange}
+                          disabled={sending}
+                          autoComplete="off"
+                          slotProps={{
+                            input: {
+                              style: { color: theme.palette.text.primary }
+                            }
+                          }}
                           sx={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: '50%',
-                            bgcolor: '#ef4444',
-                            animation: 'pulse 1.2s infinite',
-                            '@keyframes pulse': {
-                              '0%': { opacity: 0.3 },
-                              '50%': { opacity: 1 },
-                              '100%': { opacity: 0.3 }
+                            '& .MuiOutlinedInput-root': {
+                              bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
+                              borderRadius: '24px',
+                              '& fieldset': { borderColor: 'divider' },
+                              '&:hover fieldset': { borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)' },
+                              '&.Mui-focused fieldset': { borderColor: theme.palette.primary.main },
                             }
                           }}
                         />
-                        <Typography variant="body2" sx={{ color: 'text.primary', fontWeight: 600 }}>
-                          Recording Audio... {formatRecordingTime(recordingSeconds)}
-                        </Typography>
-                      </Box>
-                      <IconButton onClick={cancelRecording} color="error" size="small" disabled={sending}>
-                        <CloseIcon />
-                      </IconButton>
-                      <IconButton onClick={stopRecording} sx={{ bgcolor: '#10b981', color: '#fff', '&:hover': { bgcolor: '#059669' } }} size="small" disabled={sending}>
-                        <SendIcon fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  ) : (
-                    <>
-                      <IconButton onClick={startCamera} color="primary" size="small" disabled={sending}>
-                        <CameraIcon />
-                      </IconButton>
-                      <IconButton onClick={startRecording} color="primary" size="small" disabled={sending}>
-                        <MicIcon />
-                      </IconButton>
-                      <TextField
-                        fullWidth
-                        size="small"
-                        placeholder="Type a message..."
-                        value={typedMessage}
-                        onChange={(e) => setTypedMessage(e.target.value)}
-                        disabled={sending}
-                        autoComplete="off"
-                        slotProps={{
-                          input: {
-                            style: { color: theme.palette.text.primary }
-                          }
-                        }}
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
-                            borderRadius: '24px',
-                            '& fieldset': { borderColor: 'divider' },
-                            '&:hover fieldset': { borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)' },
-                            '&.Mui-focused fieldset': { borderColor: theme.palette.primary.main },
-                          }
-                        }}
-                      />
-                      <IconButton
-                        type="submit"
-                        disabled={!typedMessage.trim() || sending}
-                        sx={{
-                          bgcolor: '#4f46e5',
-                          color: '#fff',
-                          '&:hover': { bgcolor: '#6366f1' },
-                          '&.Mui-disabled': { bgcolor: 'action.disabledBackground', color: 'text.disabled' },
-                          width: 40,
-                          height: 40
-                        }}
-                      >
-                        <SendIcon fontSize="small" />
-                      </IconButton>
-                    </>
-                  )}
+                        <IconButton
+                          type="submit"
+                          disabled={!typedMessage.trim() || sending}
+                          sx={{
+                            bgcolor: '#4f46e5',
+                            color: '#fff',
+                            '&:hover': { bgcolor: '#6366f1' },
+                            '&.Mui-disabled': { bgcolor: 'action.disabledBackground', color: 'text.disabled' },
+                            width: 40,
+                            height: 40
+                          }}
+                        >
+                          <SendIcon fontSize="small" />
+                        </IconButton>
+                      </>
+                    )}
+                  </Box>
                 </Box>
               </>
             ) : (
@@ -904,6 +1145,9 @@ export const Chats: React.FC = () => {
           </MenuItem>
         ) : (
           [
+            <MenuItem key="reply" onClick={handleReply}>
+              Reply
+            </MenuItem>,
             <MenuItem key="delete-for-me" onClick={handleDeleteForMe}>
               Delete for me
             </MenuItem>,

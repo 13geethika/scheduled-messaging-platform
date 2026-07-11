@@ -73,6 +73,22 @@ public class ContactController {
         return ResponseEntity.ok(ApiResponse.success("Contact blocked successfully", null));
     }
 
+    @PostMapping("/{id}/unblock")
+    public ResponseEntity<ApiResponse<Void>> unblockContact(@PathVariable("id") Long id) {
+        User user = getAuthenticatedUser();
+        contactService.unblockContact(user, id);
+        return ResponseEntity.ok(ApiResponse.success("Contact unblocked successfully", null));
+    }
+
+    @PutMapping("/{id}/alias")
+    public ResponseEntity<ApiResponse<Void>> updateContactAlias(
+            @PathVariable("id") Long id,
+            @RequestParam("alias") String alias) {
+        User user = getAuthenticatedUser();
+        contactService.updateContactAlias(user, id, alias);
+        return ResponseEntity.ok(ApiResponse.success("Contact alias updated successfully", null));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> removeContact(@PathVariable("id") Long id) {
         User user = getAuthenticatedUser();

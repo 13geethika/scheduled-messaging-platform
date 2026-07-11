@@ -25,15 +25,18 @@ public class ContactServiceImpl implements ContactService {
     private final UserRepository userRepository;
     private final NotificationService notificationService;
     private final MessageRepository messageRepository;
+    private final com.enterprise.scheduler.config.ChatWebSocketHandler chatWebSocketHandler;
 
     public ContactServiceImpl(ContactRepository contactRepository, 
                               UserRepository userRepository,
                               NotificationService notificationService,
-                              MessageRepository messageRepository) {
+                              MessageRepository messageRepository,
+                              com.enterprise.scheduler.config.ChatWebSocketHandler chatWebSocketHandler) {
         this.contactRepository = contactRepository;
         this.userRepository = userRepository;
         this.notificationService = notificationService;
         this.messageRepository = messageRepository;
+        this.chatWebSocketHandler = chatWebSocketHandler;
     }
 
     @Override
@@ -147,7 +150,7 @@ public class ContactServiceImpl implements ContactService {
             throw new IllegalArgumentException("Unauthorized to reject this request");
         }
 
-        contactRepository.delete(request);
+        contactRepository.hardDeleteById(request.getId());
     }
 
     @Override
@@ -163,9 +166,8 @@ public class ContactServiceImpl implements ContactService {
         contact.setStatus(ContactStatus.BLOCKED);
         contactRepository.save(contact);
 
-        // Update reverse record if it exists to also reflect the block or delete it
-        Optional<Contact> reverse = contactRepository.findByUserAndContactUser(contact.getContactUser(), user);
-        reverse.ifPresent(contactRepository::delete);
+        // Hard delete reverse record if it exists to avoid unique constraint violations on unblock
+        contactRepository.hardDeleteByUserAndContactUser(contact.getContactUser().getId(), user.getId());
     }
 
     @Override
@@ -180,12 +182,11 @@ public class ContactServiceImpl implements ContactService {
 
         User associatedUser = contact.getContactUser();
         
-        // Delete original record
-        contactRepository.delete(contact);
+        // Hard delete original record to clear space for potential future adds
+        contactRepository.hardDeleteById(contact.getId());
 
-        // Delete reverse record
-        Optional<Contact> reverse = contactRepository.findByUserAndContactUser(associatedUser, user);
-        reverse.ifPresent(contactRepository::delete);
+        // Hard delete reverse record
+        contactRepository.hardDeleteByUserAndContactUser(associatedUser.getId(), user.getId());
     }
 
     @Override
@@ -201,14 +202,78 @@ public class ContactServiceImpl implements ContactService {
                 currentUser,
                 com.enterprise.scheduler.message.MessageStatus.DELIVERED
         );
+
+        User contactUser = contact.getContactUser();
+        String onlineStatus = "OFFLINE";
+        if (chatWebSocketHandler.isUserOnline(contactUser.getEmail())) {
+            onlineStatus = "ONLINE";
+        } else if (contactUser.getLastSeen() != null && 
+                   java.time.Duration.between(contactUser.getLastSeen(), java.time.Instant.now()).toHours() < 1) {
+            onlineStatus = "AWAY";
+        }
+
         return ContactResponse.builder()
                 .id(contact.getId())
-                .contactId(contact.getContactUser().getId())
-                .name(contact.getContactUser().getName())
-                .email(contact.getContactUser().getEmail())
+                .contactId(contactUser.getId())
+                .name(contact.getCustomName() != null ? contact.getCustomName() : contactUser.getName())
+                .email(contactUser.getEmail())
                 .status(contact.getStatus().name())
-                .profilePhotoUrl(contact.getContactUser().getProfilePhotoUrl())
+                .profilePhotoUrl(contactUser.getProfilePhotoUrl())
                 .unreadCount(unread)
+                .unblockCount(contact.getUnblockCount())
+                .onlineStatus(onlineStatus)
+                .lastSeen(contactUser.getLastSeen())
+                .customName(contact.getCustomName())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void unblockContact(User user, Long contactRecordId) {
+        Contact contact = contactRepository.findById(contactRecordId)
+                .orElseThrow(() -> new ResourceNotFoundException("Contact record not found"));
+
+        if (!contact.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("Unauthorized access to this contact");
+        }
+
+        if (contact.getStatus() != ContactStatus.BLOCKED) {
+            throw new IllegalArgumentException("This contact is not blocked");
+        }
+
+        if (contact.getUnblockCount() >= 2) {
+            throw new IllegalArgumentException("Maximum unblock limit exceeded (2 times max). You can no longer unblock this contact.");
+        }
+
+        contact.setUnblockCount(contact.getUnblockCount() + 1);
+        contact.setStatus(ContactStatus.ACCEPTED);
+        contactRepository.save(contact);
+
+        // Safety hard-delete B -> A first to ensure no soft-deleted constraints clash
+        User contactUser = contact.getContactUser();
+        contactRepository.hardDeleteByUserAndContactUser(contactUser.getId(), user.getId());
+
+        // Restore reverse contact relationship so they can message each other
+        Contact reverseContact = Contact.builder()
+                .user(contactUser)
+                .contactUser(user)
+                .status(ContactStatus.ACCEPTED)
+                .unblockCount(0)
+                .build();
+        contactRepository.save(reverseContact);
+    }
+
+    @Override
+    @Transactional
+    public void updateContactAlias(User user, Long contactRecordId, String alias) {
+        Contact contact = contactRepository.findById(contactRecordId)
+                .orElseThrow(() -> new ResourceNotFoundException("Contact record not found"));
+
+        if (!contact.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("Unauthorized access to this contact");
+        }
+
+        contact.setCustomName(alias != null && !alias.trim().isEmpty() ? alias.trim() : null);
+        contactRepository.save(contact);
     }
 }

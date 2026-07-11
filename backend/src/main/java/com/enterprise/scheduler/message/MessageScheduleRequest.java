@@ -20,4 +20,6 @@ public class MessageScheduleRequest {
     private Instant scheduledTime;
 
     private String recurringType = "NONE"; // NONE, DAILY, WEEKLY, MONTHLY
+
+    private Long replyToMessageId;
 }

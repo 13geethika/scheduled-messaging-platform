@@ -11,6 +11,8 @@ public interface ContactService {
     void acceptContactRequest(User user, Long contactRecordId);
     void rejectContactRequest(User user, Long contactRecordId);
     void blockContact(User user, Long contactRecordId);
+    void unblockContact(User user, Long contactRecordId);
+    void updateContactAlias(User user, Long contactRecordId, String alias);
     void removeContact(User user, Long contactRecordId);
     List<ContactResponse> searchContacts(User user, String query);
 }

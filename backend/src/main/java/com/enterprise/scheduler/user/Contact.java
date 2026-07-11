@@ -43,6 +43,13 @@ public class Contact {
     @Builder.Default
     private boolean deleted = false;
 
+    @Column(name = "unblock_count", nullable = false)
+    @Builder.Default
+    private int unblockCount = 0;
+
+    @Column(name = "custom_name")
+    private String customName;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;

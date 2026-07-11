@@ -6,7 +6,9 @@ import {
   useAcceptContactRequestMutation,
   useRejectContactRequestMutation,
   useBlockContactMutation,
-  useRemoveContactMutation
+  useRemoveContactMutation,
+  useUnblockContactMutation,
+  useUpdateContactAliasMutation
 } from '../../store/contacts/contactsApi';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -14,11 +16,13 @@ import * as yup from 'yup';
 import {
   Box, Typography, Grid, Paper, Tabs, Tab, TextField, Button, List,
   ListItem, ListItemText, ListItemSecondaryAction, IconButton, Alert,
-  Avatar, CircularProgress, Tooltip, Divider
+  Avatar, CircularProgress, Tooltip, Divider, Dialog, DialogTitle,
+  DialogContent, DialogActions
 } from '@mui/material';
 import {
   PersonAdd as AddIcon, Check as AcceptIcon, Close as RejectIcon,
-  Block as BlockIcon, Delete as DeleteIcon, Search as SearchIcon
+  Block as BlockIcon, Delete as DeleteIcon, Search as SearchIcon,
+  LockOpen as LockOpenIcon, Edit as EditIcon
 } from '@mui/icons-material';
 
 const addSchema = yup.object().shape({
@@ -46,6 +50,35 @@ export const Contacts: React.FC = () => {
   const [rejectRequest] = useRejectContactRequestMutation();
   const [blockContactMutation] = useBlockContactMutation();
   const [removeContactMutation] = useRemoveContactMutation();
+  const [unblockContactMutation] = useUnblockContactMutation();
+  const [updateContactAlias] = useUpdateContactAliasMutation();
+
+  // Alias Dialog States
+  const [aliasDialogOpen, setAliasDialogOpen] = useState(false);
+  const [selectedAliasContact, setSelectedAliasContact] = useState<any>(null);
+  const [aliasInput, setAliasInput] = useState('');
+
+  const handleEditAliasClick = (contact: any) => {
+    setSelectedAliasContact(contact);
+    setAliasInput(contact.customName || '');
+    setAliasDialogOpen(true);
+  };
+
+  const handleSaveAlias = async () => {
+    if (!selectedAliasContact) return;
+    try {
+      setSuccessMessage(null);
+      setErrorMessage(null);
+      await updateContactAlias({ id: selectedAliasContact.id, alias: aliasInput }).unwrap();
+      setSuccessMessage('Nickname updated successfully');
+      setAliasDialogOpen(false);
+      setSelectedAliasContact(null);
+      setAliasInput('');
+      refetchContacts();
+    } catch (err: any) {
+      setErrorMessage(err.data?.message || 'Failed to update nickname');
+    }
+  };
 
   useEffect(() => {
     // Clear messages on mount
@@ -121,6 +154,18 @@ export const Contacts: React.FC = () => {
     }
   };
 
+  const handleUnblock = async (id: number) => {
+    try {
+      setSuccessMessage(null);
+      setErrorMessage(null);
+      const res = await unblockContactMutation(id).unwrap();
+      setSuccessMessage(res.message || 'Contact unblocked successfully');
+      refetchContacts();
+    } catch (err: any) {
+      setErrorMessage(err.data?.message || 'Failed to unblock contact');
+    }
+  };
+
   const filteredContacts = contacts.filter(c =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.email.toLowerCase().includes(searchQuery.toLowerCase())
@@ -189,24 +234,39 @@ export const Contacts: React.FC = () => {
                           <Avatar sx={{ bgcolor: 'rgba(99, 102, 241, 0.1)', color: '#818cf8', mr: 2, fontWeight: 700 }}>
                             {c.name.charAt(0).toUpperCase()}
                           </Avatar>
-                          <ListItemText
-                            primary={c.name}
-                            secondary={c.email}
-                            primaryTypographyProps={{ fontWeight: 600, color: 'text.primary' }}
-                            secondaryTypographyProps={{ color: '#64748b' }}
-                          />
-                          <ListItemSecondaryAction>
-                            <Tooltip title="Block User">
-                              <IconButton onClick={() => handleBlock(c.id)} sx={{ color: '#f59e0b', mr: 1 }}>
-                                <BlockIcon />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Remove Connection">
-                              <IconButton onClick={() => handleRemove(c.id)} sx={{ color: '#ef4444' }}>
-                                <DeleteIcon />
-                              </IconButton>
-                            </Tooltip>
-                          </ListItemSecondaryAction>
+                           <ListItemText
+                             primary={
+                               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                 <Typography sx={{ fontWeight: 600, color: 'text.primary' }}>
+                                   {c.name}
+                                 </Typography>
+                                 {c.customName && (
+                                   <Typography variant="caption" sx={{ color: 'text.secondary', bgcolor: 'action.selected', px: 1, py: 0.25, borderRadius: '4px', fontSize: '0.7rem' }}>
+                                     Private Nickname
+                                   </Typography>
+                                 )}
+                               </Box>
+                             }
+                             secondary={c.email}
+                             secondaryTypographyProps={{ color: '#64748b' }}
+                           />
+                           <ListItemSecondaryAction>
+                             <Tooltip title="Edit Nickname">
+                               <IconButton onClick={() => handleEditAliasClick(c)} sx={{ color: '#818cf8', mr: 1 }}>
+                                 <EditIcon />
+                               </IconButton>
+                             </Tooltip>
+                             <Tooltip title="Block User">
+                               <IconButton onClick={() => handleBlock(c.id)} sx={{ color: '#f59e0b', mr: 1 }}>
+                                 <BlockIcon />
+                               </IconButton>
+                             </Tooltip>
+                             <Tooltip title="Remove Connection">
+                               <IconButton onClick={() => handleRemove(c.id)} sx={{ color: '#ef4444' }}>
+                                 <DeleteIcon />
+                               </IconButton>
+                             </Tooltip>
+                           </ListItemSecondaryAction>
                         </ListItem>
                         <Divider sx={{ borderColor: 'divider' }} />
                       </React.Fragment>
@@ -273,19 +333,36 @@ export const Contacts: React.FC = () => {
                           <Avatar sx={{ bgcolor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', mr: 2, fontWeight: 700 }}>
                             {c.name.charAt(0).toUpperCase()}
                           </Avatar>
-                          <ListItemText
-                            primary={c.name}
-                            secondary={c.email}
-                            primaryTypographyProps={{ fontWeight: 600, color: 'text.primary' }}
-                            secondaryTypographyProps={{ color: 'text.secondary' }}
-                          />
-                          <ListItemSecondaryAction>
-                            <Tooltip title="Unblock / Remove">
-                              <IconButton onClick={() => handleRemove(c.id)} sx={{ color: '#ef4444' }}>
-                                <DeleteIcon />
-                              </IconButton>
-                            </Tooltip>
-                          </ListItemSecondaryAction>
+                           <ListItemText
+                             primary={c.name}
+                             secondary={
+                               <>
+                                 <Typography variant="body2" component="span" sx={{ display: 'block', color: 'text.secondary' }}>{c.email}</Typography>
+                                 <Typography variant="caption" component="span" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+                                   Unblocked {c.unblockCount ?? 0}/2 times
+                                 </Typography>
+                               </>
+                             }
+                             primaryTypographyProps={{ fontWeight: 600, color: 'text.primary' }}
+                           />
+                           <ListItemSecondaryAction>
+                             <Tooltip title={c.unblockCount !== undefined && c.unblockCount >= 2 ? "Unblock limit reached (max 2)" : "Unblock User"}>
+                               <span>
+                                 <IconButton 
+                                   onClick={() => handleUnblock(c.id)} 
+                                   disabled={c.unblockCount !== undefined && c.unblockCount >= 2}
+                                   sx={{ color: '#10b981', mr: 1, '&.Mui-disabled': { color: 'rgba(16, 185, 129, 0.3)' } }}
+                                 >
+                                   <LockOpenIcon />
+                                 </IconButton>
+                               </span>
+                             </Tooltip>
+                             <Tooltip title="Delete Relationship">
+                               <IconButton onClick={() => handleRemove(c.id)} sx={{ color: '#ef4444' }}>
+                                 <DeleteIcon />
+                               </IconButton>
+                             </Tooltip>
+                           </ListItemSecondaryAction>
                         </ListItem>
                         <Divider sx={{ borderColor: 'divider' }} />
                       </React.Fragment>
@@ -338,6 +415,33 @@ export const Contacts: React.FC = () => {
           </Paper>
         </Grid>
       </Grid>
+
+      {/* Edit Nickname Dialog */}
+      <Dialog open={aliasDialogOpen} onClose={() => setAliasDialogOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ fontWeight: 700 }}>Edit Contact Nickname</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
+            Set a convenient private name for this contact. This is private to your account and does not affect their profile name.
+          </Typography>
+          <TextField
+            autoFocus
+            fullWidth
+            size="small"
+            label="Nickname / Alias"
+            value={aliasInput}
+            onChange={(e) => setAliasInput(e.target.value)}
+            placeholder={selectedAliasContact?.name}
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2.5 }}>
+          <Button onClick={() => setAliasDialogOpen(false)} variant="outlined" sx={{ borderRadius: '8px' }}>
+            Cancel
+          </Button>
+          <Button onClick={handleSaveAlias} variant="contained" sx={{ borderRadius: '8px' }}>
+            Save Nickname
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
