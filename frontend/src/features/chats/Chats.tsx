@@ -43,7 +43,6 @@ import {
   Close as CloseIcon,
   Group as GroupIcon,
   Add as AddIcon,
-  Settings as SettingsIcon,
   ExitToApp as LeaveIcon,
   CloudUpload as UploadIcon,
   InfoOutlined as InfoIcon,
