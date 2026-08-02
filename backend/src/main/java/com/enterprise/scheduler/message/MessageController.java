@@ -101,6 +101,13 @@ public class MessageController {
         return ResponseEntity.ok(ApiResponse.success("Chat history retrieved successfully", list));
     }
 
+    @GetMapping("/group/{groupId}")
+    public ResponseEntity<ApiResponse<List<MessageResponse>>> getGroupChatHistory(@PathVariable("groupId") Long groupId) {
+        User user = getAuthenticatedUser();
+        List<MessageResponse> list = messageService.getGroupChatHistory(user, groupId);
+        return ResponseEntity.ok(ApiResponse.success("Group chat history retrieved successfully", list));
+    }
+
     @PostMapping("/chat/read")
     public ResponseEntity<ApiResponse<Void>> markChatAsRead(@RequestParam("email") String email) {
         User user = getAuthenticatedUser();

@@ -8,7 +8,8 @@ import {
   useDeleteMessageMutation,
   usePauseMessageMutation,
   useResumeMessageMutation,
-  useRetryFailedMessageMutation
+  useRetryFailedMessageMutation,
+  useGetGroupsQuery
 } from '../../store/messages/messagesApi';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -26,7 +27,17 @@ import {
 } from '@mui/icons-material';
 
 const schema = yup.object().shape({
-  receiverEmail: yup.string().email('Enter a valid email').required('Recipient is required'),
+  recipientType: yup.string().required(),
+  receiverEmail: yup.string().nullable().when('recipientType', {
+    is: 'direct',
+    then: (s) => s.email('Enter a valid email').required('Recipient is required'),
+    otherwise: (s) => s.nullable(),
+  }),
+  groupId: yup.string().nullable().when('recipientType', {
+    is: 'group',
+    then: (s) => s.required('Group is required'),
+    otherwise: (s) => s.nullable(),
+  }),
   content: yup.string().when('messageType', {
     is: 'TEXT',
     then: (s) => s.required('Content is required for text messages'),
@@ -56,6 +67,7 @@ const formatToLocalDatetimeLocal = (utcString: string) => {
 export const Scheduler: React.FC = () => {
   const location = useLocation();
   const prefilledEmail = location.state?.prefilledEmail;
+  const prefilledGroupId = location.state?.prefilledGroupId;
 
   // Local Alerts
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -63,6 +75,7 @@ export const Scheduler: React.FC = () => {
 
   // Queries
   const { data: contacts = [] } = useGetContactsQuery('ACCEPTED');
+  const { data: groups = [] } = useGetGroupsQuery();
   const { data: messages = [], isLoading: loadingMessages, refetch: refetchMessages } = useGetMessagesQuery();
 
   // Mutations
@@ -84,27 +97,42 @@ export const Scheduler: React.FC = () => {
   const { register, handleSubmit, control, watch, reset, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
+      recipientType: 'direct',
       messageType: 'TEXT',
       recurringType: 'NONE',
       receiverEmail: '',
+      groupId: '',
       content: '',
       scheduledTime: '',
     }
   });
 
   const selectedMessageType = watch('messageType');
+  const watchRecipientType = watch('recipientType');
 
   useEffect(() => {
     if (prefilledEmail) {
       reset({
+        recipientType: 'direct',
         messageType: 'TEXT',
         recurringType: 'NONE',
         receiverEmail: prefilledEmail,
+        groupId: '',
+        content: '',
+        scheduledTime: '',
+      });
+    } else if (prefilledGroupId) {
+      reset({
+        recipientType: 'group',
+        messageType: 'TEXT',
+        recurringType: 'NONE',
+        receiverEmail: '',
+        groupId: prefilledGroupId.toString(),
         content: '',
         scheduledTime: '',
       });
     }
-  }, [prefilledEmail, reset]);
+  }, [prefilledEmail, prefilledGroupId, reset]);
 
   const onSchedule = async (data: any) => {
     try {
@@ -112,7 +140,11 @@ export const Scheduler: React.FC = () => {
       setErrorMessage(null);
 
       const formData = new FormData();
-      formData.append('receiverEmail', data.receiverEmail);
+      if (data.recipientType === 'group') {
+        formData.append('groupId', data.groupId);
+      } else {
+        formData.append('receiverEmail', data.receiverEmail);
+      }
       formData.append('messageType', data.messageType);
       formData.append('scheduledTime', new Date(data.scheduledTime).toISOString());
       formData.append('recurringType', data.recurringType);
@@ -126,11 +158,13 @@ export const Scheduler: React.FC = () => {
       await scheduleMsg(formData).unwrap();
       setSuccessMessage('Message scheduled successfully');
       reset({
+        recipientType: 'direct',
         messageType: 'TEXT',
         recurringType: 'NONE',
         content: '',
         scheduledTime: '',
         receiverEmail: '',
+        groupId: '',
       });
       setSelectedFile(null);
       refetchMessages();
@@ -162,7 +196,11 @@ export const Scheduler: React.FC = () => {
       setErrorMessage(null);
 
       const formData = new FormData();
-      formData.append('receiverEmail', editingMsg.receiverEmail);
+      if (editingMsg.groupId) {
+        formData.append('groupId', editingMsg.groupId.toString());
+      } else {
+        formData.append('receiverEmail', editingMsg.receiverEmail);
+      }
       formData.append('messageType', editingMsg.messageType);
       formData.append('scheduledTime', new Date(editingMsg.scheduledTime).toISOString());
       formData.append('recurringType', editingMsg.recurringType);
@@ -278,30 +316,72 @@ export const Scheduler: React.FC = () => {
             </Box>
             
             <form onSubmit={handleSubmit(onSchedule)} noValidate>
-              {/* Recipient selection */}
-              <FormControl fullWidth sx={{ mb: 2.5 }} error={!!errors.receiverEmail}>
-                <InputLabel>Recipient</InputLabel>
+              {/* Send To (Recipient Type) */}
+              <FormControl fullWidth sx={{ mb: 2.5 }}>
+                <InputLabel>Send To</InputLabel>
                 <Controller
-                  name="receiverEmail"
+                  name="recipientType"
                   control={control}
                   render={({ field }) => (
                     <Select
                       {...field}
-                      label="Recipient"
-                      sx={{}}
+                      label="Send To"
                     >
-                      {contacts.length === 0 ? (
-                        <MenuItem disabled value="">No contacts available</MenuItem>
-                      ) : (
-                        contacts.map(c => (
-                          <MenuItem key={c.id} value={c.email}>{c.name} ({c.email})</MenuItem>
-                        ))
-                      )}
+                      <MenuItem value="direct">Individual Contact</MenuItem>
+                      <MenuItem value="group">Group Chat</MenuItem>
                     </Select>
                   )}
                 />
-                <FormHelperText>{errors.receiverEmail?.message}</FormHelperText>
               </FormControl>
+
+              {/* Recipient selection */}
+              {watchRecipientType === 'group' ? (
+                <FormControl fullWidth sx={{ mb: 2.5 }} error={!!errors.groupId}>
+                  <InputLabel>Group</InputLabel>
+                  <Controller
+                    name="groupId"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        label="Group"
+                      >
+                        {groups.length === 0 ? (
+                          <MenuItem disabled value="">No groups available</MenuItem>
+                        ) : (
+                          groups.map(g => (
+                            <MenuItem key={g.id} value={g.id.toString()}>{g.name}</MenuItem>
+                          ))
+                        )}
+                      </Select>
+                    )}
+                  />
+                  <FormHelperText>{errors.groupId?.message}</FormHelperText>
+                </FormControl>
+              ) : (
+                <FormControl fullWidth sx={{ mb: 2.5 }} error={!!errors.receiverEmail}>
+                  <InputLabel>Recipient</InputLabel>
+                  <Controller
+                    name="receiverEmail"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        label="Recipient"
+                      >
+                        {contacts.length === 0 ? (
+                          <MenuItem disabled value="">No contacts available</MenuItem>
+                        ) : (
+                          contacts.map(c => (
+                            <MenuItem key={c.id} value={c.email}>{c.name} ({c.email})</MenuItem>
+                          ))
+                        )}
+                      </Select>
+                    )}
+                  />
+                  <FormHelperText>{errors.receiverEmail?.message}</FormHelperText>
+                </FormControl>
+              )}
 
               {/* Message Type */}
               <FormControl fullWidth sx={{ mb: 2.5 }}>
@@ -443,8 +523,8 @@ export const Scheduler: React.FC = () => {
                       <TableRow key={m.id} sx={{ '& td': { borderColor: 'divider', color: 'text.primary' } }}>
                         <TableCell>
                           <Box>
-                            <Typography variant="body2" sx={{ fontWeight: 600 }}>{m.receiverName}</Typography>
-                            <Typography variant="caption" sx={{ color: '#64748b' }}>{m.receiverEmail}</Typography>
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>{m.groupName ? m.groupName : m.receiverName}</Typography>
+                            <Typography variant="caption" sx={{ color: '#64748b' }}>{m.groupName ? 'Group Message' : m.receiverEmail}</Typography>
                           </Box>
                         </TableCell>
                         <TableCell sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -540,8 +620,8 @@ export const Scheduler: React.FC = () => {
                 <TextField
                   fullWidth
                   disabled
-                  label="Recipient"
-                  value={editingMsg.receiverEmail}
+                  label="Recipient / Group"
+                  value={editingMsg.groupName ? `${editingMsg.groupName} (Group)` : editingMsg.receiverEmail}
                   sx={{}}
                 />
 

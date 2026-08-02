@@ -89,14 +89,39 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             java.util.Map<String, Object> data = new com.fasterxml.jackson.databind.ObjectMapper().readValue(payload, java.util.Map.class);
             String event = (String) data.get("event");
             String receiverEmail = (String) data.get("receiverEmail");
+            Object groupIdObj = data.get("groupId");
 
-            if (("TYPING_START".equals(event) || "TYPING_STOP".equals(event)) && receiverEmail != null) {
-                java.util.Map<String, Object> forwardPayload = java.util.Map.of(
-                        "event", event,
-                        "senderEmail", senderEmail
-                );
-                String json = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(forwardPayload);
-                sendNotification(receiverEmail, json);
+            if ("TYPING_START".equals(event) || "TYPING_STOP".equals(event)) {
+                if (receiverEmail != null) {
+                    java.util.Map<String, Object> forwardPayload = java.util.Map.of(
+                            "event", event,
+                            "senderEmail", senderEmail
+                    );
+                    String json = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(forwardPayload);
+                    sendNotification(receiverEmail, json);
+                } else if (groupIdObj != null) {
+                    Long groupId = Long.valueOf(groupIdObj.toString());
+                    com.enterprise.scheduler.group.ChatGroupRepository groupRepo = 
+                        applicationContext.getBean(com.enterprise.scheduler.group.ChatGroupRepository.class);
+                    groupRepo.findById(groupId).ifPresent(group -> {
+                        java.util.Map<String, Object> forwardPayload = java.util.Map.of(
+                                "event", event,
+                                "senderEmail", senderEmail,
+                                "groupId", groupId
+                        );
+                        try {
+                            String json = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(forwardPayload);
+                            for (com.enterprise.scheduler.group.GroupMember member : group.getMembers()) {
+                                if (member.getStatus() == com.enterprise.scheduler.group.MembershipStatus.ACCEPTED &&
+                                        !member.getUser().getEmail().equals(senderEmail)) {
+                                    sendNotification(member.getUser().getEmail(), json);
+                                }
+                            }
+                        } catch (Exception ex) {
+                            logger.error("Failed to serialize group typing event", ex);
+                        }
+                    });
+                }
             }
         } catch (Exception e) {
             logger.error("Failed to handle incoming WebSocket message", e);

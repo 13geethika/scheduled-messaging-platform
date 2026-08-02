@@ -2,6 +2,7 @@ package com.enterprise.scheduler.message;
 import com.enterprise.scheduler.user.User;
 import com.enterprise.scheduler.user.Contact;
 import com.enterprise.scheduler.user.ContactStatus;
+import com.enterprise.scheduler.group.*;
 
 import com.enterprise.scheduler.message.MessageScheduleRequest;
 import com.enterprise.scheduler.message.MessageResponse;
@@ -41,6 +42,7 @@ public class MessageServiceImpl implements MessageService {
     private final DeadLetterMessageRepository deadLetterMessageRepository;
     private final ChatWebSocketHandler chatWebSocketHandler;
     private final ObjectMapper objectMapper;
+    private final com.enterprise.scheduler.group.ChatGroupRepository chatGroupRepository;
 
     public MessageServiceImpl(MessageRepository messageRepository,
                               UserRepository userRepository,
@@ -50,7 +52,8 @@ public class MessageServiceImpl implements MessageService {
                               NotificationService notificationService,
                               DeadLetterMessageRepository deadLetterMessageRepository,
                               ChatWebSocketHandler chatWebSocketHandler,
-                              ObjectMapper objectMapper) {
+                              ObjectMapper objectMapper,
+                              com.enterprise.scheduler.group.ChatGroupRepository chatGroupRepository) {
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
         this.contactRepository = contactRepository;
@@ -60,18 +63,40 @@ public class MessageServiceImpl implements MessageService {
         this.deadLetterMessageRepository = deadLetterMessageRepository;
         this.chatWebSocketHandler = chatWebSocketHandler;
         this.objectMapper = objectMapper;
+        this.chatGroupRepository = chatGroupRepository;
     }
 
     @Override
     @Transactional
     public MessageResponse scheduleMessage(User user, MessageScheduleRequest request, MultipartFile file) {
-        User receiver = userRepository.findByEmail(request.getReceiverEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("Receiver not found with email: " + request.getReceiverEmail()));
+        User receiver = null;
+        com.enterprise.scheduler.group.ChatGroup group = null;
 
-        // Verify that the receiver is in the sender's contact list and accepted
-        Optional<Contact> contactRelation = contactRepository.findByUserAndContactUser(user, receiver);
-        if (contactRelation.isEmpty() || contactRelation.get().getStatus() != ContactStatus.ACCEPTED) {
-            throw new IllegalArgumentException("You can only schedule messages to contacts in your ACCEPTED contact list.");
+        if (request.getGroupId() != null) {
+            group = chatGroupRepository.findById(request.getGroupId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Group not found with id: " + request.getGroupId()));
+            GroupMember memberOpt = group.getMembers().stream()
+                    .filter(m -> m.getUser().getId().equals(user.getId()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("You are not a member of this group."));
+            if (memberOpt.getStatus() != MembershipStatus.ACCEPTED) {
+                throw new IllegalArgumentException("You have not accepted the invitation to this group.");
+            }
+            if (group.isAdminsOnlyMessaging() && memberOpt.getRole() != GroupRole.ADMIN) {
+                throw new IllegalArgumentException("Only group admins are allowed to send messages in this group.");
+            }
+        } else {
+            if (request.getReceiverEmail() == null || request.getReceiverEmail().trim().isEmpty()) {
+                throw new IllegalArgumentException("Receiver email or Group ID is required.");
+            }
+            receiver = userRepository.findByEmail(request.getReceiverEmail())
+                    .orElseThrow(() -> new ResourceNotFoundException("Receiver not found with email: " + request.getReceiverEmail()));
+
+            // Verify that the receiver is in the sender's contact list and accepted
+            Optional<Contact> contactRelation = contactRepository.findByUserAndContactUser(user, receiver);
+            if (contactRelation.isEmpty() || contactRelation.get().getStatus() != ContactStatus.ACCEPTED) {
+                throw new IllegalArgumentException("You can only schedule messages to contacts in your ACCEPTED contact list.");
+            }
         }
 
         String fileUrl = null;
@@ -103,6 +128,7 @@ public class MessageServiceImpl implements MessageService {
         Message message = Message.builder()
                 .sender(user)
                 .receiver(receiver)
+                .group(group)
                 .content(request.getContent())
                 .messageType(type)
                 .fileUrl(fileUrl)
@@ -118,10 +144,24 @@ public class MessageServiceImpl implements MessageService {
         Message savedMessage = messageRepository.save(message);
 
         if (isImmediate) {
-            notificationService.createNotification(receiver, 
-                    "New message received from " + user.getName() + ": " + 
-                    (type == MessageType.TEXT ? message.getContent() : "[" + type + " Attachment]"),
-                    savedMessage.getId());
+            if (group != null) {
+                for (GroupMember member : group.getMembers()) {
+                    if (member.getStatus() != MembershipStatus.ACCEPTED) {
+                        continue;
+                    }
+                    if (!member.getUser().getId().equals(user.getId())) {
+                        notificationService.createNotification(member.getUser(), 
+                                "New group message in " + group.getName() + " from " + user.getName() + ": " + 
+                                (type == MessageType.TEXT ? message.getContent() : "[" + type + " Attachment]"),
+                                savedMessage.getId());
+                    }
+                }
+            } else {
+                notificationService.createNotification(receiver, 
+                        "New message received from " + user.getName() + ": " + 
+                        (type == MessageType.TEXT ? message.getContent() : "[" + type + " Attachment]"),
+                        savedMessage.getId());
+            }
         } else {
             // Schedule in Quartz
             quartzSchedulerService.scheduleMessageJob(savedMessage);
@@ -192,12 +232,13 @@ public class MessageServiceImpl implements MessageService {
 
         // Delete from DB
         String senderEmail = message.getSender().getEmail();
-        String receiverEmail = message.getReceiver().getEmail();
+        String receiverEmail = message.getReceiver() != null ? message.getReceiver().getEmail() : null;
+        Long groupId = message.getGroup() != null ? message.getGroup().getId() : null;
         
         notificationService.deleteMessageNotifications(messageId);
         messageRepository.delete(message);
         
-        broadcastMessageDelete(messageId, senderEmail, receiverEmail);
+        broadcastMessageDelete(messageId, senderEmail, receiverEmail, groupId);
     }
 
     @Override
@@ -207,9 +248,11 @@ public class MessageServiceImpl implements MessageService {
                 .orElseThrow(() -> new ResourceNotFoundException("Message not found"));
 
         boolean isSender = message.getSender().getId().equals(user.getId());
-        boolean isReceiver = message.getReceiver().getId().equals(user.getId());
+        boolean isReceiver = message.getReceiver() != null && message.getReceiver().getId().equals(user.getId());
+        boolean isGroupMember = message.getGroup() != null && message.getGroup().getMembers().stream()
+                .anyMatch(m -> m.getUser().getId().equals(user.getId()) && m.getStatus() == MembershipStatus.ACCEPTED);
 
-        if (!isSender && !isReceiver) {
+        if (!isSender && !isReceiver && !isGroupMember) {
             throw new IllegalArgumentException("Unauthorized to delete this message");
         }
 
@@ -220,8 +263,8 @@ public class MessageServiceImpl implements MessageService {
             message.setDeletedByReceiver(true);
         }
 
-        // If both have deleted, clean it up completely
-        if (message.isDeletedBySender() && message.isDeletedByReceiver()) {
+        // For group messages, we don't have deletedByReceiver flags for all members, so if a member deletes it "for me", we can just do nothing or set deletedByReceiver if they are the receiver (not group).
+        if (message.getGroup() == null && message.isDeletedBySender() && message.isDeletedByReceiver()) {
             if (message.getStatus() == MessageStatus.SCHEDULED || message.getStatus() == MessageStatus.PENDING) {
                 quartzSchedulerService.deleteMessageJob(messageId);
             }
@@ -234,7 +277,7 @@ public class MessageServiceImpl implements MessageService {
             }
         }
         
-        broadcastMessageDelete(messageId, user.getEmail(), null);
+        broadcastMessageDelete(messageId, user.getEmail(), null, null);
     }
 
     @Override
@@ -344,14 +387,16 @@ public class MessageServiceImpl implements MessageService {
         }
 
         try {
-            logger.info("Delivering message ID: {} of type {} to receiver: {}", 
-                    messageId, message.getMessageType(), message.getReceiver().getEmail());
+            String targetLog = (message.getGroup() != null) ? "group " + message.getGroup().getName() : "receiver: " + message.getReceiver().getEmail();
+            logger.info("Delivering message ID: {} of type {} to {}", 
+                    messageId, message.getMessageType(), targetLog);
 
             // Simulate Transmission (Integrate SMS API, Twilio, WhatsApp, Mail or push alert)
             // We verify by printing details and creating a real user-to-user in-app message notification
             String mediaInfo = (message.getFileUrl() != null) ? " (Attachment: " + message.getFileUrl() + ")" : "";
+            String receiverInfo = (message.getGroup() != null) ? "group " + message.getGroup().getName() : message.getReceiver().getEmail();
             logger.info(">>> SENT MSG FROM {} TO {}: {} {}", 
-                    message.getSender().getEmail(), message.getReceiver().getEmail(), message.getContent(), mediaInfo);
+                    message.getSender().getEmail(), receiverInfo, message.getContent(), mediaInfo);
 
             // Mark current message as DELIVERED
             message.setStatus(MessageStatus.DELIVERED);
@@ -360,10 +405,24 @@ public class MessageServiceImpl implements MessageService {
             broadcastMessageUpdate(saved, "MESSAGE_UPDATE");
 
             // Notify Receiver
-            notificationService.createNotification(message.getReceiver(), 
-                    "New message received from " + message.getSender().getName() + ": " + 
-                    (message.getMessageType() == MessageType.TEXT ? message.getContent() : "[" + message.getMessageType() + " Attachment]"),
-                    message.getId());
+            if (message.getGroup() != null) {
+                for (GroupMember member : message.getGroup().getMembers()) {
+                    if (member.getStatus() != MembershipStatus.ACCEPTED) {
+                        continue;
+                    }
+                    if (!member.getUser().getId().equals(message.getSender().getId())) {
+                        notificationService.createNotification(member.getUser(), 
+                                "New group message in " + message.getGroup().getName() + " from " + message.getSender().getName() + ": " + 
+                                (message.getMessageType() == MessageType.TEXT ? message.getContent() : "[" + message.getMessageType() + " Attachment]"),
+                                message.getId());
+                    }
+                }
+            } else {
+                notificationService.createNotification(message.getReceiver(), 
+                        "New message received from " + message.getSender().getName() + ": " + 
+                        (message.getMessageType() == MessageType.TEXT ? message.getContent() : "[" + message.getMessageType() + " Attachment]"),
+                        message.getId());
+            }
 
             // Handle Recurring schedules
             if (message.getRecurringType() != RecurringType.NONE) {
@@ -400,7 +459,7 @@ public class MessageServiceImpl implements MessageService {
             DeadLetterMessage dlqMessage = DeadLetterMessage.builder()
                     .messageId(message.getId())
                     .senderEmail(message.getSender().getEmail())
-                    .receiverEmail(message.getReceiver().getEmail())
+                    .receiverEmail(message.getGroup() != null ? "Group: " + message.getGroup().getName() : message.getReceiver().getEmail())
                     .content(message.getContent())
                     .errorReason(errorMsg)
                     .failedAt(Instant.now())
@@ -408,8 +467,9 @@ public class MessageServiceImpl implements MessageService {
             deadLetterMessageRepository.save(dlqMessage);
 
             // Notify Sender of failure
+            String targetName = message.getGroup() != null ? message.getGroup().getName() : message.getReceiver().getName();
             notificationService.createNotification(message.getSender(), 
-                    "Failed to deliver scheduled message to " + message.getReceiver().getName() + " after maximum retries.");
+                    "Failed to deliver scheduled message to " + targetName + " after maximum retries.");
             broadcastMessageUpdate(saved, "MESSAGE_UPDATE");
         }
     }
@@ -427,6 +487,7 @@ public class MessageServiceImpl implements MessageService {
         Message nextMessage = Message.builder()
                 .sender(currentMessage.getSender())
                 .receiver(currentMessage.getReceiver())
+                .group(currentMessage.getGroup())
                 .content(currentMessage.getContent())
                 .messageType(currentMessage.getMessageType())
                 .fileUrl(currentMessage.getFileUrl())
@@ -455,11 +516,18 @@ public class MessageServiceImpl implements MessageService {
             replyToSenderName = message.getReplyToMessage().getSender().getName();
         }
 
+        Long groupId = null;
+        String groupName = null;
+        if (message.getGroup() != null) {
+            groupId = message.getGroup().getId();
+            groupName = message.getGroup().getName();
+        }
+
         return MessageResponse.builder()
                 .id(message.getId())
                 .senderEmail(message.getSender().getEmail())
-                .receiverEmail(message.getReceiver().getEmail())
-                .receiverName(message.getReceiver().getName())
+                .receiverEmail(message.getReceiver() != null ? message.getReceiver().getEmail() : null)
+                .receiverName(message.getReceiver() != null ? message.getReceiver().getName() : null)
                 .content(message.getContent())
                 .messageType(message.getMessageType().name())
                 .fileUrl(message.getFileUrl())
@@ -473,6 +541,8 @@ public class MessageServiceImpl implements MessageService {
                 .replyToMessageId(replyToId)
                 .replyToMessageContent(replyToContent)
                 .replyToMessageSenderName(replyToSenderName)
+                .groupId(groupId)
+                .groupName(groupName)
                 .build();
     }
 
@@ -485,18 +555,26 @@ public class MessageServiceImpl implements MessageService {
             );
             String json = objectMapper.writeValueAsString(payload);
             
-            if (message.getSender() != null) {
-                chatWebSocketHandler.sendNotification(message.getSender().getEmail(), json);
-            }
-            if (message.getReceiver() != null) {
-                chatWebSocketHandler.sendNotification(message.getReceiver().getEmail(), json);
+            if (message.getGroup() != null) {
+                for (GroupMember member : message.getGroup().getMembers()) {
+                    if (member.getStatus() == MembershipStatus.ACCEPTED) {
+                        chatWebSocketHandler.sendNotification(member.getUser().getEmail(), json);
+                    }
+                }
+            } else {
+                if (message.getSender() != null) {
+                    chatWebSocketHandler.sendNotification(message.getSender().getEmail(), json);
+                }
+                if (message.getReceiver() != null) {
+                    chatWebSocketHandler.sendNotification(message.getReceiver().getEmail(), json);
+                }
             }
         } catch (Exception e) {
             logger.error("Failed to broadcast WebSocket message update", e);
         }
     }
 
-    private void broadcastMessageDelete(Long messageId, String senderEmail, String receiverEmail) {
+    private void broadcastMessageDelete(Long messageId, String senderEmail, String receiverEmail, Long groupId) {
         try {
             java.util.Map<String, Object> payload = java.util.Map.of(
                 "event", "MESSAGE_DELETE",
@@ -504,15 +582,41 @@ public class MessageServiceImpl implements MessageService {
             );
             String json = objectMapper.writeValueAsString(payload);
             
-            if (senderEmail != null) {
-                chatWebSocketHandler.sendNotification(senderEmail, json);
-            }
-            if (receiverEmail != null) {
-                chatWebSocketHandler.sendNotification(receiverEmail, json);
+            if (groupId != null) {
+                chatGroupRepository.findById(groupId).ifPresent(g -> {
+                    for (GroupMember member : g.getMembers()) {
+                        if (member.getStatus() == MembershipStatus.ACCEPTED) {
+                            chatWebSocketHandler.sendNotification(member.getUser().getEmail(), json);
+                        }
+                    }
+                });
+            } else {
+                if (senderEmail != null) {
+                    chatWebSocketHandler.sendNotification(senderEmail, json);
+                }
+                if (receiverEmail != null) {
+                    chatWebSocketHandler.sendNotification(receiverEmail, json);
+                }
             }
         } catch (Exception e) {
             logger.error("Failed to broadcast WebSocket message delete", e);
         }
+    }
+
+    @Override
+    public List<MessageResponse> getGroupChatHistory(User user, Long groupId) {
+        com.enterprise.scheduler.group.ChatGroup group = chatGroupRepository.findById(groupId)
+                .orElseThrow(() -> new ResourceNotFoundException("Group not found with id: " + groupId));
+
+        boolean isAcceptedMember = group.getMembers().stream()
+                .anyMatch(m -> m.getUser().getId().equals(user.getId()) && m.getStatus() == MembershipStatus.ACCEPTED);
+        if (!isAcceptedMember) {
+            throw new IllegalArgumentException("You are not an active member of this group.");
+        }
+
+        return messageRepository.findGroupChatHistory(groupId, user).stream()
+                .map(this::mapToMessageResponse)
+                .collect(Collectors.toList());
     }
 
     @Override

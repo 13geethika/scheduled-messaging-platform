@@ -44,6 +44,11 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
                                   @Param("senderContact") User senderContact,
                                   @Param("receiverUser") User receiverUser);
 
+    @Query("SELECT m FROM Message m WHERE m.group.id = :groupId AND " +
+           "(m.status = com.enterprise.scheduler.message.MessageStatus.DELIVERED OR m.sender = :user) " +
+           "ORDER BY COALESCE(m.sentTime, m.scheduledTime, m.createdAt) ASC")
+    List<Message> findGroupChatHistory(@Param("groupId") Long groupId, @Param("user") User user);
+
     long countBySenderAndReceiverAndStatusAndIsReadFalseAndDeletedByReceiverFalse(User sender, User receiver, MessageStatus status);
 
     List<Message> findBySenderAndReceiverAndStatusAndIsReadFalseAndDeletedByReceiverFalse(User sender, User receiver, MessageStatus status);

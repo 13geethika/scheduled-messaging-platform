@@ -8,9 +8,9 @@ import java.time.Instant;
 
 @Data
 public class MessageScheduleRequest {
-    @NotBlank(message = "Receiver email is required")
-    @Email(message = "Invalid receiver email format")
     private String receiverEmail;
+
+    private Long groupId;
 
     private String content;
 

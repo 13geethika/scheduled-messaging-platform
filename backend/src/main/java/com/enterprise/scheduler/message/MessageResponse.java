@@ -28,4 +28,6 @@ public class MessageResponse {
     private Long replyToMessageId;
     private String replyToMessageContent;
     private String replyToMessageSenderName;
+    private Long groupId;
+    private String groupName;
 }

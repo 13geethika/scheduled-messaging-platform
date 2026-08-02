@@ -15,6 +15,7 @@ public interface MessageService {
     void resumeMessage(User user, Long messageId);
     List<MessageResponse> getMyMessages(User user);
     List<MessageResponse> getChatHistory(User user, String contactEmail);
+    List<MessageResponse> getGroupChatHistory(User user, Long groupId);
     void retryFailedMessage(User user, Long messageId);
     void deliverMessage(Long messageId);
     void markChatAsRead(User user, String contactEmail);
